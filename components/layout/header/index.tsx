@@ -44,7 +44,7 @@ export default function Header() {
                 </nav>
 
                 <div className={styles.actions}>
-                    <ThemeToggle />
+                    {/* <ThemeToggle /> */}
 
                     <button
                         className={styles.cartButton}

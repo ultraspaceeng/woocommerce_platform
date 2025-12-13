@@ -11,7 +11,6 @@ export interface CartItem {
 interface CartState {
     items: CartItem[];
     isOpen: boolean;
-    isCartOpen: boolean;
 
     // Actions
     addItem: (product: Product, quantity?: number, options?: Record<string, string>) => void;
@@ -26,6 +25,7 @@ interface CartState {
     getItemCount: () => number;
     getSubtotal: () => number;
     getTotal: () => number;
+    isInCart: (productId: string) => boolean;
 }
 
 export const useCartStore = create<CartState>()(
@@ -33,7 +33,6 @@ export const useCartStore = create<CartState>()(
         (set, get) => ({
             items: [],
             isOpen: false,
-            isCartOpen: false,
 
             addItem: (product, quantity = 1, options) => {
                 const { items } = get();
@@ -43,8 +42,14 @@ export const useCartStore = create<CartState>()(
                         JSON.stringify(item.selectedOptions) === JSON.stringify(options)
                 );
 
+                // For digital products, only allow one in cart
+                if (product.type === 'digital' && existingIndex >= 0) {
+                    // Digital product already in cart - don't add again
+                    return;
+                }
+
                 if (existingIndex >= 0) {
-                    // Update quantity of existing item
+                    // Update quantity of existing item (physical products only)
                     const newItems = [...items];
                     newItems[existingIndex].quantity += quantity;
                     set({ items: newItems });
@@ -96,6 +101,10 @@ export const useCartStore = create<CartState>()(
             getTotal: () => {
                 // For now, total equals subtotal. Add tax/shipping later.
                 return get().getSubtotal();
+            },
+
+            isInCart: (productId: string) => {
+                return get().items.some((item) => item.product._id === productId);
             },
         }),
         {

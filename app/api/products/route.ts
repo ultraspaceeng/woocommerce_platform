@@ -77,20 +77,15 @@ export async function POST(request: Request) {
         // TODO: Add admin auth verification
         const body = await request.json();
 
-        // Generate slug from title
-        const slug = body.title
+        // Generate slug from title with random suffix for uniqueness
+        const baseSlug = body.title
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)/g, '');
 
-        // Check for duplicate slug
-        const existingProduct = await Product.findOne({ slug });
-        if (existingProduct) {
-            return NextResponse.json(
-                { success: false, error: 'A product with this title already exists' },
-                { status: 400 }
-            );
-        }
+        // Generate random 8-character alphanumeric suffix
+        const randomSuffix = Math.random().toString(36).substring(2, 10);
+        const slug = `${baseSlug}-${randomSuffix}`;
 
         const product = new Product({
             ...body,

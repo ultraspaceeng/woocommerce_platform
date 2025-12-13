@@ -52,13 +52,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
         // TODO: Add admin auth verification
         const body = await request.json();
 
-        // If title is being updated, update slug too
-        if (body.title) {
-            body.slug = body.title
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
-        }
+        // Note: We don't regenerate slug on update to preserve existing URLs
+        // If you need to change the slug, it should be deleted and recreated
 
         const product = await Product.findByIdAndUpdate(
             id,

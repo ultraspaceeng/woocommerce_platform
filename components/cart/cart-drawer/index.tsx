@@ -2,22 +2,22 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiX, FiMinus, FiPlus, FiShoppingBag, FiPackage } from 'react-icons/fi';
+import { FiX, FiMinus, FiPlus, FiShoppingBag, FiPackage, FiDownload } from 'react-icons/fi';
 import Button from '@/components/ui/button';
 import { useCartStore } from '@/lib/stores/cart-store';
 import styles from './cart-drawer.module.css';
 
 export default function CartDrawer() {
-    const { items, isCartOpen, closeCart, updateQuantity, removeItem, getSubtotal } = useCartStore();
+    const { items, isOpen, closeCart, updateQuantity, removeItem, getSubtotal } = useCartStore();
 
     const formatPrice = (price: number) =>
         new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(price);
 
     return (
         <>
-            <div className={`${styles.overlay} ${isCartOpen ? styles.visible : ''}`} onClick={closeCart} />
+            <div className={`${styles.overlay} ${isOpen ? styles.visible : ''}`} onClick={closeCart} />
 
-            <div className={`${styles.cartDrawer} ${isCartOpen ? styles.open : ''}`}>
+            <div className={`${styles.cartDrawer} ${isOpen ? styles.open : ''}`}>
                 <div className={styles.header}>
                     <h2 className={styles.title}>Cart ({items.length})</h2>
                     <button className={styles.closeBtn} onClick={closeCart}>

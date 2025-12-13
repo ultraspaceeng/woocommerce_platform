@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Providers from './providers';
+import CartDrawer from '@/components/cart/cart-drawer';
 import './global.css';
 
-import {Bricolage_Grotesque} from 'next/font/google';
+import { Bricolage_Grotesque } from 'next/font/google';
 
 const font = Bricolage_Grotesque({
     subsets: ['latin'],
@@ -32,9 +33,9 @@ export default function RootLayout({
             <body className={font.variable}>
                 <Providers>
                     {children}
+                    <CartDrawer />
                 </Providers>
             </body>
         </html>
     );
 }
-

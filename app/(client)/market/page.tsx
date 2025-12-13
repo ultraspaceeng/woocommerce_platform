@@ -9,30 +9,34 @@ import ProductCard from '@/components/product/product-card';
 import Button from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Product } from '@/types';
-import { productsApi } from '@/lib/services/api';
+import { productsApi, categoriesApi } from '@/lib/services/api';
 import styles from './page.module.css';
 
-const categories = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'electronics', label: 'Electronics' },
-    { value: 'clothing', label: 'Clothing' },
-    { value: 'software', label: 'Software' },
-    { value: 'ebooks', label: 'E-Books' },
-    { value: 'other', label: 'Other' },
-];
-
+// Product type options (static)
 const types = [
     { value: 'all', label: 'All Types' },
     { value: 'physical', label: 'Physical Products' },
     { value: 'digital', label: 'Digital Products' },
 ];
 
+// Category type for API response
+interface Category {
+    _id: string;
+    name: string;
+    slug: string;
+    isActive: boolean;
+}
+
 function MarketContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<{ value: string; label: string }[]>([
+        { value: 'all', label: 'All Categories' },
+    ]);
     const [loading, setLoading] = useState(true);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(1);
 
     const [search, setSearch] = useState(searchParams.get('search') || '');
@@ -44,6 +48,31 @@ function MarketContent() {
 
     const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
     const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+    // Fetch categories from database
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await categoriesApi.getAll();
+                const dbCategories = response.data.data as Category[];
+                const categoryOptions = [
+                    { value: 'all', label: 'All Categories' },
+                    ...dbCategories.map((cat) => ({
+                        value: cat.slug,
+                        label: cat.name,
+                    })),
+                ];
+                setCategories(categoryOptions);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+                // Keep default "All Categories" if fetch fails
+            } finally {
+                setCategoriesLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => setDebouncedSearch(search), 300);
@@ -93,9 +122,19 @@ function MarketContent() {
             <div className={styles.filterSection}>
                 <h3 className={styles.filterTitle}>Category</h3>
                 <div className={styles.filterOptions}>
-                    {categories.map((cat) => (
-                        <button key={cat.value} className={`${styles.filterOption} ${category === cat.value ? styles.active : ''}`} onClick={() => { setCategory(cat.value); setPage(1); }}>{cat.label}</button>
-                    ))}
+                    {categoriesLoading ? (
+                        <span className={styles.filterLoading}>Loading...</span>
+                    ) : (
+                        categories.map((cat) => (
+                            <button
+                                key={cat.value}
+                                className={`${styles.filterOption} ${category === cat.value ? styles.active : ''}`}
+                                onClick={() => { setCategory(cat.value); setPage(1); }}
+                            >
+                                {cat.label}
+                            </button>
+                        ))
+                    )}
                 </div>
             </div>
             <div className={styles.filterSection}>

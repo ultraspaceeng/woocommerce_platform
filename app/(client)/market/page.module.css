@@ -89,6 +89,12 @@
     gap: var(--space-sm);
 }
 
+.filterLoading {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    padding: var(--space-sm);
+}
+
 .filterOption {
     display: flex;
     align-items: center;

@@ -1,6 +1,13 @@
 /* Dashboard Page Styles */
 .page {
     animation: fadeIn 0.3s ease;
+    padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 1rem;
+    }
 }
 
 @keyframes fadeIn {

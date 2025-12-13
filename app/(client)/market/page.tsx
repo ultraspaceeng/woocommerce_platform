@@ -173,7 +173,26 @@ function MarketContent() {
 
             <div className={styles.content}>
                 <aside className={styles.sidebar}><FilterContent /></aside>
-                <div className={`${styles.mobileSidebar} ${mobileFilterOpen ? styles.open : ''}`}><FilterContent /><Button fullWidth onClick={() => setMobileFilterOpen(false)} style={{ marginTop: 'var(--space-lg)' }}>Apply Filters</Button></div>
+
+                {/* Mobile Filter Overlay */}
+                <div
+                    className={`${styles.mobileOverlay} ${mobileFilterOpen ? styles.open : ''}`}
+                    onClick={() => setMobileFilterOpen(false)}
+                />
+
+                {/* Mobile Filter Drawer */}
+                <div className={`${styles.mobileSidebar} ${mobileFilterOpen ? styles.open : ''}`}>
+                    <div className={styles.mobileFilterHeader}>
+                        <span className={styles.mobileFilterTitle}>Filters</span>
+                        <button className={styles.mobileCloseBtn} onClick={() => setMobileFilterOpen(false)}>
+                            <FiX size={20} />
+                        </button>
+                    </div>
+                    <FilterContent />
+                    <Button fullWidth onClick={() => setMobileFilterOpen(false)} style={{ marginTop: 'var(--space-lg)' }}>
+                        Apply Filters
+                    </Button>
+                </div>
 
                 <div className={styles.productsWrapper}>
                     {loading ? (

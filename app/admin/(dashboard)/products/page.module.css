@@ -1,6 +1,13 @@
 /* Products Page Styles */
 .page {
     animation: fadeIn 0.3s ease;
+    padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 1rem;
+    }
 }
 
 @keyframes fadeIn {
@@ -224,11 +231,13 @@
     background: #111113;
     border: 1px solid #27272a;
     border-radius: 12px;
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .table {
     width: 100%;
+    min-width: 800px;
     border-collapse: collapse;
 }
 

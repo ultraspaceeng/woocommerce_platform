@@ -189,7 +189,7 @@ export default function HomePage() {
                             </div>
                         </div>
 
-                        <form className={styles.contactForm} onSubmit={(e) => e.preventDefault()}>
+                        {/* <form className={styles.contactForm} onSubmit={(e) => e.preventDefault()}>
                             <div className={styles.formGrid}>
                                 <Input
                                     label="Full Name"
@@ -214,7 +214,7 @@ export default function HomePage() {
                                     Send Message
                                 </Button>
                             </div>
-                        </form>
+                        </form> */}
                     </div>
                 </div>
             </section>

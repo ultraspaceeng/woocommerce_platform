@@ -197,6 +197,19 @@ export async function POST(request: Request) {
             // Don't fail the request if email fails, but log it
         }
 
+        // Prepare digital items list for frontend download links
+        const digitalItemsList = orderData.cartItems
+            .filter((item: { type?: string }) => item.type === 'digital')
+            .map((item: { title: string; productId: string }) => ({
+                title: item.title,
+                productId: item.productId,
+            }));
+
+        // Check if order has physical products
+        const hasPhysicalProducts = orderData.cartItems.some(
+            (item: { type?: string }) => item.type === 'physical' || !item.type
+        );
+
         return NextResponse.json({
             success: true,
             message: 'Payment verified and order created successfully',
@@ -204,6 +217,8 @@ export async function POST(request: Request) {
                 orderId: order.orderId,
                 status: order.paymentStatus,
                 hasDigitalProducts,
+                hasPhysicalProducts,
+                digitalItems: digitalItemsList,
                 totalAmount: order.totalAmount,
             },
         });
@@ -211,6 +226,74 @@ export async function POST(request: Request) {
         console.error('Payment verification error:', error);
         return NextResponse.json(
             { success: false, error: 'Payment verification failed. Please contact support.' },
+            { status: 500 }
+        );
+    }
+}
+
+/**
+ * GET /api/paystack/verify?reference=xxx
+ * 
+ * FALLBACK: Lookup existing order by payment reference
+ * Used when user revisits the verify page and sessionStorage is empty
+ * (e.g., after browser refresh or on a different tab)
+ */
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const reference = searchParams.get('reference');
+
+        if (!reference) {
+            return NextResponse.json(
+                { success: false, error: 'Missing payment reference' },
+                { status: 400 }
+            );
+        }
+
+        await connectDB();
+
+        // Look up order by Paystack reference
+        const order = await Order.findOne({ paystackRef: reference });
+
+        if (!order) {
+            return NextResponse.json(
+                { success: false, error: 'Order not found. Payment may not have been completed.' },
+                { status: 404 }
+            );
+        }
+
+        // Determine if order has digital/physical products
+        const hasDigitalProducts:any = order.cartItems.some(
+            (item: { type?: string }) => item.type === 'digital'
+        );
+        const hasPhysicalProducts:any = order.cartItems.some(
+            (item: { type?: string }) => item.type === 'physical' || !item.type
+        );
+
+        // Build digital items list for download links
+        const digitalItems:any = order.cartItems
+            .filter((item: any) => item.type === 'digital')
+            .map((item: any) => ({
+                title: item.title,
+                productId: item.productId.toString(),
+            }));
+
+        return NextResponse.json({
+            success: true,
+            message: 'Order found',
+            data: {
+                orderId: order.orderId,
+                status: order.paymentStatus,
+                hasDigitalProducts,
+                hasPhysicalProducts,
+                digitalItems,
+                totalAmount: order.totalAmount,
+            },
+        });
+    } catch (error) {
+        console.error('Order lookup error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to lookup order' },
             { status: 500 }
         );
     }

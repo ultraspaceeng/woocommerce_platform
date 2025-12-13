@@ -233,15 +233,8 @@ export default function CheckoutPage() {
         metadata: {
             custom_fields: [
                 {
-                    display_name: 'Customer Name',
-                    variable_name: 'customer_name',
                     value: formData.name,
-                },
-                {
-                    display_name: 'Phone',
-                    variable_name: 'phone',
-                    value: formData.phone,
-                },
+                }
             ],
         },
     };

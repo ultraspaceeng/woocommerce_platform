@@ -74,10 +74,10 @@ export default function AnalyticsPage() {
                         <div className={`${styles.cardIcon} ${styles.iconPurple}`}>
                             <FiDollarSign size={20} />
                         </div>
-                        <div className={styles.cardTrend}>
+                        {/* <div className={styles.cardTrend}>
                             <FiTrendingUp size={14} />
                             +12.5%
-                        </div>
+                        </div> */}
                     </div>
                     <div className={styles.cardValue}>{formatCurrency(metrics?.netSales || 0)}</div>
                     <div className={styles.cardLabel}>Total Revenue</div>
@@ -97,10 +97,10 @@ export default function AnalyticsPage() {
                         <div className={`${styles.cardIcon} ${styles.iconBlue}`}>
                             <FiShoppingCart size={20} />
                         </div>
-                        <div className={styles.cardTrend}>
+                        {/* <div className={styles.cardTrend}>
                             <FiTrendingUp size={14} />
                             +8.2%
-                        </div>
+                        </div> */}
                     </div>
                     <div className={styles.cardValue}>{metrics?.totalOrders || 0}</div>
                     <div className={styles.cardLabel}>Total Orders</div>
@@ -111,10 +111,10 @@ export default function AnalyticsPage() {
                         <div className={`${styles.cardIcon} ${styles.iconGreen}`}>
                             <FiUsers size={20} />
                         </div>
-                        <div className={styles.cardTrend}>
+                        {/* <div className={styles.cardTrend}>
                             <FiTrendingUp size={14} />
                             +15.3%
-                        </div>
+                        </div> */}
                     </div>
                     <div className={styles.cardValue}>{metrics?.totalUsers || 0}</div>
                     <div className={styles.cardLabel}>Customers</div>

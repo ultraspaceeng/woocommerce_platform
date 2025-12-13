@@ -68,10 +68,10 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconPurple}`}>
                             <FiDollarSign size={20} />
                         </div>
-                        <div className={`${styles.metricTrend} ${styles.trendUp}`}>
+                        {/* <div className={`${styles.metricTrend} ${styles.trendUp}`}>
                             <FiTrendingUp size={14} />
                             +12.5%
-                        </div>
+                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{formatCurrency(metrics?.netSales || 0)}</div>
                     <div className={styles.metricLabel}>Total Revenue</div>
@@ -82,10 +82,10 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconBlue}`}>
                             <FiShoppingCart size={20} />
                         </div>
-                        <div className={`${styles.metricTrend} ${styles.trendUp}`}>
+                        {/* <div className={`${styles.metricTrend} ${styles.trendUp}`}>
                             <FiTrendingUp size={14} />
                             +8.2%
-                        </div>
+                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{metrics?.totalOrders || 0}</div>
                     <div className={styles.metricLabel}>Total Orders</div>
@@ -96,10 +96,10 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconGreen}`}>
                             <FiPackage size={20} />
                         </div>
-                        <div className={`${styles.metricTrend} ${styles.trendDown}`}>
+                        {/* <div className={`${styles.metricTrend} ${styles.trendDown}`}>
                             <FiTrendingDown size={14} />
                             -3.1%
-                        </div>
+                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{metrics?.ordersFulfilled || 0}</div>
                     <div className={styles.metricLabel}>Fulfilled Orders</div>
@@ -110,10 +110,10 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconOrange}`}>
                             <FiUsers size={20} />
                         </div>
-                        <div className={`${styles.metricTrend} ${styles.trendUp}`}>
+                        {/* <div className={`${styles.metricTrend} ${styles.trendUp}`}>
                             <FiTrendingUp size={14} />
                             +15.3%
-                        </div>
+                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{metrics?.totalUsers || 0}</div>
                     <div className={styles.metricLabel}>Customers</div>

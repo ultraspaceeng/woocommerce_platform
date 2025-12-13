@@ -99,22 +99,21 @@ function VerifyContent() {
                     setStatus('success');
                     setOrderId(data.data.orderId);
 
-                    // If we didn't get order type from sessionStorage, determine from API response
-                    if (!storedOrderType) {
-                        const hasDigital = data.data.hasDigitalProducts;
-                        const hasPhysical = data.data.hasPhysicalProducts;
+                    // Always determine order type from API response (most accurate)
+                    // The API tells us exactly what products are in the order
+                    const hasDigital = data.data.hasDigitalProducts;
+                    const hasPhysical = data.data.hasPhysicalProducts;
 
-                        if (hasDigital && hasPhysical) {
-                            setOrderType('mixed');
-                        } else if (hasDigital) {
-                            setOrderType('digital-only');
-                        } else {
-                            setOrderType('physical-only');
-                        }
+                    if (hasDigital && hasPhysical) {
+                        setOrderType('mixed');
+                    } else if (hasDigital) {
+                        setOrderType('digital-only');
+                    } else {
+                        setOrderType('physical-only');
                     }
 
                     // Store digital items for download links
-                    if (data.data.digitalItems) {
+                    if (data.data.digitalItems && data.data.digitalItems.length > 0) {
                         setDigitalItems(data.data.digitalItems);
                     }
 

@@ -35,21 +35,21 @@ interface OrderEmailData {
 // Create transporter based on environment
 const createTransporter = () => {
     // Support multiple providers
-    const provider = process.env.EMAIL_PROVIDER || 'smtp';
+    // const provider = process.env.EMAIL_PROVIDER || 'smtp';
 
-    if (provider === 'gmail') {
-        return nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.SMPT_USER,
-                pass: process.env.SMPT_PASS,
-            },
-        });
-    }
+    // if (provider === 'gmail') {
+    //     return nodemailer.createTransport({
+    //         service: 'gmail',
+    //         auth: {
+    //             user: process.env.SMPT_USER,
+    //             pass: process.env.SMPT_PASS,
+    //         },
+    //     });
+    // }
 
     // Default SMTP configuration
     return nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.mailtrap.io',
+        host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '587'),
         secure: process.env.SMTP_SECURE === 'true',
         auth: {

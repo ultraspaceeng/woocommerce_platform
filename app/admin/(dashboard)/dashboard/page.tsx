@@ -12,12 +12,12 @@ import { DashboardMetrics, Order } from '@/types';
 import styles from './page.module.css';
 
 // Dynamic import Recharts
-const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
-const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const BarChart:any = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar:any = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis:any = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis:any = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip:any = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer:any = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
 
 export default function DashboardPage() {
     const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);

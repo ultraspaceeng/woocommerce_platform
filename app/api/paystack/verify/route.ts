@@ -210,12 +210,23 @@ export async function POST(request: Request) {
             (item: { type?: string }) => item.type === 'physical' || !item.type
         );
 
+        // Determine order type: digital-only, physical-only, or mixed
+        let orderType: 'digital-only' | 'physical-only' | 'mixed';
+        if (hasDigitalProducts && hasPhysicalProducts) {
+            orderType = 'mixed';
+        } else if (hasDigitalProducts) {
+            orderType = 'digital-only';
+        } else {
+            orderType = 'physical-only';
+        }
+
         return NextResponse.json({
             success: true,
             message: 'Payment verified and order created successfully',
             data: {
                 orderId: order.orderId,
                 status: order.paymentStatus,
+                orderType,
                 hasDigitalProducts,
                 hasPhysicalProducts,
                 digitalItems: digitalItemsList,
@@ -263,17 +274,27 @@ export async function GET(request: Request) {
         }
 
         // Determine if order has digital/physical products
-        const hasDigitalProducts:any = order.cartItems.some(
+        const hasDigitalProducts: boolean = order.cartItems.some(
             (item: { type?: string }) => item.type === 'digital'
         );
-        const hasPhysicalProducts:any = order.cartItems.some(
+        const hasPhysicalProducts: boolean = order.cartItems.some(
             (item: { type?: string }) => item.type === 'physical' || !item.type
         );
 
+        // Determine order type: digital-only, physical-only, or mixed
+        let orderType: 'digital-only' | 'physical-only' | 'mixed';
+        if (hasDigitalProducts && hasPhysicalProducts) {
+            orderType = 'mixed';
+        } else if (hasDigitalProducts) {
+            orderType = 'digital-only';
+        } else {
+            orderType = 'physical-only';
+        }
+
         // Build digital items list for download links
-        const digitalItems:any = order.cartItems
-            .filter((item: any) => item.type === 'digital')
-            .map((item: any) => ({
+        const digitalItems = order.cartItems
+            .filter((item: { type?: string }) => item.type === 'digital')
+            .map((item: { title: string; productId: { toString: () => string } }) => ({
                 title: item.title,
                 productId: item.productId.toString(),
             }));
@@ -284,6 +305,7 @@ export async function GET(request: Request) {
             data: {
                 orderId: order.orderId,
                 status: order.paymentStatus,
+                orderType,
                 hasDigitalProducts,
                 hasPhysicalProducts,
                 digitalItems,

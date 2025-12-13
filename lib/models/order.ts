@@ -97,8 +97,8 @@ const PaymentDetailsSchema = new Schema<IPaymentDetails>({
 const OrderSchema = new Schema<IOrder>({
     orderId: {
         type: String,
-        required: true,
         unique: true,
+        // Note: NOT required because it's auto-generated in pre-validate hook
     },
     userId: {
         type: Schema.Types.ObjectId,
@@ -142,13 +142,15 @@ const OrderSchema = new Schema<IOrder>({
     timestamps: true,
 });
 
-// Generate order ID before saving
-OrderSchema.pre('save', async function () {
+// Generate order ID BEFORE validation runs (pre-validate hook)
+// This ensures orderId is set before any validation occurs
+OrderSchema.pre('validate', function (next) {
     if (!this.orderId) {
         const timestamp = Date.now().toString(36).toUpperCase();
         const random = Math.random().toString(36).substring(2, 6).toUpperCase();
         this.orderId = `RC-${timestamp}-${random}`;
     }
+    next();
 });
 
 // Indexes for querying

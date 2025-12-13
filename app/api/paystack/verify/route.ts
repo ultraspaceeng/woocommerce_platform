@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import Order from '@/lib/models/order';
 import User from '@/lib/models/user';
+import Product from '@/lib/models/product';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 
@@ -11,7 +12,8 @@ const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
  * UPDATED FLOW: Payment happens BEFORE order creation
  * 1. Verify payment with Paystack API
  * 2. If payment is successful, CREATE the order with 'paid' status
- * 3. Return order details to client
+ * 3. Decrement stock for physical products
+ * 4. Return order details to client
  * 
  * This prevents orphan orders from cancelled/failed payments
  */
@@ -113,6 +115,40 @@ export async function POST(request: Request) {
         // Add order to user's history
         user.orderHistory.push(order._id);
         await user.save();
+
+        // Step 4: Decrement stock for physical products
+        const physicalItems = orderData.cartItems.filter(
+            (item: { type?: string }) => item.type === 'physical' || !item.type
+        );
+
+        if (physicalItems.length > 0) {
+            // Update stock for each physical product (atomic operation)
+            const stockUpdatePromises = physicalItems.map(
+                (item: { productId: string; quantity: number }) =>
+                    Product.findByIdAndUpdate(
+                        item.productId,
+                        { $inc: { 'inventory.stock': -item.quantity } },
+                        { new: true }
+                    )
+            );
+
+            try {
+                const updatedProducts = await Promise.all(stockUpdatePromises);
+                console.log(`📦 Stock updated for ${updatedProducts.length} products`);
+
+                // Log any products that went to 0 or negative (for admin alerts)
+                updatedProducts.forEach((product) => {
+                    if (product && product.inventory?.stock <= 0) {
+                        console.warn(`⚠️ Product "${product.title}" is now out of stock!`);
+                    } else if (product && product.inventory?.stock <= 5) {
+                        console.warn(`⚠️ Low stock alert: "${product.title}" has only ${product.inventory.stock} left`);
+                    }
+                });
+            } catch (stockError) {
+                console.error('Failed to update stock:', stockError);
+                // Don't fail the order if stock update fails, but log it
+            }
+        }
 
         // Step 4: Handle digital products - add to user's owned products
         hasDigitalProducts = orderData.cartItems.some(

@@ -32,21 +32,20 @@ interface OrderEmailData {
     }>;
 }
 
+/**
+ * Check if email is properly configured
+ * Returns true if SMTP settings are available
+ */
+const isEmailConfigured = (): boolean => {
+    const host = process.env.SMTP_HOST;
+    const user = process.env.SMTP_USER;
+    const pass = process.env.SMTP_PASS;
+
+    return !!(host && user && pass);
+};
+
 // Create transporter based on environment
 const createTransporter = () => {
-    // Support multiple providers
-    // const provider = process.env.EMAIL_PROVIDER || 'smtp';
-
-    // if (provider === 'gmail') {
-    //     return nodemailer.createTransport({
-    //         service: 'gmail',
-    //         auth: {
-    //             user: process.env.SMPT_USER,
-    //             pass: process.env.SMPT_PASS,
-    //         },
-    //     });
-    // }
-
     // Default SMTP configuration
     return nodemailer.createTransport({
         host: process.env.SMTP_HOST,
@@ -56,11 +55,22 @@ const createTransporter = () => {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS
         },
+        // Connection timeout settings
+        connectionTimeout: 10000, // 10 seconds
+        greetingTimeout: 5000,
+        socketTimeout: 10000,
     });
 };
 
 // Send email
 export const sendEmail = async (options: EmailOptions): Promise<boolean> => {
+    // Check if email is configured before attempting to send
+    if (!isEmailConfigured()) {
+        console.warn('⚠️ Email not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASS in environment.');
+        console.log(`📧 [SKIPPED] Would have sent email to ${options.to}: "${options.subject}"`);
+        return false;
+    }
+
     try {
         const transporter = createTransporter();
 
@@ -72,11 +82,28 @@ export const sendEmail = async (options: EmailOptions): Promise<boolean> => {
             text: options.text,
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${options.to}`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Email sent to ${options.to} (ID: ${info.messageId})`);
         return true;
-    } catch (error) {
-        console.error('Failed to send email:', error);
+    } catch (error: any) {
+        // Detailed error logging for debugging
+        console.error('❌ Failed to send email:', {
+            to: options.to,
+            subject: options.subject,
+            error: error.message,
+            code: error.code,
+            command: error.command,
+        });
+
+        // Log common issues
+        if (error.code === 'ECONNREFUSED') {
+            console.error('   → SMTP server connection refused. Check SMTP_HOST and SMTP_PORT.');
+        } else if (error.code === 'EAUTH') {
+            console.error('   → SMTP authentication failed. Check SMTP_USER and SMTP_PASS.');
+        } else if (error.code === 'ESOCKET') {
+            console.error('   → Socket error. Check if SMTP_SECURE matches your port (465=true, 587=false).');
+        }
+
         return false;
     }
 };

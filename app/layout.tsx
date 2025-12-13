@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Providers from './providers';
 import CartDrawer from '@/components/cart/cart-drawer';
+import Toast from '@/components/ui/Toast';
 import './global.css';
 
 import { Bricolage_Grotesque } from 'next/font/google';
@@ -34,8 +35,10 @@ export default function RootLayout({
                 <Providers>
                     {children}
                     <CartDrawer />
+                    <Toast />
                 </Providers>
             </body>
         </html>
     );
 }
+

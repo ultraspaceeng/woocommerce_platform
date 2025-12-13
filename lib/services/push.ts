@@ -173,6 +173,74 @@ export const sendNewOrderAdminPush = async (
     });
 };
 
+// Low stock alert for admin
+export const sendLowStockAdminPush = async (
+    productTitle: string,
+    currentStock: number
+): Promise<boolean> => {
+    const adminUserId = 'admin';
+
+    return sendPushNotification(adminUserId, {
+        title: '⚠️ Low Stock Alert!',
+        body: `"${productTitle}" - Only ${currentStock} left in stock`,
+        url: '/admin/products',
+        tag: `admin-lowstock-${productTitle}`,
+    });
+};
+
+// New user registration notification for admin
+export const sendNewUserAdminPush = async (
+    userEmail: string,
+    userName: string
+): Promise<boolean> => {
+    const adminUserId = 'admin';
+
+    return sendPushNotification(adminUserId, {
+        title: '👤 New User Registered!',
+        body: `${userName} (${userEmail}) just signed up`,
+        url: '/admin/users',
+        tag: `admin-newuser-${userEmail}`,
+    });
+};
+
+// Order status change notification for admin
+export const sendOrderStatusAdminPush = async (
+    orderId: string,
+    newStatus: string
+): Promise<boolean> => {
+    const adminUserId = 'admin';
+
+    const statusEmoji: Record<string, string> = {
+        'paid': '✅',
+        'shipped': '🚚',
+        'fulfilled': '📦',
+        'failed': '❌',
+    };
+
+    return sendPushNotification(adminUserId, {
+        title: `${statusEmoji[newStatus] || '📋'} Order Status Updated`,
+        body: `Order ${orderId} is now ${newStatus}`,
+        url: `/admin/orders/${orderId}`,
+        tag: `admin-status-${orderId}`,
+    });
+};
+
+// Payment received notification for admin
+export const sendPaymentReceivedAdminPush = async (
+    orderId: string,
+    amount: number,
+    customerName: string
+): Promise<boolean> => {
+    const adminUserId = 'admin';
+
+    return sendPushNotification(adminUserId, {
+        title: '💳 Payment Received!',
+        body: `₦${amount.toLocaleString()} from ${customerName} (Order: ${orderId})`,
+        url: `/admin/orders/${orderId}`,
+        tag: `admin-payment-${orderId}`,
+    });
+};
+
 export default {
     saveSubscription,
     removeSubscription,
@@ -182,4 +250,8 @@ export default {
     sendOrderShippedPush,
     sendOrderDeliveredPush,
     sendNewOrderAdminPush,
+    sendLowStockAdminPush,
+    sendNewUserAdminPush,
+    sendOrderStatusAdminPush,
+    sendPaymentReceivedAdminPush,
 };

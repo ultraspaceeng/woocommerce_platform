@@ -14,12 +14,19 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
     const addItem = useCartStore((state) => state.addItem);
     const isInCart = useCartStore((state) => state.isInCart);
+    const getCartItemQuantity = useCartStore((state) => state.getCartItemQuantity);
 
     const hasDiscount = product.discountedPrice && product.discountedPrice < product.price;
     const displayPrice = hasDiscount ? product.discountedPrice : product.price;
     const isDigital = product.type === 'digital';
     const inCart = isInCart(product._id);
-    const isOutOfStock = product.type === 'physical' && product.inventory?.stock === 0;
+
+    // Get real-time cart quantity and stock info
+    const cartQuantity = getCartItemQuantity(product._id);
+    const totalStock = product.inventory?.stock ?? 0;
+    const availableToAdd = isDigital ? (inCart ? 0 : 1) : Math.max(0, totalStock - cartQuantity);
+    const isOutOfStock = product.type === 'physical' && totalStock === 0;
+    const isStockLimitReached = product.type === 'physical' && cartQuantity >= totalStock && totalStock > 0;
 
     // Calculate discount percentage
     const discountPercentage = hasDiscount
@@ -57,23 +64,35 @@ export default function ProductCard({ product }: ProductCardProps) {
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (!inCart || !isDigital) {
+        if (availableToAdd > 0) {
             addItem(product, 1);
         }
     };
 
+
     const productLink = `/market/${product.slug || product._id}`;
 
-    // Determine button state and text
+    // Determine button state and text - updates in real-time based on cart state
     const getButtonState = () => {
+        // Out of stock (no stock at all)
         if (isOutOfStock) {
             return { text: 'Out of Stock', disabled: true, icon: <FiPackage size={14} /> };
         }
+        // Digital product already in cart
         if (isDigital && inCart) {
             return { text: 'Added', disabled: true, icon: <FiCheck size={14} /> };
         }
+        // Physical product - stock limit reached
+        if (isStockLimitReached) {
+            return { text: `Max ${totalStock} in Cart`, disabled: true, icon: <FiCheck size={14} /> };
+        }
+        // Digital - available to add
         if (isDigital) {
             return { text: 'Add to Cart', disabled: false, icon: <FiDownload size={14} /> };
+        }
+        // Physical - available to add (show remaining if some in cart)
+        if (cartQuantity > 0) {
+            return { text: `Add More (${availableToAdd} left)`, disabled: false, icon: <FiShoppingCart size={14} /> };
         }
         return { text: 'Add to Cart', disabled: false, icon: <FiShoppingCart size={14} /> };
     };

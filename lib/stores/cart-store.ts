@@ -8,9 +8,17 @@ export interface CartItem {
     selectedOptions?: Record<string, string>;
 }
 
+// Message types for real-time feedback
+export interface CartMessage {
+    type: 'success' | 'warning' | 'error';
+    message: string;
+    timestamp: number;
+}
+
 interface CartState {
     items: CartItem[];
     isOpen: boolean;
+    lastMessage: CartMessage | null;
 
     // Actions
     addItem: (product: Product, quantity?: number, options?: Record<string, string>) => void;
@@ -20,12 +28,15 @@ interface CartState {
     toggleCart: () => void;
     openCart: () => void;
     closeCart: () => void;
+    clearMessage: () => void;
 
     // Computed
     getItemCount: () => number;
     getSubtotal: () => number;
     getTotal: () => number;
     isInCart: (productId: string) => boolean;
+    getCartItemQuantity: (productId: string) => number;
+    getAvailableStock: (product: Product) => number;
 }
 
 export const useCartStore = create<CartState>()(
@@ -33,6 +44,7 @@ export const useCartStore = create<CartState>()(
         (set, get) => ({
             items: [],
             isOpen: false,
+            lastMessage: null,
 
             addItem: (product, quantity = 1, options) => {
                 const { items } = get();
@@ -43,20 +55,89 @@ export const useCartStore = create<CartState>()(
                 );
 
                 // For digital products, only allow one in cart
-                if (product.type === 'digital' && existingIndex >= 0) {
-                    // Digital product already in cart - don't add again
+                if (product.type === 'digital') {
+                    if (existingIndex >= 0) {
+                        // Digital product already in cart - don't add again
+                        set({
+                            lastMessage: {
+                                type: 'warning',
+                                message: `"${product.title}" is already in your cart`,
+                                timestamp: Date.now(),
+                            },
+                        });
+                        return;
+                    }
+                    // Digital products: add with quantity 1
+                    set({
+                        items: [...items, { product, quantity: 1, selectedOptions: options }],
+                        lastMessage: {
+                            type: 'success',
+                            message: `Added "${product.title}" to cart`,
+                            timestamp: Date.now(),
+                        },
+                    });
+                    return;
+                }
+
+                // Physical products: check stock limits
+                const availableStock = product.inventory?.stock ?? 0;
+                const currentQtyInCart = existingIndex >= 0 ? items[existingIndex].quantity : 0;
+
+                // Don't allow adding if out of stock
+                if (availableStock <= 0) {
+                    set({
+                        lastMessage: {
+                            type: 'error',
+                            message: `"${product.title}" is out of stock`,
+                            timestamp: Date.now(),
+                        },
+                    });
+                    return;
+                }
+
+                // Cap at available stock
+                const maxCanAdd = Math.max(0, availableStock - currentQtyInCart);
+                const actualQuantityToAdd = Math.min(quantity, maxCanAdd);
+
+                if (actualQuantityToAdd <= 0) {
+                    set({
+                        lastMessage: {
+                            type: 'warning',
+                            message: `Maximum stock reached for "${product.title}" (${availableStock} available)`,
+                            timestamp: Date.now(),
+                        },
+                    });
                     return;
                 }
 
                 if (existingIndex >= 0) {
-                    // Update quantity of existing item (physical products only)
+                    // Update quantity of existing item
                     const newItems = [...items];
-                    newItems[existingIndex].quantity += quantity;
-                    set({ items: newItems });
+                    newItems[existingIndex].quantity += actualQuantityToAdd;
+
+                    const wasLimited = actualQuantityToAdd < quantity;
+                    set({
+                        items: newItems,
+                        lastMessage: {
+                            type: wasLimited ? 'warning' : 'success',
+                            message: wasLimited
+                                ? `Added ${actualQuantityToAdd} (max stock: ${availableStock})`
+                                : `Updated cart: ${newItems[existingIndex].quantity}× "${product.title}"`,
+                            timestamp: Date.now(),
+                        },
+                    });
                 } else {
                     // Add new item
+                    const wasLimited = actualQuantityToAdd < quantity;
                     set({
-                        items: [...items, { product, quantity, selectedOptions: options }],
+                        items: [...items, { product, quantity: actualQuantityToAdd, selectedOptions: options }],
+                        lastMessage: {
+                            type: wasLimited ? 'warning' : 'success',
+                            message: wasLimited
+                                ? `Added ${actualQuantityToAdd}× "${product.title}" (max stock: ${availableStock})`
+                                : `Added "${product.title}" to cart`,
+                            timestamp: Date.now(),
+                        },
                     });
                 }
             },
@@ -72,13 +153,38 @@ export const useCartStore = create<CartState>()(
                     get().removeItem(productId);
                     return;
                 }
-                set({
-                    items: get().items.map((item) =>
-                        item.product._id === productId
-                            ? { ...item, quantity }
-                            : item
-                    ),
-                });
+
+                const { items } = get();
+                const item = items.find((i) => i.product._id === productId);
+
+                if (!item) return;
+
+                // For physical products, validate against stock
+                if (item.product.type !== 'digital') {
+                    const availableStock = item.product.inventory?.stock ?? 0;
+                    const safeQuantity = Math.min(quantity, availableStock);
+
+                    if (safeQuantity !== quantity) {
+                        console.warn(`Quantity adjusted to ${safeQuantity} (max stock: ${availableStock})`);
+                    }
+
+                    set({
+                        items: items.map((i) =>
+                            i.product._id === productId
+                                ? { ...i, quantity: safeQuantity }
+                                : i
+                        ),
+                    });
+                } else {
+                    // Digital products always have quantity 1
+                    set({
+                        items: items.map((i) =>
+                            i.product._id === productId
+                                ? { ...i, quantity: 1 }
+                                : i
+                        ),
+                    });
+                }
             },
 
             clearCart: () => set({ items: [] }),
@@ -105,6 +211,24 @@ export const useCartStore = create<CartState>()(
 
             isInCart: (productId: string) => {
                 return get().items.some((item) => item.product._id === productId);
+            },
+
+            clearMessage: () => set({ lastMessage: null }),
+
+            getCartItemQuantity: (productId: string) => {
+                const item = get().items.find((i) => i.product._id === productId);
+                return item?.quantity ?? 0;
+            },
+
+            getAvailableStock: (product: Product) => {
+                // For digital products, always return 1 (can only buy once)
+                if (product.type === 'digital') {
+                    return get().isInCart(product._id) ? 0 : 1;
+                }
+                // For physical products, return stock minus what's already in cart
+                const inCartQty = get().getCartItemQuantity(product._id);
+                const totalStock = product.inventory?.stock ?? 0;
+                return Math.max(0, totalStock - inCartQty);
             },
         }),
         {

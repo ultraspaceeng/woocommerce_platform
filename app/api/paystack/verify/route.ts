@@ -169,7 +169,7 @@ export async function POST(request: Request) {
         let downloadLinks: Array<{ title: string; url: string }> = [];
         if (hasDigitalProducts) {
             const digitalItems = orderData.cartItems.filter((item: { type?: string }) => item.type === 'digital');
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
             downloadLinks = digitalItems.map((item: { title: string; productId: string }) => ({
                 title: item.title,

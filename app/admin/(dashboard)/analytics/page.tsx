@@ -1,18 +1,25 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import {
-    FiTrendingUp, FiDollarSign, FiShoppingCart, FiUsers,
-    FiCalendar, FiBarChart2, FiPieChart
+    FiDollarSign, FiShoppingCart, FiUsers, FiCalendar, FiPieChart
 } from 'react-icons/fi';
 import { dashboardApi } from '@/lib/services/api';
 import { DashboardMetrics } from '@/types';
 import styles from './page.module.css';
 
+// Dynamic import Recharts
+const BarChart:any = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar:any = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis:any = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis:any = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip:any = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer:any = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+
 export default function AnalyticsPage() {
     const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
     const [loading, setLoading] = useState(true);
-    const [period, setPeriod] = useState('7d');
 
     useEffect(() => {
         const fetchMetrics = async () => {
@@ -26,7 +33,7 @@ export default function AnalyticsPage() {
             }
         };
         fetchMetrics();
-    }, [period]);
+    }, []);
 
     const formatCurrency = (amount: number) =>
         new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount);
@@ -35,7 +42,11 @@ export default function AnalyticsPage() {
         return <div className={styles.loading}>Loading analytics...</div>;
     }
 
-    const maxSale = Math.max(...(metrics?.weeklySales.map(d => d.amount) || [1]), 1);
+    // Prepare chart data
+    const chartData = (metrics?.weeklySales || []).map(day => ({
+        ...day,
+        day: new Date(day.date).toLocaleDateString('en', { weekday: 'short' })
+    }));
 
     return (
         <div className={styles.page}>
@@ -44,26 +55,6 @@ export default function AnalyticsPage() {
                 <div>
                     <h1 className={styles.pageTitle}>Analytics</h1>
                     <p className={styles.pageSubtitle}>Track your store performance</p>
-                </div>
-                <div className={styles.periodSelector}>
-                    <button
-                        className={`${styles.periodBtn} ${period === '7d' ? styles.active : ''}`}
-                        onClick={() => setPeriod('7d')}
-                    >
-                        7 Days
-                    </button>
-                    <button
-                        className={`${styles.periodBtn} ${period === '30d' ? styles.active : ''}`}
-                        onClick={() => setPeriod('30d')}
-                    >
-                        30 Days
-                    </button>
-                    <button
-                        className={`${styles.periodBtn} ${period === '90d' ? styles.active : ''}`}
-                        onClick={() => setPeriod('90d')}
-                    >
-                        90 Days
-                    </button>
                 </div>
             </div>
 
@@ -74,22 +65,9 @@ export default function AnalyticsPage() {
                         <div className={`${styles.cardIcon} ${styles.iconPurple}`}>
                             <FiDollarSign size={20} />
                         </div>
-                        {/* <div className={styles.cardTrend}>
-                            <FiTrendingUp size={14} />
-                            +12.5%
-                        </div> */}
                     </div>
                     <div className={styles.cardValue}>{formatCurrency(metrics?.netSales || 0)}</div>
                     <div className={styles.cardLabel}>Total Revenue</div>
-                    <div className={styles.miniChart}>
-                        {metrics?.weeklySales.map((day, i) => (
-                            <div
-                                key={i}
-                                className={styles.miniBar}
-                                style={{ height: `${Math.max((day.amount / maxSale) * 100, 10)}%` }}
-                            />
-                        ))}
-                    </div>
                 </div>
 
                 <div className={styles.overviewCard}>
@@ -97,10 +75,6 @@ export default function AnalyticsPage() {
                         <div className={`${styles.cardIcon} ${styles.iconBlue}`}>
                             <FiShoppingCart size={20} />
                         </div>
-                        {/* <div className={styles.cardTrend}>
-                            <FiTrendingUp size={14} />
-                            +8.2%
-                        </div> */}
                     </div>
                     <div className={styles.cardValue}>{metrics?.totalOrders || 0}</div>
                     <div className={styles.cardLabel}>Total Orders</div>
@@ -111,10 +85,6 @@ export default function AnalyticsPage() {
                         <div className={`${styles.cardIcon} ${styles.iconGreen}`}>
                             <FiUsers size={20} />
                         </div>
-                        {/* <div className={styles.cardTrend}>
-                            <FiTrendingUp size={14} />
-                            +15.3%
-                        </div> */}
                     </div>
                     <div className={styles.cardValue}>{metrics?.totalUsers || 0}</div>
                     <div className={styles.cardLabel}>Customers</div>
@@ -126,9 +96,7 @@ export default function AnalyticsPage() {
                             <FiCalendar size={20} />
                         </div>
                     </div>
-                    <div className={styles.cardValue}>
-                        {formatCurrency((metrics?.netSales || 0) / Math.max(metrics?.totalOrders || 1, 1))}
-                    </div>
+                    <div className={styles.cardValue}>{formatCurrency(metrics?.averageOrderValue || 0)}</div>
                     <div className={styles.cardLabel}>Avg. Order Value</div>
                 </div>
             </div>
@@ -140,24 +108,26 @@ export default function AnalyticsPage() {
                     <div className={styles.chartHeader}>
                         <div className={styles.chartInfo}>
                             <h3 className={styles.chartTitle}>Revenue Trend</h3>
-                            <p className={styles.chartSubtitle}>Daily revenue over time</p>
+                            <p className={styles.chartSubtitle}>
+                                Last 7 days • {formatCurrency(metrics?.weekTotalRevenue || 0)} total
+                            </p>
                         </div>
-                        <div className={styles.chartIcon}><FiBarChart2 size={20} /></div>
                     </div>
-                    <div className={styles.barChart}>
-                        {metrics?.weeklySales.map((day, i) => (
-                            <div key={i} className={styles.barColumn}>
-                                <div
-                                    className={styles.bar}
-                                    style={{ height: `${Math.max((day.amount / maxSale) * 100, 4)}%` }}
-                                >
-                                    <span className={styles.barTooltip}>{formatCurrency(day.amount)}</span>
-                                </div>
-                                <span className={styles.barLabel}>
-                                    {new Date(day.date).toLocaleDateString('en', { weekday: 'short' })}
-                                </span>
-                            </div>
-                        ))}
+                    <div style={{ width: '100%', height: 200 }}>
+                        {chartData.length > 0 && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v:any) => `₦${(v / 1000).toFixed(0)}k`} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
+                                        formatter={(value: number) => [formatCurrency(value), 'Revenue']}
+                                        labelStyle={{ color: '#a1a1aa' }}
+                                    />
+                                    <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -175,16 +145,6 @@ export default function AnalyticsPage() {
                             <div className={`${styles.statusDot} ${styles.dotPending}`} />
                             <span className={styles.statusLabel}>Pending</span>
                             <span className={styles.statusValue}>{metrics?.ordersUnfulfilled || 0}</span>
-                        </div>
-                        <div className={styles.statusItem}>
-                            <div className={`${styles.statusDot} ${styles.dotProcessing}`} />
-                            <span className={styles.statusLabel}>Processing</span>
-                            <span className={styles.statusValue}>0</span>
-                        </div>
-                        <div className={styles.statusItem}>
-                            <div className={`${styles.statusDot} ${styles.dotShipped}`} />
-                            <span className={styles.statusLabel}>Shipped</span>
-                            <span className={styles.statusValue}>0</span>
                         </div>
                         <div className={styles.statusItem}>
                             <div className={`${styles.statusDot} ${styles.dotFulfilled}`} />

@@ -2,13 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
     FiDollarSign, FiShoppingCart, FiPackage, FiUsers,
-    FiTrendingUp, FiTrendingDown, FiArrowRight, FiClock
+    FiArrowRight, FiClock
 } from 'react-icons/fi';
 import { dashboardApi, ordersApi } from '@/lib/services/api';
 import { DashboardMetrics, Order } from '@/types';
 import styles from './page.module.css';
+
+// Dynamic import Recharts
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
 
 export default function DashboardPage() {
     const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -43,7 +52,11 @@ export default function DashboardPage() {
         return <div className={styles.loading}>Loading dashboard...</div>;
     }
 
-    const maxSale = Math.max(...(metrics?.weeklySales.map(d => d.amount) || [1]), 1);
+    // Prepare chart data
+    const chartData = (metrics?.weeklySales || []).map(day => ({
+        ...day,
+        day: new Date(day.date).toLocaleDateString('en', { weekday: 'short' })
+    }));
 
     return (
         <div className={styles.page}>
@@ -68,10 +81,6 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconPurple}`}>
                             <FiDollarSign size={20} />
                         </div>
-                        {/* <div className={`${styles.metricTrend} ${styles.trendUp}`}>
-                            <FiTrendingUp size={14} />
-                            +12.5%
-                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{formatCurrency(metrics?.netSales || 0)}</div>
                     <div className={styles.metricLabel}>Total Revenue</div>
@@ -82,10 +91,6 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconBlue}`}>
                             <FiShoppingCart size={20} />
                         </div>
-                        {/* <div className={`${styles.metricTrend} ${styles.trendUp}`}>
-                            <FiTrendingUp size={14} />
-                            +8.2%
-                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{metrics?.totalOrders || 0}</div>
                     <div className={styles.metricLabel}>Total Orders</div>
@@ -96,10 +101,6 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconGreen}`}>
                             <FiPackage size={20} />
                         </div>
-                        {/* <div className={`${styles.metricTrend} ${styles.trendDown}`}>
-                            <FiTrendingDown size={14} />
-                            -3.1%
-                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{metrics?.ordersFulfilled || 0}</div>
                     <div className={styles.metricLabel}>Fulfilled Orders</div>
@@ -110,10 +111,6 @@ export default function DashboardPage() {
                         <div className={`${styles.metricIcon} ${styles.iconOrange}`}>
                             <FiUsers size={20} />
                         </div>
-                        {/* <div className={`${styles.metricTrend} ${styles.trendUp}`}>
-                            <FiTrendingUp size={14} />
-                            +15.3%
-                        </div> */}
                     </div>
                     <div className={styles.metricValue}>{metrics?.totalUsers || 0}</div>
                     <div className={styles.metricLabel}>Customers</div>
@@ -125,23 +122,24 @@ export default function DashboardPage() {
                 {/* Revenue Chart */}
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h2 className={styles.cardTitle}>Revenue Overview</h2>
-                        <span className={styles.cardPeriod}>Last 7 days</span>
+                        <h2 className={styles.cardTitle}>Revenue (Last 7 Days)</h2>
+                        <span className={styles.cardPeriod}>{formatCurrency(metrics?.weekTotalRevenue || 0)} total</span>
                     </div>
-                    <div className={styles.chart}>
-                        <div className={styles.chartBars}>
-                            {metrics?.weeklySales.map((day, i) => (
-                                <div key={i} className={styles.chartBarWrapper}>
-                                    <div
-                                        className={styles.chartBar}
-                                        style={{ height: `${Math.max((day.amount / maxSale) * 100, 4)}%` }}
+                    <div style={{ width: '100%', height: 180 }}>
+                        {chartData.length > 0 && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v) => `₦${(v / 1000).toFixed(0)}k`} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
+                                        formatter={(value: number) => [formatCurrency(value), 'Revenue']}
+                                        labelStyle={{ color: '#a1a1aa' }}
                                     />
-                                    <span className={styles.chartLabel}>
-                                        {new Date(day.date).toLocaleDateString('en', { weekday: 'short' })}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
+                                    <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 

@@ -95,7 +95,10 @@ export interface DashboardMetrics {
   ordersFulfilled: number;
   ordersUnfulfilled: number;
   totalUsers: number;
-  weeklySales: Array<{ date: string; amount: number }>;
+  weeklySales: Array<{ date: string; amount: number; orderCount: number }>;
+  weekTotalRevenue: number;
+  weekTotalOrders: number;
+  averageOrderValue: number;
 }
 
 // API Response Types

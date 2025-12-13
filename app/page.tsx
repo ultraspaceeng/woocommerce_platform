@@ -172,19 +172,19 @@ export default function HomePage() {
                                     <span className={styles.contactIcon}>
                                         <FiMail size={18} />
                                     </span>
-                                    <span>support@royalcommerce.com</span>
+                                    <span>ultraspaceeng@gmail.com</span>
                                 </div>
                                 <div className={styles.contactItem}>
                                     <span className={styles.contactIcon}>
                                         <FiPhone size={18} />
                                     </span>
-                                    <span>+234 800 000 0000</span>
+                                    <span>+234 08131519518</span>
                                 </div>
                                 <div className={styles.contactItem}>
                                     <span className={styles.contactIcon}>
                                         <FiMapPin size={18} />
                                     </span>
-                                    <span>Lagos, Nigeria</span>
+                                    <span>International!</span>
                                 </div>
                             </div>
                         </div>

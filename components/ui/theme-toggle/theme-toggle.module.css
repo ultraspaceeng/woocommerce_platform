@@ -1,0 +1,62 @@
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.toggle:hover {
+    background-color: var(--color-bg-secondary);
+}
+
+.iconWrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    position: absolute;
+    transition: opacity var(--transition-base), transform var(--transition-base);
+    color: var(--color-text-primary);
+}
+
+.sunIcon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.moonIcon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+}
+
+/* Dark mode */
+[data-theme='dark'] .sunIcon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+}
+
+[data-theme='dark'] .moonIcon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.label {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+    .label {
+        display: none;
+    }
+}

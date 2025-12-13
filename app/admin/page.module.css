@@ -1,0 +1,251 @@
+/* Admin Login Page Styles */
+.page {
+    min-height: 100vh;
+    background-color: #0a0a0b;
+}
+
+.loginContainer {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Branding Side */
+.brandingSide {
+    display: none;
+    flex: 1;
+    background: linear-gradient(135deg, #0a0a0b 0%, #18181b 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.brandingSide::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+}
+
+.brandingSide::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+}
+
+@media (min-width: 1024px) {
+    .brandingSide {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem;
+    }
+}
+
+.brandingContent {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+}
+
+.logoIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 1.25rem;
+    border-radius: 12px;
+}
+
+.logoText {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fafafa;
+}
+
+.brandingTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fafafa;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.brandingSubtitle {
+    font-size: 1.125rem;
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    color: #a1a1aa;
+}
+
+.featureIcon {
+    font-size: 1.25rem;
+}
+
+/* Form Side */
+.formSide {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .formSide {
+        max-width: 560px;
+    }
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 400px;
+}
+
+.formHeader {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.formTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fafafa;
+    margin-bottom: 0.5rem;
+}
+
+.formSubtitle {
+    font-size: 0.9375rem;
+    color: #71717a;
+}
+
+/* Form */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.error {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 10px;
+    color: #f87171;
+    font-size: 0.875rem;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #a1a1aa;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #52525b;
+    pointer-events: none;
+}
+
+.input {
+    width: 100%;
+    height: 48px;
+    padding: 0 1rem 0 42px;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 10px;
+    color: #fafafa;
+    font-size: 0.9375rem;
+    transition: all 0.15s ease;
+}
+
+.input::placeholder {
+    color: #52525b;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: #111113;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.submitBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 48px;
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+.submitBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.footerText {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: #52525b;
+}

@@ -1,0 +1,223 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    flex: 1;
+    padding: var(--space-xl) 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+/* Search Form */
+.searchForm {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.searchTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+
+.searchInputWrapper {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.searchInputWrapper input {
+    flex: 1;
+}
+
+/* Order Result */
+.orderResult {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+}
+
+.orderHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.orderInfo h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+}
+
+.orderDate {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.statusBadge {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: var(--radius-full);
+}
+
+.pending {
+    background-color: rgba(234, 179, 8, 0.1);
+    color: #eab308;
+}
+
+.processing {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.shipped {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.fulfilled {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+/* Progress Timeline */
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-xl);
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-border);
+    z-index: 0;
+}
+
+.timelineStep {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    position: relative;
+    z-index: 1;
+}
+
+.stepCircle {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg-primary);
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    color: var(--color-text-muted);
+}
+
+.stepCircle.active {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+}
+
+.stepCircle.completed {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+    color: white;
+}
+
+.stepLabel {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+.stepLabel.active {
+    color: var(--color-text-primary);
+    font-weight: 500;
+}
+
+/* Order Details */
+.orderSection {
+    margin-bottom: var(--space-lg);
+}
+
+.orderSection h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+.orderItems {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.orderItem {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9375rem;
+}
+
+.orderItem span:last-child {
+    font-weight: 500;
+}
+
+.orderTotal {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    font-weight: 700;
+}
+
+.customerInfo p {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* Error State */
+.error {
+    padding: var(--space-xl);
+    text-align: center;
+    color: var(--color-error);
+}
+
+.loading {
+    padding: var(--space-xl);
+    text-align: center;
+    color: var(--color-text-muted);
+}

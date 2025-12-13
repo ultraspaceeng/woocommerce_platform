@@ -231,7 +231,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Success State */
@@ -291,4 +293,33 @@
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+/* Paystack Button */
+.paystackBtn {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, #0066f5 0%, #1d4ed8 100%);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.paystackBtn:hover {
+    background: linear-gradient(135deg, #0052cc 0%, #1e40af 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 102, 245, 0.35);
+}
+
+.paystackBtn:active {
+    transform: translateY(0);
 }

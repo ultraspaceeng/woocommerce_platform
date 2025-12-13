@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiShoppingCart, FiMenu, FiX } from 'react-icons/fi';
@@ -17,8 +17,14 @@ const navLinks = [
 export default function Header() {
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    // Prevent hydration mismatch by only showing cart count after mount
+    const [hasMounted, setHasMounted] = useState(false);
     const itemCount = useCartStore((state) => state.getItemCount());
     const toggleCart = useCartStore((state) => state.toggleCart);
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
 
     const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
     const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -52,7 +58,7 @@ export default function Header() {
                         aria-label="Open cart"
                     >
                         <FiShoppingCart size={22} />
-                        {itemCount > 0 && (
+                        {hasMounted && itemCount > 0 && (
                             <span className={styles.cartBadge}>
                                 {itemCount > 99 ? '99+' : itemCount}
                             </span>

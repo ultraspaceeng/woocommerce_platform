@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FiSettings, FiGlobe, FiDollarSign, FiTruck, FiBell, FiMapPin, FiSave } from 'react-icons/fi';
+import { FiSettings, FiGlobe, FiDollarSign, FiTruck, FiBell, FiMapPin, FiSave, FiRefreshCw } from 'react-icons/fi';
 import { settingsApi } from '@/lib/services/api';
+import { SUPPORTED_CURRENCIES, CURRENCY_SYMBOLS } from '@/lib/constants/currencies';
 import styles from './page.module.css';
 
 interface Settings {
@@ -12,7 +13,10 @@ interface Settings {
     supportPhone: string;
     maintenanceMode: boolean;
     maintenanceMessage: string;
-    currency: string;
+    baseCurrency: string;
+    displayCurrency: string;
+    exchangeRate: number;
+    exchangeRateUpdatedAt: string | null;
     currencySymbol: string;
     paystackEnabled: boolean;
     freeShippingThreshold: number;
@@ -34,7 +38,10 @@ export default function SettingsPage() {
         supportPhone: '',
         maintenanceMode: false,
         maintenanceMessage: '',
-        currency: 'NGN',
+        baseCurrency: 'NGN',
+        displayCurrency: 'NGN',
+        exchangeRate: 1,
+        exchangeRateUpdatedAt: null,
         currencySymbol: '₦',
         paystackEnabled: true,
         freeShippingThreshold: 50000,
@@ -50,6 +57,7 @@ export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [refreshingRate, setRefreshingRate] = useState(false);
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -82,6 +90,45 @@ export default function SettingsPage() {
         setSaved(false);
     };
 
+    const handleCurrencyChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newCurrency = e.target.value;
+        const newSymbol = CURRENCY_SYMBOLS[newCurrency] || newCurrency;
+
+        setSettings(prev => ({
+            ...prev,
+            displayCurrency: newCurrency,
+            currencySymbol: newSymbol,
+        }));
+        setSaved(false);
+    };
+
+    const handleRefreshRate = async () => {
+        setRefreshingRate(true);
+        try {
+            const response = await fetch('/api/exchange-rate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ displayCurrency: settings.displayCurrency }),
+            });
+            const data = await response.json();
+
+            if (data.success && data.data) {
+                setSettings(prev => ({
+                    ...prev,
+                    exchangeRate: data.data.exchangeRate,
+                    exchangeRateUpdatedAt: data.data.exchangeRateUpdatedAt,
+                }));
+            } else {
+                alert('Failed to refresh exchange rate');
+            }
+        } catch (error) {
+            console.error('Failed to refresh rate:', error);
+            alert('Failed to refresh exchange rate');
+        } finally {
+            setRefreshingRate(false);
+        }
+    };
+
     const handleSave = async () => {
         setSaving(true);
         try {
@@ -99,6 +146,11 @@ export default function SettingsPage() {
     if (loading) {
         return <div className={styles.loading}>Loading settings...</div>;
     }
+
+    const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return 'Never';
+        return new Date(dateStr).toLocaleString();
+    };
 
     return (
         <div className={styles.page}>
@@ -200,37 +252,63 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                {/* Payment Settings */}
+                {/* Currency & Payment Settings */}
                 <div className={styles.settingsCard}>
                     <div className={styles.cardHeader}>
                         <FiDollarSign size={20} />
-                        <h2>Payment</h2>
+                        <h2>Currency & Payment</h2>
                     </div>
                     <div className={styles.cardBody}>
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
-                                <label>Currency Code</label>
+                                <label>Base Currency (Stored)</label>
                                 <input
                                     type="text"
-                                    name="currency"
-                                    value={settings.currency}
-                                    onChange={handleChange}
+                                    value={settings.baseCurrency}
                                     className={styles.input}
-                                    maxLength={3}
+                                    disabled
                                 />
+                                <span className={styles.helperText}>Prices are stored in this currency</span>
                             </div>
                             <div className={styles.formGroup}>
-                                <label>Currency Symbol</label>
-                                <input
-                                    type="text"
-                                    name="currencySymbol"
-                                    value={settings.currencySymbol}
-                                    onChange={handleChange}
-                                    className={styles.input}
-                                    maxLength={3}
-                                />
+                                <label>Display Currency</label>
+                                <select
+                                    name="displayCurrency"
+                                    value={settings.displayCurrency}
+                                    onChange={handleCurrencyChange}
+                                    className={styles.select}
+                                >
+                                    {SUPPORTED_CURRENCIES.map(currency => (
+                                        <option key={currency.code} value={currency.code}>
+                                            {currency.symbol} {currency.code} - {currency.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
+
+                        {settings.baseCurrency !== settings.displayCurrency && (
+                            <div className={styles.exchangeRateBox}>
+                                <div className={styles.rateInfo}>
+                                    <span className={styles.rateLabel}>Exchange Rate</span>
+                                    <span className={styles.rateValue}>
+                                        1 {settings.displayCurrency} = {settings.exchangeRate?.toFixed(2) || '—'} {settings.baseCurrency}
+                                    </span>
+                                    <span className={styles.rateUpdated}>
+                                        Last updated: {formatDate(settings.exchangeRateUpdatedAt)}
+                                    </span>
+                                </div>
+                                <button
+                                    className={styles.refreshBtn}
+                                    onClick={handleRefreshRate}
+                                    disabled={refreshingRate}
+                                >
+                                    <FiRefreshCw size={14} className={refreshingRate ? styles.spinning : ''} />
+                                    {refreshingRate ? 'Refreshing...' : 'Refresh Rate'}
+                                </button>
+                            </div>
+                        )}
+
                         <div className={styles.toggleRow}>
                             <div>
                                 <h4>Paystack Payments</h4>
@@ -255,7 +333,7 @@ export default function SettingsPage() {
                     <div className={styles.cardBody}>
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
-                                <label>Free Shipping Threshold (₦)</label>
+                                <label>Free Shipping Threshold ({settings.currencySymbol})</label>
                                 <input
                                     type="number"
                                     name="freeShippingThreshold"
@@ -266,7 +344,7 @@ export default function SettingsPage() {
                                 />
                             </div>
                             <div className={styles.formGroup}>
-                                <label>Default Shipping Fee (₦)</label>
+                                <label>Default Shipping Fee ({settings.currencySymbol})</label>
                                 <input
                                     type="number"
                                     name="defaultShippingFee"
@@ -382,3 +460,4 @@ export default function SettingsPage() {
         </div>
     );
 }
+

@@ -1,5 +1,8 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+// Re-export currency constants from shared module (for backward compatibility)
+export { CURRENCY_SYMBOLS, SUPPORTED_CURRENCIES } from '@/lib/constants/currencies';
+
 export interface ISystemSettings extends Document {
     // General
     siteName: string;
@@ -11,9 +14,12 @@ export interface ISystemSettings extends Document {
     maintenanceMode: boolean;
     maintenanceMessage: string;
 
-    // Payment
-    currency: string;
-    currencySymbol: string;
+    // Payment & Currency
+    baseCurrency: string; // Currency prices are stored in (NGN default)
+    displayCurrency: string; // Currency to display to users
+    exchangeRate: number; // Rate from base to display currency
+    exchangeRateUpdatedAt: Date | null; // Last update time
+    currencySymbol: string; // Display symbol
     paystackEnabled: boolean;
 
     // Shipping
@@ -63,10 +69,22 @@ const SystemSettingsSchema = new Schema<ISystemSettings>({
         default: 'We are currently undergoing maintenance. Please check back soon.',
     },
 
-    // Payment
-    currency: {
+    // Payment & Currency
+    baseCurrency: {
         type: String,
         default: 'NGN',
+    },
+    displayCurrency: {
+        type: String,
+        default: 'NGN',
+    },
+    exchangeRate: {
+        type: Number,
+        default: 1, // 1:1 when base and display are same
+    },
+    exchangeRateUpdatedAt: {
+        type: Date,
+        default: null,
     },
     currencySymbol: {
         type: String,
@@ -125,3 +143,4 @@ const SystemSettingsSchema = new Schema<ISystemSettings>({
 const SystemSettings: Model<ISystemSettings> = mongoose.models.SystemSettings || mongoose.model<ISystemSettings>('SystemSettings', SystemSettingsSchema);
 
 export default SystemSettings;
+

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { FiCheckCircle, FiLock, FiShoppingBag, FiDownload } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
@@ -11,27 +12,19 @@ import { useCartStore } from '@/lib/stores/cart-store';
 import { ordersApi } from '@/lib/services/api';
 import styles from './page.module.css';
 
-// Paystack inline script type
-declare global {
-    interface Window {
-        PaystackPop: {
-            setup: (config: PaystackConfig) => { openIframe: () => void };
-        };
-    }
-}
+// Dynamic import of PaystackButton to avoid SSR issues
+const PaystackButton = dynamic(
+    () => import('react-paystack').then((mod) => mod.PaystackButton),
+    { ssr: false, loading: () => <Button loading fullWidth size="lg">Loading Payment...</Button> }
+);
 
-interface PaystackConfig {
-    key: string;
-    email: string;
-    amount: number;
-    currency: string;
-    ref: string;
-    metadata: {
-        orderId: string;
-        custom_fields: Array<{ display_name: string; variable_name: string; value: string }>;
-    };
-    callback: (response: { reference: string }) => void;
-    onClose: () => void;
+interface PaystackReference {
+    reference: string;
+    message?: string;
+    status?: string;
+    trans?: string;
+    transaction?: string;
+    trxref?: string;
 }
 
 export default function CheckoutPage() {
@@ -41,6 +34,7 @@ export default function CheckoutPage() {
     const [success, setSuccess] = useState(false);
     const [orderId, setOrderId] = useState('');
     const [hasDigitalProducts, setHasDigitalProducts] = useState(false);
+    const [pendingOrder, setPendingOrder] = useState<{ orderId: string; amount: number } | null>(null);
     const [formData, setFormData] = useState({
         name: '', email: '', phone: '', address: '', city: '', state: '', country: 'Nigeria',
     });
@@ -51,17 +45,6 @@ export default function CheckoutPage() {
         setHasDigitalProducts(hasDigital);
     }, [items]);
 
-    // Load Paystack script
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://js.paystack.co/v1/inline.js';
-        script.async = true;
-        document.body.appendChild(script);
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, []);
-
     const formatPrice = (price: number) =>
         new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(price);
 
@@ -69,7 +52,7 @@ export default function CheckoutPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const verifyPayment = async (reference: string, orderIdToVerify: string) => {
+    const verifyPayment = useCallback(async (reference: string, orderIdToVerify: string) => {
         setVerifying(true);
         try {
             const response = await fetch('/api/paystack/verify', {
@@ -91,48 +74,43 @@ export default function CheckoutPage() {
         } finally {
             setVerifying(false);
         }
-    };
+    }, [clearCart]);
 
-    const initiatePayment = (orderData: { orderId: string; email: string; amount: number; name: string }) => {
-        const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-
-        if (!paystackPublicKey) {
-            alert('Payment not configured. Please contact support.');
-            return;
+    // Paystack callback handlers
+    const onPaystackSuccess = useCallback((reference: PaystackReference) => {
+        if (pendingOrder) {
+            verifyPayment(reference.reference, pendingOrder.orderId);
         }
+    }, [pendingOrder, verifyPayment]);
 
-        const handler = window.PaystackPop.setup({
-            key: paystackPublicKey,
-            email: orderData.email,
-            amount: orderData.amount * 100, // Convert to kobo
-            currency: 'NGN',
-            ref: `RC-${orderData.orderId}-${Date.now()}`,
-            metadata: {
-                orderId: orderData.orderId,
-                custom_fields: [
-                    {
-                        display_name: 'Customer Name',
-                        variable_name: 'customer_name',
-                        value: orderData.name,
-                    },
-                ],
-            },
-            callback: (response) => {
-                verifyPayment(response.reference, orderData.orderId);
-            },
-            onClose: () => {
-                setLoading(false);
-                alert('Payment cancelled. Your order is saved, you can pay later.');
-            },
-        });
+    const onPaystackClose = useCallback(() => {
+        setLoading(false);
+        alert('Payment cancelled. Your order is saved, you can pay later.');
+    }, []);
 
-        handler.openIframe();
+    // Paystack configuration
+    const paystackConfig = {
+        reference: pendingOrder ? `RC-${pendingOrder.orderId}-${Date.now()}` : '',
+        email: formData.email,
+        amount: (pendingOrder?.amount || 0) * 100, // Convert to kobo
+        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+        currency: 'NGN',
+        metadata: {
+            orderId: pendingOrder?.orderId || '',
+            custom_fields: [
+                {
+                    display_name: 'Customer Name',
+                    variable_name: 'customer_name',
+                    value: formData.name,
+                },
+            ],
+        },
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate for digital products - require email confirmation
+        // Validate for digital products - require email
         if (hasDigitalProducts && !formData.email) {
             alert('Email is required for digital product purchases.');
             return;
@@ -140,14 +118,13 @@ export default function CheckoutPage() {
 
         setLoading(true);
         try {
-            const cartItems = items.map((item:any) => ({
+            const cartItems = items.map((item: any) => ({
                 productId: item.product._id,
                 title: item.product.title,
                 type: item.product.type,
                 quantity: item.quantity,
                 price: item.product.discountedPrice || item.product.price,
                 selectedOptions: item.selectedOptions,
-                // Include digital file info for digital products
                 digitalFile: item.product.type === 'digital' ? item.product.digitalFile : undefined,
                 digitalFileName: item.product.type === 'digital' ? item.product.digitalFileName : undefined,
             }));
@@ -162,14 +139,7 @@ export default function CheckoutPage() {
             if (response.data.success) {
                 const createdOrderId = response.data.data.order.orderId;
                 setOrderId(createdOrderId);
-
-                // Initiate Paystack payment
-                initiatePayment({
-                    orderId: createdOrderId,
-                    email: formData.email,
-                    amount: getTotal(),
-                    name: formData.name,
-                });
+                setPendingOrder({ orderId: createdOrderId, amount: getTotal() });
             }
         } catch (error) {
             console.error('Checkout failed:', error);
@@ -366,16 +336,27 @@ export default function CheckoutPage() {
                                 <span>{formatPrice(getTotal())}</span>
                             </div>
 
-                            <Button
-                                type="submit"
-                                fullWidth
-                                size="lg"
-                                loading={loading}
-                                className={styles.submitBtn}
-                                leftIcon={<FiLock size={16} />}
-                            >
-                                Pay {formatPrice(getTotal())}
-                            </Button>
+                            {/* Show create order button if no pending order, else show Paystack button */}
+                            {!pendingOrder ? (
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    size="lg"
+                                    loading={loading}
+                                    className={styles.submitBtn}
+                                    leftIcon={<FiLock size={16} />}
+                                >
+                                    Proceed to Payment
+                                </Button>
+                            ) : (
+                                <PaystackButton
+                                    {...paystackConfig}
+                                    text={`Pay ${formatPrice(pendingOrder.amount)}`}
+                                    onSuccess={onPaystackSuccess}
+                                    onClose={onPaystackClose}
+                                    className={styles.paystackBtn}
+                                />
+                            )}
 
                             <div className={styles.secureNotice}>
                                 <FiLock size={14} />
@@ -389,3 +370,4 @@ export default function CheckoutPage() {
         </div>
     );
 }
+

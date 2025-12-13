@@ -144,17 +144,16 @@ const OrderSchema = new Schema<IOrder>({
 
 // Generate order ID BEFORE validation runs (pre-validate hook)
 // This ensures orderId is set before any validation occurs
-OrderSchema.pre('validate', function (next) {
+OrderSchema.pre('validate', function () {
     if (!this.orderId) {
         const timestamp = Date.now().toString(36).toUpperCase();
         const random = Math.random().toString(36).substring(2, 6).toUpperCase();
         this.orderId = `RC-${timestamp}-${random}`;
     }
-    next();
 });
 
 // Indexes for querying
-OrderSchema.index({ orderId: 1 });
+// orderId index is already created by unique: true option in schema path
 OrderSchema.index({ 'userDetails.email': 1 });
 OrderSchema.index({ paymentStatus: 1, fulfillmentStatus: 1 });
 OrderSchema.index({ createdAt: -1 });

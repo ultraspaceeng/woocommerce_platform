@@ -16,11 +16,11 @@ export async function GET(request: Request, { params }: RouteParams) {
         let product = null;
 
         if (id.match(/^[0-9a-fA-F]{24}$/)) {
-            product = await Product.findById(id).lean();
+            product = await Product.findById(id).select('-digitalFile').lean();
         }
 
         if (!product) {
-            product = await Product.findOne({ slug: id }).lean();
+            product = await Product.findOne({ slug: id }, { digitalFile: 0 }).lean();
         }
 
         if (!product) {

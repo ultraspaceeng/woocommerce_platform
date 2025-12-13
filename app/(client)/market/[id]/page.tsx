@@ -26,6 +26,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
     const addItem = useCartStore((state) => state.addItem);
     const openCart = useCartStore((state) => state.openCart);
+    const checkIfInCart = useCartStore((state) => state.isInCart);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -87,7 +88,22 @@ export default function ProductPage({ params }: ProductPageProps) {
 
     const hasDiscount = product.discountedPrice && product.discountedPrice < product.price;
     const displayPrice = hasDiscount ? product.discountedPrice : product.price;
-    const isInStock = product.type === 'digital' || (product.inventory?.stock || 0) > 0;
+    const isInStock = product?.type === 'digital' || (product?.inventory?.stock || 0) > 0;
+
+    const inCart = product ? checkIfInCart(product._id) : false;
+    const isDigital = product?.type === 'digital';
+
+    const getButtonState = () => {
+        if (isDigital && inCart) {
+            return { text: 'Added to Cart', disabled: true, icon: <FiCheck /> };
+        }
+        if (!isInStock) {
+            return { text: 'Out of Stock', disabled: true, icon: <FiX /> };
+        }
+        return { text: 'Add to Cart', disabled: false, icon: <FiShoppingCart /> };
+    };
+
+    const buttonState = getButtonState();
 
     return (
         <div className={styles.page}>
@@ -114,7 +130,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
                             <div className={styles.priceBlock}>
                                 <span className={styles.price}>{formatPrice(displayPrice!)}</span>
-                                {hasDiscount && <span className={styles.originalPrice}>{formatPrice(product.price)}</span>}
+                                <span className={styles.originalPrice}>{hasDiscount && formatPrice(product.price)}</span>
                             </div>
 
                             <p className={styles.description}>{product.description}</p>
@@ -147,8 +163,14 @@ export default function ProductPage({ params }: ProductPageProps) {
                                 </div>
                             )}
 
-                            <Button size="lg" fullWidth onClick={handleAddToCart} disabled={!isInStock} leftIcon={<FiShoppingCart />}>
-                                {isInStock ? 'Add to Cart' : 'Out of Stock'}
+                            <Button
+                                size="lg"
+                                fullWidth
+                                onClick={handleAddToCart}
+                                disabled={buttonState.disabled}
+                                leftIcon={buttonState.icon}
+                            >
+                                {buttonState.text}
                             </Button>
 
                             <div className={`${styles.stockInfo} ${isInStock ? styles.inStock : styles.outOfStock}`}>

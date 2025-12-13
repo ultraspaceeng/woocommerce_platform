@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IUser extends Document {
-    _id: string;
     email: string;
     name: string;
     phone?: string;
@@ -61,8 +60,9 @@ const UserSchema = new Schema<IUser>({
 });
 
 // Indexes
-UserSchema.index({ email: 1 });
+// Indexes
+// Email index is already created by unique: true option in schema path
 
-const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+const User: any = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
 export default User;

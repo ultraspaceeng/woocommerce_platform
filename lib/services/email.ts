@@ -26,6 +26,10 @@ interface OrderEmailData {
         state: string;
         country: string;
     };
+    downloadLinks?: Array<{
+        title: string;
+        url: string;
+    }>;
 }
 
 // Create transporter based on environment
@@ -37,8 +41,8 @@ const createTransporter = () => {
         return nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD, // App password for Gmail
+                user: process.env.SMPT_USER,
+                pass: process.env.SMPT_PASS,
             },
         });
     }
@@ -49,8 +53,8 @@ const createTransporter = () => {
         port: parseInt(process.env.SMTP_PORT || '587'),
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
-            user: process.env.SMTP_USER || process.env.EMAIL_USER,
-            pass: process.env.SMTP_PASSWORD || process.env.EMAIL_PASSWORD,
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
         },
     });
 };
@@ -149,10 +153,30 @@ export const sendOrderConfirmationEmail = async (order: OrderEmailData): Promise
                     </p>
                 </div>
                 ` : ''}
+
+                ${order.downloadLinks && order.downloadLinks.length > 0 ? `
+                <!-- Digital Downloads -->
+                <h3 style="margin: 0 0 12px; color: #111827; font-size: 16px; font-weight: 600;">Digital Downloads</h3>
+                <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                    <p style="margin: 0 0 12px; color: #374151; font-size: 14px;">
+                        Your digital products are ready for download:
+                    </p>
+                    ${order.downloadLinks.map(link => `
+                    <div style="margin-bottom: 12px;">
+                        <a href="${link.url}" style="display: block; padding: 12px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; color: #6366f1; text-decoration: none; font-weight: 500; font-size: 14px; text-align: center;">
+                            Download ${link.title} ⬇️
+                        </a>
+                    </div>
+                    `).join('')}
+                    <p style="margin: 8px 0 0; color: #6b7280; font-size: 12px;">
+                        Note: Download links are secure and specific to your order.
+                    </p>
+                </div>
+                ` : ''}
                 
                 <!-- CTA Button -->
                 <div style="text-align: center; margin-top: 32px;">
-                    <a href="${process.env.NEXT_PUBLIC_BASE_URL}/track?orderId=${order.orderId}" 
+                    <a href="${process.env.NEXT_PUBLIC_BASE_URL}/order-tracking?orderId=${order.orderId}" 
                        style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #ffffff; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;">
                         Track Your Order
                     </a>
@@ -176,7 +200,7 @@ export const sendOrderConfirmationEmail = async (order: OrderEmailData): Promise
         to: order.customerEmail,
         subject: `Order Confirmed - ${order.orderId}`,
         html,
-        text: `Order Confirmed!\n\nHi ${order.customerName},\n\nYour order ${order.orderId} has been confirmed.\nTotal: ₦${order.totalAmount.toLocaleString()}\n\nTrack your order: ${process.env.NEXT_PUBLIC_BASE_URL}/track?orderId=${order.orderId}`,
+        text: `Order Confirmed!\n\nHi ${order.customerName},\n\nYour order ${order.orderId} has been confirmed.\nTotal: ₦${order.totalAmount.toLocaleString()}\n\nTrack your order: ${process.env.NEXT_PUBLIC_BASE_URL}/order-tracking?orderId=${order.orderId}`,
     });
 };
 
@@ -214,7 +238,7 @@ export const sendOrderShippedEmail = async (
                 </div>
                 ` : ''}
                 <div style="text-align: center;">
-                    <a href="${process.env.NEXT_PUBLIC_BASE_URL}/track?orderId=${orderId}" 
+                    <a href="${process.env.NEXT_PUBLIC_BASE_URL}/order-tracking?orderId=${orderId}" 
                        style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;">
                         Track Your Package
                     </a>

@@ -86,7 +86,7 @@ export async function POST(request: Request) {
         }
 
         // Step 3: Create order with 'paid' status (only after verified payment)
-        const hasDigitalProducts = orderData.cartItems.some(
+        let hasDigitalProducts: any = orderData.cartItems.some(
             (item: { type?: string }) => item.type === 'digital'
         );
 
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
         await user.save();
 
         // Step 4: Handle digital products - add to user's owned products
-        const hasDigitalProducts = orderData.cartItems.some(
+        hasDigitalProducts = orderData.cartItems.some(
             (item: { type?: string }) => item.type === 'digital'
         );
 
@@ -129,8 +129,37 @@ export async function POST(request: Request) {
             });
         }
 
-        // TODO: Send order confirmation email
-        // TODO: Send digital download links if applicable
+        // Generate download links if applicable
+        let downloadLinks: Array<{ title: string; url: string }> = [];
+        if (hasDigitalProducts) {
+            const digitalItems = orderData.cartItems.filter((item: { type?: string }) => item.type === 'digital');
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+            downloadLinks = digitalItems.map((item: { title: string; productId: string }) => ({
+                title: item.title,
+                url: `${baseUrl}/api/download/${order.orderId}/${item.productId}`,
+            }));
+        }
+
+        // Send order confirmation email
+        const emailData = {
+            orderId: order.orderId,
+            customerName: orderData.userDetails.name,
+            customerEmail: orderData.userDetails.email,
+            items: orderData.cartItems,
+            totalAmount: orderData.totalAmount,
+            shippingAddress: orderData.userDetails,
+            downloadLinks,
+        };
+
+        try {
+            const { sendOrderConfirmationEmail, sendNewOrderAdminNotification } = await import('@/lib/services/email');
+            await sendOrderConfirmationEmail(emailData);
+            await sendNewOrderAdminNotification(emailData);
+        } catch (emailError) {
+            console.error('Failed to send confirmation email:', emailError);
+            // Don't fail the request if email fails, but log it
+        }
 
         return NextResponse.json({
             success: true,

@@ -7,8 +7,6 @@ export async function GET() {
     try {
         await connectDB();
 
-        // TODO: Add admin auth verification
-
         const users = await User.find()
             .sort({ createdAt: -1 })
             .lean();

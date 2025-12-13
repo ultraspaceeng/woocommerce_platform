@@ -82,3 +82,19 @@ export const settingsApi = {
     get: () => api.get('/settings'),
     update: (data: object) => api.put('/settings', data),
 };
+
+export const categoriesApi = {
+    getAll: () => api.get('/categories'),
+    getById: (id: string) => api.get(`/categories/${id}`),
+    create: (data: object) => api.post('/categories', data),
+    update: (id: string, data: object) => api.put(`/categories/${id}`, data),
+    delete: (id: string) => api.delete(`/categories/${id}`),
+};
+
+export const usersApi = {
+    getAll: () => api.get('/users'),
+    getById: (id: string) => api.get(`/users/${id}`),
+    update: (id: string, data: object) => api.put(`/users/${id}`, data),
+    delete: (id: string) => api.delete(`/users/${id}`),
+};
+

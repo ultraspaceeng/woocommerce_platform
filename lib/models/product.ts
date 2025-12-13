@@ -27,6 +27,8 @@ export interface IProduct extends Document {
     inventory: IProductInventory;
     assets: string[];
     digitalFile?: string;
+    digitalFileName?: string;
+    brand?: string;
     seoData: IProductSeoData;
     isActive: boolean;
     createdAt: Date;
@@ -90,6 +92,8 @@ const ProductSchema = new Schema<IProduct>({
     },
     assets: [{ type: String }],
     digitalFile: { type: String },
+    digitalFileName: { type: String },
+    brand: { type: String },
     seoData: {
         type: ProductSeoDataSchema,
         default: { metaTitle: '', metaDescription: '' },

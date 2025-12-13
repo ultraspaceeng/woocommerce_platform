@@ -1,16 +1,22 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     FiArrowLeft, FiPlus, FiX, FiImage, FiUpload,
-    FiDollarSign, FiPackage, FiTag, FiGlobe, FiSave
+    FiDollarSign, FiPackage, FiTag, FiGlobe, FiSave, FiFile
 } from 'react-icons/fi';
 import Button from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
-import { productsApi } from '@/lib/services/api';
+import { productsApi, categoriesApi } from '@/lib/services/api';
 import styles from './page.module.css';
+
+interface Category {
+    _id: string;
+    name: string;
+    slug: string;
+}
 
 interface ProductFormData {
     title: string;
@@ -27,6 +33,9 @@ interface ProductFormData {
     options: { name: string; values: string }[];
     seoTitle: string;
     seoDescription: string;
+    // Digital product fields
+    digitalFile: string;
+    digitalFileName: string;
 }
 
 interface ProductFormPageProps {
@@ -37,10 +46,13 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
     const { id } = use(params);
     const router = useRouter();
     const isNew = id === 'new';
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const digitalFileInputRef = useRef<HTMLInputElement>(null);
 
     const [loading, setLoading] = useState(!isNew);
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
+    const [categories, setCategories] = useState<Category[]>([]);
     const [formData, setFormData] = useState<ProductFormData>({
         title: '',
         description: '',
@@ -56,8 +68,24 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         options: [],
         seoTitle: '',
         seoDescription: '',
+        digitalFile: '',
+        digitalFileName: '',
     });
 
+    // Fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await categoriesApi.getAll();
+                setCategories(response.data.data || []);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Fetch product if editing
     useEffect(() => {
         if (!isNew) {
             const fetchProduct = async () => {
@@ -73,8 +101,8 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         category: product.category || '',
                         sku: product.inventory?.sku || '',
                         stock: product.inventory?.stock?.toString() || '0',
-                        weight: '',
-                        brand: '',
+                        weight: product.inventory?.weight?.toString() || '',
+                        brand: product.brand || '',
                         isActive: product.isActive,
                         options: product.options?.map((opt: { name: string; values: string[] }) => ({
                             name: opt.name,
@@ -82,6 +110,8 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         })) || [],
                         seoTitle: product.seoData?.metaTitle || '',
                         seoDescription: product.seoData?.metaDescription || '',
+                        digitalFile: product.digitalFile || '',
+                        digitalFileName: product.digitalFileName || '',
                     });
                 } catch (error) {
                     console.error('Failed to fetch product:', error);
@@ -94,9 +124,43 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         }
     }, [id, isNew, router]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // Handle digital file upload
+    const handleDigitalFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Max 50MB for digital files
+        if (file.size > 50 * 1024 * 1024) {
+            alert('File size must be under 50MB');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result as string;
+            setFormData(prev => ({
+                ...prev,
+                digitalFile: base64,
+                digitalFileName: file.name,
+            }));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const removeDigitalFile = () => {
+        setFormData(prev => ({
+            ...prev,
+            digitalFile: '',
+            digitalFileName: '',
+        }));
+        if (digitalFileInputRef.current) {
+            digitalFileInputRef.current.value = '';
+        }
     };
 
     const addOption = () => {
@@ -134,10 +198,12 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                 discountedPrice: formData.discountedPrice ? parseFloat(formData.discountedPrice) : undefined,
                 type: formData.type,
                 category: formData.category,
-                inventory: {
+                brand: formData.brand,
+                inventory: formData.type === 'physical' ? {
                     sku: formData.sku,
                     stock: parseInt(formData.stock) || 0,
-                },
+                    weight: formData.weight ? parseFloat(formData.weight) : undefined,
+                } : undefined,
                 isActive: formData.isActive,
                 options: formData.options.map((opt) => ({
                     name: opt.name,
@@ -147,6 +213,9 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                     metaTitle: formData.seoTitle,
                     metaDescription: formData.seoDescription,
                 },
+                // Digital product data
+                digitalFile: formData.type === 'digital' ? formData.digitalFile : undefined,
+                digitalFileName: formData.type === 'digital' ? formData.digitalFileName : undefined,
             };
 
             if (isNew) {
@@ -281,13 +350,20 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                                             </button>
                                         </div>
                                     </div>
-                                    <Input
-                                        label="Category"
-                                        name="category"
-                                        value={formData.category}
-                                        onChange={handleChange}
-                                        placeholder="e.g., Electronics, Clothing"
-                                    />
+                                    <div className={styles.selectWrapper}>
+                                        <label className={styles.fieldLabel}>Category</label>
+                                        <select
+                                            name="category"
+                                            value={formData.category}
+                                            onChange={handleChange}
+                                            className={styles.select}
+                                        >
+                                            <option value="">Select a category</option>
+                                            {categories.map(cat => (
+                                                <option key={cat._id} value={cat.slug}>{cat.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <Input
                                         label="Brand"
                                         name="brand"
@@ -362,6 +438,39 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                                 </div>
                             </div>
                         )}
+
+                        {formData.type === 'digital' && (
+                            <div className={styles.formCard}>
+                                <h3 className={styles.cardTitle}>Digital File</h3>
+                                <p className={styles.fieldDescription}>Upload the file customers will receive after purchase</p>
+
+                                {formData.digitalFileName ? (
+                                    <div className={styles.uploadedFile}>
+                                        <FiFile size={24} />
+                                        <div className={styles.fileInfo}>
+                                            <span className={styles.fileName}>{formData.digitalFileName}</span>
+                                            <span className={styles.fileSize}>Ready for delivery</span>
+                                        </div>
+                                        <button type="button" className={styles.removeFileBtn} onClick={removeDigitalFile}>
+                                            <FiX size={18} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className={styles.uploadZone} onClick={() => digitalFileInputRef.current?.click()}>
+                                        <FiUpload size={32} />
+                                        <p>Click to upload digital file</p>
+                                        <span>Max 50MB - PDF, ZIP, MP3, MP4, etc.</span>
+                                    </div>
+                                )}
+                                <input
+                                    ref={digitalFileInputRef}
+                                    type="file"
+                                    onChange={handleDigitalFileUpload}
+                                    style={{ display: 'none' }}
+                                    accept=".pdf,.zip,.rar,.mp3,.mp4,.epub,.mobi,.doc,.docx,.ppt,.pptx"
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -371,12 +480,19 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         <div className={styles.formCard}>
                             <h3 className={styles.cardTitle}>Product Images</h3>
                             <div className={styles.mediaUpload}>
-                                <div className={styles.uploadZone}>
+                                <div className={styles.uploadZone} onClick={() => fileInputRef.current?.click()}>
                                     <FiUpload size={32} />
                                     <p>Drag and drop images here</p>
                                     <span>or click to browse</span>
                                     <button type="button" className={styles.uploadBtn}>Upload Images</button>
                                 </div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                />
                             </div>
                             <p className={styles.mediaNote}>
                                 Recommended size: 1024x1024px. Maximum 5 images. Supports JPG, PNG, WebP.

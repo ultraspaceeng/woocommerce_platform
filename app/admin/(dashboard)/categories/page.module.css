@@ -97,6 +97,30 @@
     color: #71717a;
 }
 
+/* Empty State */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background: #111113;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    text-align: center;
+    color: #52525b;
+}
+
+.emptyState h3 {
+    font-size: 1.125rem;
+    color: #fafafa;
+    margin: 1rem 0 0.5rem;
+}
+
+.emptyState p {
+    margin-bottom: 1.5rem;
+}
+
 /* Categories Grid */
 .categoriesGrid {
     display: grid;
@@ -156,11 +180,14 @@
 .categorySlug {
     font-size: 0.8125rem;
     color: #52525b;
+    font-family: monospace;
 }
 
-.categoryCount {
-    font-size: 0.875rem;
-    color: #a1a1aa;
+.categoryDescription {
+    font-size: 0.8125rem;
+    color: #71717a;
+    margin-top: 0.5rem;
+    line-height: 1.4;
 }
 
 .categoryActions {
@@ -209,17 +236,63 @@
     background: #111113;
     border: 1px solid #27272a;
     border-radius: 16px;
-    padding: 1.5rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 480px;
     margin: 1rem;
+    overflow: hidden;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #27272a;
 }
 
 .modalTitle {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: #fafafa;
-    margin-bottom: 1.25rem;
+}
+
+.closeBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: #71717a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.closeBtn:hover {
+    background: #18181b;
+    color: #fafafa;
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.formGroup:last-child {
+    margin-bottom: 0;
+}
+
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #a1a1aa;
+    margin-bottom: 0.5rem;
 }
 
 .modalInput {
@@ -231,10 +304,26 @@
     border-radius: 8px;
     color: #fafafa;
     font-size: 0.9375rem;
-    margin-bottom: 1.25rem;
 }
 
 .modalInput:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.modalTextarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    color: #fafafa;
+    font-size: 0.9375rem;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.modalTextarea:focus {
     outline: none;
     border-color: #6366f1;
 }
@@ -243,6 +332,9 @@
     display: flex;
     gap: 0.75rem;
     justify-content: flex-end;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #27272a;
+    background: #0a0a0b;
 }
 
 .cancelBtn {
@@ -273,6 +365,20 @@
     transition: all 0.15s ease;
 }
 
-.submitBtn:hover {
+.submitBtn:hover:not(:disabled) {
     transform: translateY(-1px);
+}
+
+.submitBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #71717a;
 }

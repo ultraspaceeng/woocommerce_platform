@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { FiCheckCircle, FiLock, FiShoppingBag, FiDownload } from 'react-icons/fi';
+import { FiCheckCircle, FiLock, FiShoppingBag, FiDownload, FiPrinter, FiMail, FiPackage } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
@@ -53,6 +53,9 @@ export default function CheckoutPage() {
     const [success, setSuccess] = useState(false);
     const [orderId, setOrderId] = useState('');
     const [hasDigitalProducts, setHasDigitalProducts] = useState(false);
+    const [hasPhysicalProducts, setHasPhysicalProducts] = useState(false);
+    // Order type: 'digital-only' | 'physical-only' | 'mixed'
+    const [orderType, setOrderType] = useState<'digital-only' | 'physical-only' | 'mixed'>('physical-only');
     const [isFormValid, setIsFormValid] = useState(false);
     const [formData, setFormData] = useState({
         name: '', email: '', phone: '', address: '', city: '', state: '', country: 'Nigeria',
@@ -61,10 +64,21 @@ export default function CheckoutPage() {
     // Paystack config
     const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '';
 
-    // Check if cart has digital products
+    // Check product types in cart and determine order type
     useEffect(() => {
         const hasDigital = items.some(item => item.product.type === 'digital');
+        const hasPhysical = items.some(item => item.product.type !== 'digital');
         setHasDigitalProducts(hasDigital);
+        setHasPhysicalProducts(hasPhysical);
+
+        // Determine order type for post-purchase messaging
+        if (hasDigital && hasPhysical) {
+            setOrderType('mixed');
+        } else if (hasDigital) {
+            setOrderType('digital-only');
+        } else {
+            setOrderType('physical-only');
+        }
     }, [items]);
 
     // Validate form
@@ -83,6 +97,15 @@ export default function CheckoutPage() {
     };
 
     /**
+     * Print Invoice Handler
+     * Opens the browser print dialog so user can save their order as PDF
+     * This allows them to keep a local copy with tracking ID
+     */
+    const handlePrintInvoice = () => {
+        window.print();
+    };
+
+    /**
      * Prepare order data from cart and form
      * This data will be sent to the verify endpoint AFTER successful payment
      */
@@ -92,7 +115,7 @@ export default function CheckoutPage() {
         totalAmount: number;
         hasDigitalProducts: boolean
     } => {
-        const cartItems: CartItemForOrder[] = items.map((item:any) => ({
+        const cartItems: CartItemForOrder[] = items.map((item: any) => ({
             productId: item.product._id,
             title: item.product.title,
             type: item.product.type as 'physical' | 'digital',
@@ -223,7 +246,7 @@ export default function CheckoutPage() {
         );
     }
 
-    // Success state
+    // Success state - Different messages based on order type
     if (success) {
         return (
             <div className={styles.page}>
@@ -235,19 +258,66 @@ export default function CheckoutPage() {
                             <h2 className={styles.successTitle}>Payment Successful! 🎉</h2>
                             <p className={styles.orderId}>Order ID: <strong>{orderId}</strong></p>
 
-                            {hasDigitalProducts && (
+                            {/* DIGITAL-ONLY: Check email for download link */}
+                            {orderType === 'digital-only' && (
                                 <div className={styles.digitalNotice}>
-                                    <FiDownload size={20} />
-                                    <p>Your digital products are now available for download. Check your email or visit the product page.</p>
+                                    <FiMail size={20} />
+                                    <div>
+                                        <p><strong>Check your email!</strong></p>
+                                        <p>Your download link has been sent to your email address. If you don&apos;t see it, check your spam folder.</p>
+                                    </div>
                                 </div>
                             )}
 
+                            {/* PHYSICAL-ONLY: Print invoice for tracking ID */}
+                            {orderType === 'physical-only' && (
+                                <div className={styles.physicalNotice}>
+                                    <FiPackage size={20} />
+                                    <div>
+                                        <p><strong>Save Your Tracking ID</strong></p>
+                                        <p>Print or save this invoice as PDF to keep your tracking ID (<strong>{orderId}</strong>) for order tracking.</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* MIXED ORDER: Email for digital + Print for physical tracking */}
+                            {orderType === 'mixed' && (
+                                <>
+                                    <div className={styles.digitalNotice}>
+                                        <FiMail size={20} />
+                                        <div>
+                                            <p><strong>Digital Products</strong></p>
+                                            <p>Check your email for download links to your digital purchases.</p>
+                                        </div>
+                                    </div>
+                                    <div className={styles.physicalNotice}>
+                                        <FiPackage size={20} />
+                                        <div>
+                                            <p><strong>Physical Products</strong></p>
+                                            <p>Print this invoice to save your tracking ID (<strong>{orderId}</strong>) for shipment tracking.</p>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
                             <div className={styles.successActions}>
-                                <Link href={`/track?orderId=${orderId}`}>
-                                    <Button>Track Order</Button>
-                                </Link>
+                                {/* Print Invoice button for physical/mixed orders */}
+                                {(orderType === 'physical-only' || orderType === 'mixed') && (
+                                    <Button onClick={handlePrintInvoice} className={styles.printButton}>
+                                        <FiPrinter size={16} />
+                                        Print Invoice
+                                    </Button>
+                                )}
+
+                                {/* Track Order button for physical/mixed orders */}
+                                {(orderType === 'physical-only' || orderType === 'mixed') && (
+                                    <Link href={`/order-tracking?orderId=${orderId}`}>
+                                        <Button variant="secondary">Track Order</Button>
+                                    </Link>
+                                )}
+
                                 <Link href="/market">
-                                    <Button variant="secondary">Continue Shopping</Button>
+                                    <Button variant={orderType === 'digital-only' ? 'primary' : 'secondary'}>Continue Shopping</Button>
                                 </Link>
                             </div>
                         </div>

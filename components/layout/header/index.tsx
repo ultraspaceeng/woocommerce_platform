@@ -42,7 +42,7 @@ export default function Header() {
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`${styles.navLink} ${pathname === link.href ? styles.active : ''}`}
+                            className={`${styles.navLink} ${hasMounted && pathname === link.href ? styles.active : ''}`}
                         >
                             {link.label}
                         </Link>

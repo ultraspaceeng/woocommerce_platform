@@ -269,25 +269,6 @@
     font-family: monospace;
 }
 
-.digitalNotice {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 10px;
-    margin-bottom: 1.5rem;
-    max-width: 480px;
-    text-align: left;
-}
-
-.digitalNotice p {
-    font-size: 0.875rem;
-    color: var(--text);
-    margin: 0;
-}
-
 .successActions {
     display: flex;
     gap: 1rem;
@@ -328,4 +309,93 @@
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+}
+
+/* Physical Products Notice (Amber/Orange theme) */
+.physicalNotice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    max-width: 480px;
+    text-align: left;
+    color: var(--text);
+}
+
+.physicalNotice svg {
+    color: #f59e0b;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.physicalNotice p {
+    font-size: 0.875rem;
+    margin: 0 0 0.25rem;
+}
+
+.physicalNotice p:last-child {
+    margin-bottom: 0;
+}
+
+/* Updated Digital Notice with flex-start alignment */
+.digitalNotice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    max-width: 480px;
+    text-align: left;
+}
+
+.digitalNotice svg {
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.digitalNotice p {
+    font-size: 0.875rem;
+    color: var(--text);
+    margin: 0 0 0.25rem;
+}
+
+.digitalNotice p:last-child {
+    margin-bottom: 0;
+}
+
+/* Print Invoice Button */
+.printButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Print Media Query - Hide nav and controls when printing */
+@media print {
+
+    .page header,
+    .page footer,
+    .successActions {
+        display: none !important;
+    }
+
+    .success {
+        padding: 2rem !important;
+    }
+
+    .digitalNotice,
+    .physicalNotice {
+        border: 1px solid #ccc !important;
+        background: #f9f9f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 }

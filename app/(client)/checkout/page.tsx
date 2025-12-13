@@ -52,7 +52,6 @@ export default function CheckoutPage() {
     const [verifying, setVerifying] = useState(false);
     const [success, setSuccess] = useState(false);
     const [orderId, setOrderId] = useState('');
-    const [digitalItems, setDigitalItems] = useState<{ title: string; productId: string }[]>([]);
     const [hasDigitalProducts, setHasDigitalProducts] = useState(false);
     const [hasPhysicalProducts, setHasPhysicalProducts] = useState(false);
     // Order type: 'digital-only' | 'physical-only' | 'mixed'
@@ -67,9 +66,6 @@ export default function CheckoutPage() {
 
     // Check product types in cart and determine order type
     useEffect(() => {
-        // Don't recalculate after success - the order type was already set from API response
-        if (success) return;
-
         const hasDigital = items.some(item => item.product.type === 'digital');
         const hasPhysical = items.some(item => item.product.type !== 'digital');
         setHasDigitalProducts(hasDigital);
@@ -83,7 +79,7 @@ export default function CheckoutPage() {
         } else {
             setOrderType('physical-only');
         }
-    }, [items, success]);
+    }, [items]);
 
     // Validate form
     useEffect(() => {
@@ -159,25 +155,6 @@ export default function CheckoutPage() {
 
             if (data.success) {
                 setOrderId(data.data.orderId);
-
-                // Set order type from API response BEFORE clearing cart
-                // This prevents the useEffect from resetting orderType to 'physical-only'
-                const hasDigital = data.data.hasDigitalProducts;
-                const hasPhysical = data.data.hasPhysicalProducts;
-
-                if (hasDigital && hasPhysical) {
-                    setOrderType('mixed');
-                } else if (hasDigital) {
-                    setOrderType('digital-only');
-                } else {
-                    setOrderType('physical-only');
-                }
-
-                // Store digital items for download links
-                if (data.data.digitalItems && data.data.digitalItems.length > 0) {
-                    setDigitalItems(data.data.digitalItems);
-                }
-
                 setSuccess(true);
                 clearCart();
             } else {
@@ -290,31 +267,13 @@ export default function CheckoutPage() {
                             <h2 className={styles.successTitle}>Payment Successful! 🎉</h2>
                             <p className={styles.orderId}>Order ID: <strong>{orderId}</strong></p>
 
-                            {/* DIGITAL-ONLY: Check email for download link + Direct download buttons */}
+                            {/* DIGITAL-ONLY: Check email for download link */}
                             {orderType === 'digital-only' && (
                                 <div className={styles.digitalNotice}>
                                     <FiMail size={20} />
                                     <div>
                                         <p><strong>Check your email!</strong></p>
                                         <p>Your download link has been sent to your email address. If you don&apos;t see it, check your spam folder.</p>
-
-                                        {/* Direct download links */}
-                                        {digitalItems.length > 0 && (
-                                            <div className={styles.downloadLinks}>
-                                                <p style={{ marginTop: '0.75rem', marginBottom: '0.5rem' }}><strong>Download your files directly:</strong></p>
-                                                {digitalItems.map((item, index) => (
-                                                    <a
-                                                        key={index}
-                                                        href={`/api/download/${orderId}/${item.productId}`}
-                                                        className={styles.downloadLink}
-                                                        download
-                                                    >
-                                                        <FiDownload size={14} />
-                                                        <span>{item.title}</span>
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             )}
@@ -338,24 +297,6 @@ export default function CheckoutPage() {
                                         <div>
                                             <p><strong>Digital Products</strong></p>
                                             <p>Check your email for download links to your digital purchases.</p>
-
-                                            {/* Direct download links */}
-                                            {digitalItems.length > 0 && (
-                                                <div className={styles.downloadLinks}>
-                                                    <p style={{ marginTop: '0.75rem', marginBottom: '0.5rem' }}><strong>Download your files directly:</strong></p>
-                                                    {digitalItems.map((item, index) => (
-                                                        <a
-                                                            key={index}
-                                                            href={`/api/download/${orderId}/${item.productId}`}
-                                                            className={styles.downloadLink}
-                                                            download
-                                                        >
-                                                            <FiDownload size={14} />
-                                                            <span>{item.title}</span>
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )}
                                         </div>
                                     </div>
                                     <div className={styles.physicalNotice}>

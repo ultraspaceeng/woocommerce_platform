@@ -50,9 +50,33 @@ export async function GET(request: Request, { params }: RouteParams) {
             );
         }
 
-        // 4. Decode Base64 File
-        const fileData = product.digitalFile.split(';base64,').pop();
-        if (!fileData) {
+        // 4. Decode Base64 File - Handle different formats
+        let fileData = product.digitalFile;
+        let mimeType = 'application/octet-stream';
+
+        // Check if it has a data URI prefix (e.g., "data:application/pdf;base64,...")
+        if (fileData.startsWith('data:')) {
+            // Extract mime type from the data URI
+            const mimeMatch = fileData.match(/^data:([^;]+);/);
+            if (mimeMatch) {
+                mimeType = mimeMatch[1];
+            }
+
+            // Extract the base64 part after the comma
+            const base64Index = fileData.indexOf(',');
+            if (base64Index !== -1) {
+                fileData = fileData.substring(base64Index + 1);
+            } else {
+                // Try the ;base64, format
+                const base64Parts = fileData.split(';base64,');
+                if (base64Parts.length > 1) {
+                    fileData = base64Parts[1];
+                }
+            }
+        }
+
+        if (!fileData || fileData.length === 0) {
+            console.error('Invalid file data for product:', productId);
             return NextResponse.json(
                 { success: false, error: 'Invalid file data' },
                 { status: 500 }

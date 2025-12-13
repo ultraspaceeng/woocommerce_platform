@@ -1,10 +1,16 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IUser extends Document {
+    _id: string;
     email: string;
     name: string;
     phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
     orderHistory: mongoose.Types.ObjectId[];
+    ownedProducts: mongoose.Types.ObjectId[]; // Digital products the user owns
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,9 +32,29 @@ const UserSchema = new Schema<IUser>({
         type: String,
         trim: true,
     },
+    address: {
+        type: String,
+        trim: true,
+    },
+    city: {
+        type: String,
+        trim: true,
+    },
+    state: {
+        type: String,
+        trim: true,
+    },
+    country: {
+        type: String,
+        default: 'Nigeria',
+    },
     orderHistory: [{
         type: Schema.Types.ObjectId,
         ref: 'Order',
+    }],
+    ownedProducts: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
     }],
 }, {
     timestamps: true,

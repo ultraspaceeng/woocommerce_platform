@@ -1,65 +1,97 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import Order from '@/lib/models/order';
+import User from '@/lib/models/user';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 
-// GET /api/paystack/verify?reference=xxx - Verify Paystack payment
-export async function GET(request: Request) {
+// POST /api/paystack/verify - Verify payment after Paystack inline popup
+export async function POST(request: Request) {
     try {
-        const { searchParams } = new URL(request.url);
-        const reference = searchParams.get('reference');
+        const { reference, orderId } = await request.json();
 
-        if (!reference) {
+        if (!reference || !orderId) {
             return NextResponse.json(
-                { success: false, error: 'Reference is required' },
+                { success: false, error: 'Missing reference or orderId' },
                 { status: 400 }
             );
         }
 
-        // Verify transaction with Paystack
-        const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-            headers: {
-                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-            },
-        });
+        // Verify with Paystack API
+        const verifyResponse = await fetch(
+            `https://api.paystack.co/transaction/verify/${reference}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+                },
+            }
+        );
 
-        const data = await response.json();
+        const verifyData = await verifyResponse.json();
 
-        if (!data.status || data.data.status !== 'success') {
+        if (!verifyData.status || verifyData.data.status !== 'success') {
             return NextResponse.json(
                 { success: false, error: 'Payment verification failed' },
                 { status: 400 }
             );
         }
 
-        // Update order status
         await connectDB();
-        const orderId = data.data.metadata?.orderId;
 
-        if (orderId) {
-            await Order.findOneAndUpdate(
-                { orderId },
-                {
-                    paymentStatus: 'paid',
-                    paystackRef: reference,
-                }
+        // Update order with payment details
+        const order = await Order.findOneAndUpdate(
+            { orderId },
+            {
+                paymentStatus: 'paid',
+                paystackRef: reference,
+                paidAt: new Date(),
+                paymentDetails: {
+                    amount: verifyData.data.amount / 100, // Convert from kobo
+                    currency: verifyData.data.currency,
+                    channel: verifyData.data.channel,
+                    paidAt: verifyData.data.paid_at,
+                    reference: verifyData.data.reference,
+                },
+            },
+            { new: true }
+        );
+
+        if (!order) {
+            return NextResponse.json(
+                { success: false, error: 'Order not found' },
+                { status: 404 }
             );
+        }
+
+        // Check if order contains digital products and user is authenticated
+        const hasDigitalProducts = order.cartItems.some(
+            (item: { type?: string }) => item.type === 'digital'
+        );
+
+        if (hasDigitalProducts && order.userId) {
+            // Add digital products to user's owned products
+            const digitalProductIds = order.cartItems
+                .filter((item: { type?: string }) => item.type === 'digital')
+                .map((item: { productId?: string }) => item.productId);
+
+            await User.findByIdAndUpdate(order.userId, {
+                $addToSet: { ownedProducts: { $each: digitalProductIds } },
+            });
         }
 
         return NextResponse.json({
             success: true,
+            message: 'Payment verified successfully',
             data: {
-                status: data.data.status,
-                amount: data.data.amount / 100, // Convert from kobo
-                reference: data.data.reference,
-                orderId,
+                orderId: order.orderId,
+                status: order.paymentStatus,
+                hasDigitalProducts,
             },
         });
     } catch (error) {
         console.error('Payment verification error:', error);
         return NextResponse.json(
-            { success: false, error: 'Failed to verify payment' },
+            { success: false, error: 'Payment verification failed' },
             { status: 500 }
         );
     }

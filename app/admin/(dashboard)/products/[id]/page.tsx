@@ -36,6 +36,8 @@ interface ProductFormData {
     // Digital product fields
     digitalFile: string;
     digitalFileName: string;
+    // Product images (base64)
+    images: string[];
 }
 
 interface ProductFormPageProps {
@@ -70,6 +72,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         seoDescription: '',
         digitalFile: '',
         digitalFileName: '',
+        images: [],
     });
 
     // Fetch categories
@@ -112,6 +115,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         seoDescription: product.seoData?.metaDescription || '',
                         digitalFile: product.digitalFile || '',
                         digitalFileName: product.digitalFileName || '',
+                        images: product.assets || [],
                     });
                 } catch (error) {
                     console.error('Failed to fetch product:', error);
@@ -161,6 +165,48 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         if (digitalFileInputRef.current) {
             digitalFileInputRef.current.value = '';
         }
+    };
+
+    // Handle product image upload
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+
+        // Max 5 images
+        if (formData.images.length + files.length > 5) {
+            alert('Maximum 5 images allowed');
+            return;
+        }
+
+        Array.from(files).forEach(file => {
+            // Max 5MB per image
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`${file.name} is too large. Max 5MB per image.`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = reader.result as string;
+                setFormData(prev => ({
+                    ...prev,
+                    images: [...prev.images, base64],
+                }));
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Reset input
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const removeImage = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index),
+        }));
     };
 
     const addOption = () => {
@@ -213,6 +259,8 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                     metaTitle: formData.seoTitle,
                     metaDescription: formData.seoDescription,
                 },
+                // Product images
+                assets: formData.images,
                 // Digital product data
                 digitalFile: formData.type === 'digital' ? formData.digitalFile : undefined,
                 digitalFileName: formData.type === 'digital' ? formData.digitalFileName : undefined,
@@ -479,23 +527,47 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                     <div className={styles.tabContent}>
                         <div className={styles.formCard}>
                             <h3 className={styles.cardTitle}>Product Images</h3>
-                            <div className={styles.mediaUpload}>
-                                <div className={styles.uploadZone} onClick={() => fileInputRef.current?.click()}>
-                                    <FiUpload size={32} />
-                                    <p>Drag and drop images here</p>
-                                    <span>or click to browse</span>
-                                    <button type="button" className={styles.uploadBtn}>Upload Images</button>
+
+                            {/* Image Gallery */}
+                            {formData.images.length > 0 && (
+                                <div className={styles.imageGallery}>
+                                    {formData.images.map((img, index) => (
+                                        <div key={index} className={styles.imageItem}>
+                                            <img src={img} alt={`Product ${index + 1}`} />
+                                            <button
+                                                type="button"
+                                                className={styles.removeImageBtn}
+                                                onClick={() => removeImage(index)}
+                                            >
+                                                <FiX size={14} />
+                                            </button>
+                                            {index === 0 && <span className={styles.mainBadge}>Main</span>}
+                                        </div>
+                                    ))}
                                 </div>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    multiple
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                />
-                            </div>
+                            )}
+
+                            {/* Upload Zone */}
+                            {formData.images.length < 5 && (
+                                <div className={styles.mediaUpload}>
+                                    <div className={styles.uploadZone} onClick={() => fileInputRef.current?.click()}>
+                                        <FiUpload size={32} />
+                                        <p>Click to upload images</p>
+                                        <span>{5 - formData.images.length} slots remaining</span>
+                                    </div>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        multiple
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        style={{ display: 'none' }}
+                                    />
+                                </div>
+                            )}
+
                             <p className={styles.mediaNote}>
-                                Recommended size: 1024x1024px. Maximum 5 images. Supports JPG, PNG, WebP.
+                                Recommended size: 1024x1024px. Maximum 5 images, 5MB each. Supports JPG, PNG, WebP.
                             </p>
                         </div>
                     </div>

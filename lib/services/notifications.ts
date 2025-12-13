@@ -33,7 +33,7 @@ interface OrderNotificationData {
 }
 
 // Send all notifications for a new order
-export const notifyOrderPlaced = async (order: OrderNotificationData): Promise<void> => {
+export const notifyOrderPlaced = async (order: any): Promise<void> => {
     console.log(`Sending order notifications for ${order.orderId}`);
 
     // Run notifications in parallel but don't block on failures

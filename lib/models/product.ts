@@ -6,8 +6,9 @@ export interface IProductOption {
 }
 
 export interface IProductInventory {
-    sku: string;
+    sku?: string;
     stock: number;
+    weight?: number;
 }
 
 export interface IProductSeoData {
@@ -41,8 +42,9 @@ const ProductOptionSchema = new Schema<IProductOption>({
 }, { _id: false });
 
 const ProductInventorySchema = new Schema<IProductInventory>({
-    sku: { type: String, required: true },
+    sku: { type: String, default: '' },
     stock: { type: Number, default: 0 },
+    weight: { type: Number },
 }, { _id: false });
 
 const ProductSeoDataSchema = new Schema<IProductSeoData>({

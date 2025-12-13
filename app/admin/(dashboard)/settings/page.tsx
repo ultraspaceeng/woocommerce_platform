@@ -1,25 +1,63 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FiSettings, FiGlobe, FiMail, FiShield, FiDatabase, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
+import { FiSettings, FiGlobe, FiDollarSign, FiTruck, FiBell, FiMapPin, FiSave } from 'react-icons/fi';
 import { settingsApi } from '@/lib/services/api';
 import styles from './page.module.css';
 
 interface Settings {
-    maintenanceMode: boolean;
     siteName: string;
+    siteDescription: string;
+    contactEmail: string;
+    supportPhone: string;
+    maintenanceMode: boolean;
+    maintenanceMessage: string;
+    currency: string;
+    currencySymbol: string;
+    paystackEnabled: boolean;
+    freeShippingThreshold: number;
+    defaultShippingFee: number;
+    orderEmailNotifications: boolean;
+    lowStockAlerts: boolean;
+    lowStockThreshold: number;
+    storeAddress: string;
+    storeCity: string;
+    storeState: string;
+    storeCountry: string;
 }
 
 export default function SettingsPage() {
-    const [settings, setSettings] = useState<Settings | null>(null);
+    const [settings, setSettings] = useState<Settings>({
+        siteName: 'Royal Commerce',
+        siteDescription: '',
+        contactEmail: '',
+        supportPhone: '',
+        maintenanceMode: false,
+        maintenanceMessage: '',
+        currency: 'NGN',
+        currencySymbol: '₦',
+        paystackEnabled: true,
+        freeShippingThreshold: 50000,
+        defaultShippingFee: 2500,
+        orderEmailNotifications: true,
+        lowStockAlerts: true,
+        lowStockThreshold: 10,
+        storeAddress: '',
+        storeCity: 'Lagos',
+        storeState: 'Lagos',
+        storeCountry: 'Nigeria',
+    });
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
 
     useEffect(() => {
         const fetchSettings = async () => {
             try {
                 const response = await settingsApi.get();
-                setSettings(response.data.data);
+                if (response.data.success) {
+                    setSettings(prev => ({ ...prev, ...response.data.data }));
+                }
             } catch (error) {
                 console.error('Failed to fetch settings:', error);
             } finally {
@@ -29,17 +67,32 @@ export default function SettingsPage() {
         fetchSettings();
     }, []);
 
-    const toggleMaintenance = async () => {
-        if (!settings) return;
-        setSaving('maintenance');
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        setSettings(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked :
+                type === 'number' ? parseFloat(value) || 0 : value,
+        }));
+        setSaved(false);
+    };
+
+    const handleToggle = (name: keyof Settings) => {
+        setSettings(prev => ({ ...prev, [name]: !prev[name] }));
+        setSaved(false);
+    };
+
+    const handleSave = async () => {
+        setSaving(true);
         try {
-            const newValue = !settings.maintenanceMode;
-            await settingsApi.update({ maintenanceMode: newValue });
-            setSettings({ ...settings, maintenanceMode: newValue });
+            await settingsApi.update(settings);
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
         } catch (error) {
-            console.error('Failed to update settings:', error);
+            console.error('Failed to save settings:', error);
+            alert('Failed to save settings');
         } finally {
-            setSaving(null);
+            setSaving(false);
         }
     };
 
@@ -49,41 +102,66 @@ export default function SettingsPage() {
 
     return (
         <div className={styles.page}>
-            {/* Page Header */}
             <div className={styles.pageHeader}>
                 <div>
                     <h1 className={styles.pageTitle}>Settings</h1>
-                    <p className={styles.pageSubtitle}>Manage your store configuration</p>
+                    <p className={styles.pageSubtitle}>Configure your store settings</p>
                 </div>
+                <button className={styles.saveBtn} onClick={handleSave} disabled={saving}>
+                    <FiSave size={16} />
+                    {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
+                </button>
             </div>
 
-            {/* Settings Grid */}
             <div className={styles.settingsGrid}>
                 {/* General Settings */}
                 <div className={styles.settingsCard}>
                     <div className={styles.cardHeader}>
-                        <div className={styles.cardIcon}>
-                            <FiGlobe size={20} />
-                        </div>
-                        <div>
-                            <h2 className={styles.cardTitle}>General</h2>
-                            <p className={styles.cardDescription}>Basic store settings</p>
-                        </div>
+                        <FiGlobe size={20} />
+                        <h2>General</h2>
                     </div>
-                    <div className={styles.settingsList}>
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <span className={styles.settingLabel}>Store Name</span>
-                                <span className={styles.settingValue}>{settings?.siteName || 'Royal Commerce'}</span>
-                            </div>
-                            <button className={styles.editBtn}>Edit</button>
+                    <div className={styles.cardBody}>
+                        <div className={styles.formGroup}>
+                            <label>Site Name</label>
+                            <input
+                                type="text"
+                                name="siteName"
+                                value={settings.siteName}
+                                onChange={handleChange}
+                                className={styles.input}
+                            />
                         </div>
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <span className={styles.settingLabel}>Currency</span>
-                                <span className={styles.settingValue}>NGN (₦)</span>
+                        <div className={styles.formGroup}>
+                            <label>Site Description</label>
+                            <textarea
+                                name="siteDescription"
+                                value={settings.siteDescription}
+                                onChange={handleChange}
+                                className={styles.textarea}
+                                rows={2}
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroup}>
+                                <label>Contact Email</label>
+                                <input
+                                    type="email"
+                                    name="contactEmail"
+                                    value={settings.contactEmail}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                />
                             </div>
-                            <button className={styles.editBtn}>Edit</button>
+                            <div className={styles.formGroup}>
+                                <label>Support Phone</label>
+                                <input
+                                    type="tel"
+                                    name="supportPhone"
+                                    value={settings.supportPhone}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -91,95 +169,212 @@ export default function SettingsPage() {
                 {/* Site Status */}
                 <div className={styles.settingsCard}>
                     <div className={styles.cardHeader}>
-                        <div className={`${styles.cardIcon} ${styles.iconWarning}`}>
-                            <FiShield size={20} />
-                        </div>
-                        <div>
-                            <h2 className={styles.cardTitle}>Site Status</h2>
-                            <p className={styles.cardDescription}>Control site availability</p>
-                        </div>
+                        <FiSettings size={20} />
+                        <h2>Site Status</h2>
                     </div>
-                    <div className={styles.settingsList}>
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <span className={styles.settingLabel}>Maintenance Mode</span>
-                                <span className={styles.settingDescription}>
-                                    When enabled, visitors see a maintenance page
-                                </span>
+                    <div className={styles.cardBody}>
+                        <div className={styles.toggleRow}>
+                            <div>
+                                <h4>Maintenance Mode</h4>
+                                <p>Temporarily disable the store for maintenance</p>
                             </div>
                             <button
-                                className={`${styles.toggle} ${settings?.maintenanceMode ? styles.active : ''}`}
-                                onClick={toggleMaintenance}
-                                disabled={saving === 'maintenance'}
+                                className={`${styles.toggle} ${settings.maintenanceMode ? styles.active : ''}`}
+                                onClick={() => handleToggle('maintenanceMode')}
                             >
-                                {settings?.maintenanceMode ? <FiToggleRight size={28} /> : <FiToggleLeft size={28} />}
+                                <span className={styles.toggleKnob} />
+                            </button>
+                        </div>
+                        {settings.maintenanceMode && (
+                            <div className={styles.formGroup}>
+                                <label>Maintenance Message</label>
+                                <textarea
+                                    name="maintenanceMessage"
+                                    value={settings.maintenanceMessage}
+                                    onChange={handleChange}
+                                    className={styles.textarea}
+                                    rows={2}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Payment Settings */}
+                <div className={styles.settingsCard}>
+                    <div className={styles.cardHeader}>
+                        <FiDollarSign size={20} />
+                        <h2>Payment</h2>
+                    </div>
+                    <div className={styles.cardBody}>
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroup}>
+                                <label>Currency Code</label>
+                                <input
+                                    type="text"
+                                    name="currency"
+                                    value={settings.currency}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    maxLength={3}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Currency Symbol</label>
+                                <input
+                                    type="text"
+                                    name="currencySymbol"
+                                    value={settings.currencySymbol}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    maxLength={3}
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.toggleRow}>
+                            <div>
+                                <h4>Paystack Payments</h4>
+                                <p>Enable online payment via Paystack</p>
+                            </div>
+                            <button
+                                className={`${styles.toggle} ${settings.paystackEnabled ? styles.active : ''}`}
+                                onClick={() => handleToggle('paystackEnabled')}
+                            >
+                                <span className={styles.toggleKnob} />
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Notifications */}
+                {/* Shipping Settings */}
                 <div className={styles.settingsCard}>
                     <div className={styles.cardHeader}>
-                        <div className={`${styles.cardIcon} ${styles.iconBlue}`}>
-                            <FiMail size={20} />
-                        </div>
-                        <div>
-                            <h2 className={styles.cardTitle}>Notifications</h2>
-                            <p className={styles.cardDescription}>Email and push settings</p>
-                        </div>
+                        <FiTruck size={20} />
+                        <h2>Shipping</h2>
                     </div>
-                    <div className={styles.settingsList}>
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <span className={styles.settingLabel}>Order Notifications</span>
-                                <span className={styles.settingDescription}>
-                                    Receive email for new orders
-                                </span>
+                    <div className={styles.cardBody}>
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroup}>
+                                <label>Free Shipping Threshold (₦)</label>
+                                <input
+                                    type="number"
+                                    name="freeShippingThreshold"
+                                    value={settings.freeShippingThreshold}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    min={0}
+                                />
                             </div>
-                            <button className={`${styles.toggle} ${styles.active}`}>
-                                <FiToggleRight size={28} />
-                            </button>
-                        </div>
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <span className={styles.settingLabel}>Low Stock Alerts</span>
-                                <span className={styles.settingDescription}>
-                                    Get notified when stock is low
-                                </span>
+                            <div className={styles.formGroup}>
+                                <label>Default Shipping Fee (₦)</label>
+                                <input
+                                    type="number"
+                                    name="defaultShippingFee"
+                                    value={settings.defaultShippingFee}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    min={0}
+                                />
                             </div>
-                            <button className={styles.toggle}>
-                                <FiToggleLeft size={28} />
-                            </button>
                         </div>
                     </div>
                 </div>
 
-                {/* API & Integrations */}
+                {/* Notification Settings */}
                 <div className={styles.settingsCard}>
                     <div className={styles.cardHeader}>
-                        <div className={`${styles.cardIcon} ${styles.iconGreen}`}>
-                            <FiDatabase size={20} />
-                        </div>
-                        <div>
-                            <h2 className={styles.cardTitle}>Integrations</h2>
-                            <p className={styles.cardDescription}>Payment and API settings</p>
-                        </div>
+                        <FiBell size={20} />
+                        <h2>Notifications</h2>
                     </div>
-                    <div className={styles.settingsList}>
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <span className={styles.settingLabel}>Paystack</span>
-                                <span className={`${styles.settingBadge} ${styles.connected}`}>Connected</span>
+                    <div className={styles.cardBody}>
+                        <div className={styles.toggleRow}>
+                            <div>
+                                <h4>Order Email Notifications</h4>
+                                <p>Send email notifications for new orders</p>
                             </div>
-                            <button className={styles.editBtn}>Configure</button>
+                            <button
+                                className={`${styles.toggle} ${settings.orderEmailNotifications ? styles.active : ''}`}
+                                onClick={() => handleToggle('orderEmailNotifications')}
+                            >
+                                <span className={styles.toggleKnob} />
+                            </button>
                         </div>
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <span className={styles.settingLabel}>MongoDB</span>
-                                <span className={`${styles.settingBadge} ${styles.connected}`}>Connected</span>
+                        <div className={styles.toggleRow}>
+                            <div>
+                                <h4>Low Stock Alerts</h4>
+                                <p>Get notified when products are running low</p>
                             </div>
-                            <button className={styles.editBtn}>View</button>
+                            <button
+                                className={`${styles.toggle} ${settings.lowStockAlerts ? styles.active : ''}`}
+                                onClick={() => handleToggle('lowStockAlerts')}
+                            >
+                                <span className={styles.toggleKnob} />
+                            </button>
+                        </div>
+                        {settings.lowStockAlerts && (
+                            <div className={styles.formGroup}>
+                                <label>Low Stock Threshold</label>
+                                <input
+                                    type="number"
+                                    name="lowStockThreshold"
+                                    value={settings.lowStockThreshold}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    min={1}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Store Location */}
+                <div className={styles.settingsCard}>
+                    <div className={styles.cardHeader}>
+                        <FiMapPin size={20} />
+                        <h2>Store Location</h2>
+                    </div>
+                    <div className={styles.cardBody}>
+                        <div className={styles.formGroup}>
+                            <label>Store Address</label>
+                            <input
+                                type="text"
+                                name="storeAddress"
+                                value={settings.storeAddress}
+                                onChange={handleChange}
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroup}>
+                                <label>City</label>
+                                <input
+                                    type="text"
+                                    name="storeCity"
+                                    value={settings.storeCity}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>State</label>
+                                <input
+                                    type="text"
+                                    name="storeState"
+                                    value={settings.storeState}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Country</label>
+                                <input
+                                    type="text"
+                                    name="storeCountry"
+                                    value={settings.storeCountry}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

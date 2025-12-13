@@ -17,7 +17,12 @@
 
 /* Page Header */
 .pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .pageTitle {
@@ -32,10 +37,35 @@
     color: #71717a;
 }
 
+.saveBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.saveBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.saveBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 /* Settings Grid */
 .settingsGrid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(1, 1fr);
     gap: 1.5rem;
 }
 
@@ -56,148 +86,143 @@
 .cardHeader {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1.25rem;
-    border-bottom: 1px solid #27272a;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
     background: #0a0a0b;
-}
-
-.cardIcon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(99, 102, 241, 0.15);
+    border-bottom: 1px solid #27272a;
     color: #818cf8;
-    border-radius: 10px;
 }
 
-.cardIcon.iconWarning {
-    background: rgba(234, 179, 8, 0.15);
-    color: #facc15;
-}
-
-.cardIcon.iconBlue {
-    background: rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
-}
-
-.cardIcon.iconGreen {
-    background: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
-}
-
-.cardTitle {
-    font-size: 1rem;
+.cardHeader h2 {
+    font-size: 0.9375rem;
     font-weight: 600;
+    color: #fafafa;
+}
+
+.cardBody {
+    padding: 1.25rem;
+}
+
+/* Form Elements */
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.formGroup:last-child {
+    margin-bottom: 0;
+}
+
+.formGroup label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #a1a1aa;
+    margin-bottom: 0.5rem;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.formRow:last-child {
+    margin-bottom: 0;
+}
+
+.input {
+    width: 100%;
+    height: 40px;
+    padding: 0 0.875rem;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    color: #fafafa;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: #111113;
+}
+
+.textarea {
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    color: #fafafa;
+    font-size: 0.875rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.15s ease;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: #111113;
+}
+
+/* Toggle Row */
+.toggleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #1f1f24;
+}
+
+.toggleRow:last-child {
+    border-bottom: none;
+}
+
+.toggleRow h4 {
+    font-size: 0.875rem;
+    font-weight: 500;
     color: #fafafa;
     margin-bottom: 0.125rem;
 }
 
-.cardDescription {
-    font-size: 0.8125rem;
-    color: #71717a;
-}
-
-/* Settings List */
-.settingsList {
-    padding: 0.5rem;
-}
-
-.settingItem {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    border-radius: 8px;
-    transition: background-color 0.15s ease;
-}
-
-.settingItem:hover {
-    background: #18181b;
-}
-
-.settingInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.settingLabel {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #fafafa;
-}
-
-.settingValue {
-    font-size: 0.8125rem;
-    color: #a1a1aa;
-}
-
-.settingDescription {
+.toggleRow p {
     font-size: 0.75rem;
-    color: #52525b;
-}
-
-.settingBadge {
-    display: inline-flex;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    border-radius: 9999px;
-}
-
-.settingBadge.connected {
-    background: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
-}
-
-.settingBadge.disconnected {
-    background: rgba(239, 68, 68, 0.15);
-    color: #f87171;
-}
-
-/* Buttons */
-.editBtn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #6366f1;
-    background: transparent;
-    border: 1px solid #6366f1;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.editBtn:hover {
-    background: rgba(99, 102, 241, 0.1);
-}
-
-/* Toggle */
-.toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    color: #52525b;
-    cursor: pointer;
-    transition: color 0.15s ease;
-}
-
-.toggle:hover {
     color: #71717a;
+}
+
+/* Toggle Switch */
+.toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #27272a;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .toggle.active {
-    color: #4ade80;
+    background: #6366f1;
 }
 
-.toggle:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.toggleKnob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fafafa;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.toggle.active .toggleKnob {
+    transform: translateX(20px);
 }
 
 /* Loading */

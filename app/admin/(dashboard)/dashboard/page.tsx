@@ -130,10 +130,10 @@ export default function DashboardPage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v) => `₦${(v / 1000).toFixed(0)}k`} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v:any) => `₦${(v / 1000).toFixed(0)}k`} />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
-                                        formatter={(value: number) => [formatCurrency(value), 'Revenue']}
+                                        formatter={(value:any) => [formatCurrency(value), 'Revenue']}
                                         labelStyle={{ color: '#a1a1aa' }}
                                     />
                                     <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} />

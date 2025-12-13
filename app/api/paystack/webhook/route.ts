@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import connectDB from '@/lib/db/mongodb';
 import Order from '@/lib/models/order';
+import { notifyOrderPlaced } from '@/lib/services/notifications';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 
@@ -33,21 +34,47 @@ export async function POST(request: Request) {
         // Handle different event types
         switch (event.event) {
             case 'charge.success': {
-                const { reference, metadata } = event.data;
+                const { reference, metadata, customer } = event.data;
                 const orderId = metadata?.orderId;
 
                 if (orderId) {
-                    await Order.findOneAndUpdate(
+                    // Update order status
+                    const order = await Order.findOneAndUpdate(
                         { orderId },
                         {
                             paymentStatus: 'paid',
                             paystackRef: reference,
-                        }
+                        },
+                        { new: true }
                     );
-                    console.log(`Order ${orderId} marked as paid`);
 
-                    // TODO: Send email notification
-                    // TODO: Send push notification to admin
+                    if (order) {
+                        console.log(`Order ${orderId} marked as paid`);
+
+                        // Send notifications (email + push)
+                        try {
+                            await notifyOrderPlaced({
+                                orderId: order.orderId,
+                                customerName: order.userDetails.name,
+                                customerEmail: order.userDetails.email,
+                                items: order.cartItems.map((item: { title: string; quantity: number; price: number }) => ({
+                                    title: item.title,
+                                    quantity: item.quantity,
+                                    price: item.price,
+                                })),
+                                totalAmount: order.totalAmount,
+                                shippingAddress: order.userDetails.address ? {
+                                    address: order.userDetails.address,
+                                    city: order.userDetails.city || '',
+                                    state: order.userDetails.state || '',
+                                    country: order.userDetails.country || 'Nigeria',
+                                } : undefined,
+                            });
+                        } catch (notifyError) {
+                            console.error('Notification error:', notifyError);
+                            // Don't fail the webhook if notification fails
+                        }
+                    }
                 }
                 break;
             }
@@ -62,6 +89,7 @@ export async function POST(request: Request) {
                         { paymentStatus: 'failed' }
                     );
                     console.log(`Order ${orderId} payment failed`);
+                    // Could add failed payment notification here
                 }
                 break;
             }

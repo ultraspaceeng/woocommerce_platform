@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
             // Redirect to admin login
             const loginUrl = new URL('/admin', request.url);
             loginUrl.searchParams.set('redirect', pathname);
-            // return NextResponse.redirect(loginUrl);
+            return NextResponse.redirect(loginUrl);
         }
 
         // Verify token by calling the auth API
@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
             if (!response.ok) {
                 const loginUrl = new URL('/admin', request.url);
                 loginUrl.searchParams.set('redirect', pathname);
-                // return NextResponse.redirect(loginUrl);
+                return NextResponse.redirect(loginUrl);
             }
         } catch {
             // If verification fails, redirect to login

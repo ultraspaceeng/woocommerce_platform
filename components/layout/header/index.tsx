@@ -33,8 +33,8 @@ export default function Header() {
         <header className={styles.header}>
             <div className={styles.container}>
                 <Link href="/" className={styles.logo}>
-                    <span className={styles.logoIcon}>R</span>
-                    Royal Commerce
+                    <span className={styles.logoIcon}>U</span>
+                    UltraSpaceStore
                 </Link>
 
                 <nav className={styles.nav}>

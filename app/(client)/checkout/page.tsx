@@ -9,6 +9,7 @@ import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
 import { useCartStore } from '@/lib/stores/cart-store';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 /**
@@ -49,6 +50,7 @@ interface CartItemForOrder {
 
 export default function CheckoutPage() {
     const { items, getSubtotal, getTotal, clearCart } = useCartStore();
+    const { priceInCurrency }: any = useCurrency(); // Use global currency formatter
     const [verifying, setVerifying] = useState(false);
     const [success, setSuccess] = useState(false);
     const [orderId, setOrderId] = useState('');
@@ -93,8 +95,10 @@ export default function CheckoutPage() {
         setIsFormValid(!!(contactValid && shippingValid));
     }, [formData, items]);
 
-    const formatPrice = (price: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(price);
+    // Use global formatter, but fall back to NGN if needed
+    // NOTE: Paystack ALWAYS requires NGN, so checkout totals shown to Paystack button must be NGN.
+    // However, for display on the page ("Total: $10"), we use format().
+    const formatPrice = (price: number) => priceInCurrency(price);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -513,12 +517,15 @@ export default function CheckoutPage() {
                                 <span>Total</span>
                                 <span>{formatPrice(getTotal())}</span>
                             </div>
+                            <div className={styles.currencyNote} style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', textAlign: 'right' }}>
+                                (Charged in NGN: {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(getTotal())})
+                            </div>
 
                             {/* Paystack Button with react-paystack */}
                             {isFormValid && formData.email ? (
                                 <PaystackButton
                                     {...paystackConfig}
-                                    text={`Pay ${formatPrice(getTotal())}`}
+                                    text={`Pay ${new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(getTotal())}`}
                                     onSuccess={handlePaystackSuccess}
                                     onClose={handlePaystackClose}
                                     onBankTransferConfirmationPending={() => storeOrderDataForVerify()}

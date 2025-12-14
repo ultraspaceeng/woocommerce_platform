@@ -19,7 +19,7 @@ export default function HomePage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response:any = await productsApi.getAll({ limit: 4 });
+                const response: any = await productsApi.getAll({ limit: 4 });
                 setProducts(response.data.data.products);
             } catch (error) {
                 console.error('Failed to fetch products:', error);
@@ -41,7 +41,7 @@ export default function HomePage() {
                     <div className={styles.heroContent}>
                         <span className={styles.heroTag}>Premium E-Commerce</span>
                         <h1 className={styles.heroTitle}>
-                            Shop Like <span className={styles.heroHighlight}>Royalty</span>
+                            Shop <span className={styles.heroHighlight}>Premium</span>
                         </h1>
                         <p className={styles.heroDescription}>
                             Discover our curated collection of premium physical and digital products.
@@ -118,7 +118,7 @@ export default function HomePage() {
                             <span className={styles.sectionTag}>About Us</span>
                             <h3>Your Trusted Shopping Destination</h3>
                             <p>
-                                Royal Commerce is dedicated to providing you with the finest selection
+                                UltraSpaceStore is dedicated to providing you with the finest selection
                                 of physical and digital products. We believe in quality, transparency,
                                 and exceptional customer service.
                             </p>

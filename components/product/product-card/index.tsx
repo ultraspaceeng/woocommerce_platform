@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { FiShoppingCart, FiPackage, FiDownload, FiCheck, FiStar, FiClock } from 'react-icons/fi';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/stores/cart-store';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './product-card.module.css';
 
 interface ProductCardProps {
@@ -53,12 +54,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         ? product.description.slice(0, 60) + (product.description.length > 60 ? '...' : '')
         : null;
 
+    const { priceInCurrency } = useCurrency();
+
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('en-NG', {
-            style: 'currency',
-            currency: 'NGN',
-            minimumFractionDigits: 0,
-        }).format(price);
+        return priceInCurrency(price);
     };
 
     const handleAddToCart = (e: React.MouseEvent) => {

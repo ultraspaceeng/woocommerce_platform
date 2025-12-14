@@ -11,12 +11,12 @@ export default function Footer() {
                 <div className={styles.grid}>
                     <div className={styles.brand}>
                         <Link href="/" className={styles.logo}>
-                            <span className={styles.logoIcon}>R</span>
-                            Royal Commerce
+                            <span className={styles.logoIcon}>U</span>
+                            UltraSpaceStore
                         </Link>
                         <p className={styles.description}>
                             Your premium destination for quality physical and digital products.
-                            Experience shopping like royalty.
+                            Experience premium shopping.
                         </p>
                         <div className={styles.social}>
                             <a href="#" className={styles.socialLink} aria-label="Twitter">
@@ -63,7 +63,7 @@ export default function Footer() {
 
                 <div className={styles.bottom}>
                     <p className={styles.copyright}>
-                        © {currentYear} Royal Commerce. All rights reserved.
+                        © {currentYear} UltraSpaceStore. All rights reserved.
                     </p>
                     <div className={styles.bottomLinks}>
                         <Link href="#">Privacy</Link>

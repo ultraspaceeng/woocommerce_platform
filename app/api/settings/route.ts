@@ -13,7 +13,7 @@ export async function GET() {
         if (!settings) {
             const newSettings = new SystemSettings({
                 maintenanceMode: false,
-                siteName: 'Royal Commerce',
+                siteName: 'UltraSpaceStore',
             });
             await newSettings.save();
             settings = newSettings.toObject();

@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import { ThemeProvider } from '@/lib/context/theme-context';
+import { CurrencyProvider } from '@/lib/hooks/use-currency';
 import CartDrawer from '@/components/cart/cart-drawer';
 
 interface ProvidersProps {
@@ -11,8 +12,10 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
     return (
         <ThemeProvider>
-            {children}
-            <CartDrawer />
+            <CurrencyProvider>
+                {children}
+                <CartDrawer />
+            </CurrencyProvider>
         </ThemeProvider>
     );
 }

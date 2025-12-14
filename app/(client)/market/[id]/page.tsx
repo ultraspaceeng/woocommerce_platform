@@ -10,6 +10,7 @@ import Button from '@/components/ui/button';
 import { Product } from '@/types';
 import { productsApi } from '@/lib/services/api';
 import { useCartStore } from '@/lib/stores/cart-store';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 interface ProductPageProps {
@@ -56,8 +57,9 @@ export default function ProductPage({ params }: ProductPageProps) {
         }
     };
 
-    const formatPrice = (price: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(price);
+    const { priceInCurrency } = useCurrency(); // Use global currency formatter
+
+    const formatPrice = (price: number) => priceInCurrency(price);
 
     if (loading) {
         return (

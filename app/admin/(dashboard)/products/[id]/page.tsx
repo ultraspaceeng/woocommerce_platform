@@ -262,7 +262,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                 // Product images
                 assets: formData.images,
                 // Digital product data
-                digitalFile: formData.type === 'digital' ? formData.digitalFile : undefined,
+                digitalFile: formData.type === 'digital' && formData.digitalFile ? formData.digitalFile : undefined,
                 digitalFileName: formData.type === 'digital' ? formData.digitalFileName : undefined,
             };
 

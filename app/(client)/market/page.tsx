@@ -7,6 +7,7 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import ProductCard from '@/components/product/product-card';
 import Button from '@/components/ui/button';
+import MaintenanceOverlay from '@/components/ui/maintenance-overlay';
 import { Product } from '@/types';
 import { productsApi, categoriesApi } from '@/lib/services/api';
 import { useCurrency } from '@/lib/hooks/use-currency';
@@ -362,6 +363,7 @@ function MarketContent() {
 export default function MarketPage() {
     return (
         <div className={styles.page}>
+            <MaintenanceOverlay />
             <Header />
             <main className={styles.main}>
                 <div className={styles.container}>

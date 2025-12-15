@@ -8,6 +8,7 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
+import MaintenanceOverlay from '@/components/ui/maintenance-overlay';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
@@ -247,6 +248,7 @@ export default function CheckoutPage() {
     if (items.length === 0 && !success) {
         return (
             <div className={styles.page}>
+                <MaintenanceOverlay />
                 <Header />
                 <main className={styles.main}>
                     <div className={styles.container}>
@@ -403,6 +405,7 @@ export default function CheckoutPage() {
     // Checkout form
     return (
         <div className={styles.page}>
+            <MaintenanceOverlay />
             <Header />
             <main className={styles.main}>
                 <div className={styles.container}>

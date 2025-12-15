@@ -6,6 +6,7 @@ import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiPackage } from 'react-icons
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
+import MaintenanceOverlay from '@/components/ui/maintenance-overlay';
 import { useCartStore } from '@/lib/stores/cart-store';
 import styles from './page.module.css';
 
@@ -18,6 +19,7 @@ export default function CartPage() {
     if (items.length === 0) {
         return (
             <div className={styles.page}>
+                <MaintenanceOverlay />
                 <Header />
                 <main className={styles.main}>
                     <div className={styles.container}>
@@ -37,6 +39,7 @@ export default function CartPage() {
 
     return (
         <div className={styles.page}>
+            <MaintenanceOverlay />
             <Header />
             <main className={styles.main}>
                 <div className={styles.container}>

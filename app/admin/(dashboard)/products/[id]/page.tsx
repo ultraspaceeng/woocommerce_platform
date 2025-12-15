@@ -36,6 +36,7 @@ interface ProductFormData {
     // Digital product fields
     digitalFile: string;
     digitalFileName: string;
+    deleteDigitalFile: boolean; // Flag to explicitly delete existing file
     // Product images (base64)
     images: string[];
 }
@@ -72,6 +73,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         seoDescription: '',
         digitalFile: '',
         digitalFileName: '',
+        deleteDigitalFile: false,
         images: [],
     });
 
@@ -116,6 +118,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         digitalFile: product.digitalFile || '',
                         digitalFileName: product.digitalFileName || '',
                         images: product.assets || [],
+                        deleteDigitalFile: false,
                     });
                 } catch (error) {
                     console.error('Failed to fetch product:', error);
@@ -161,6 +164,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
             ...prev,
             digitalFile: '',
             digitalFileName: '',
+            deleteDigitalFile: true, // Mark for explicit deletion
         }));
         if (digitalFileInputRef.current) {
             digitalFileInputRef.current.value = '';
@@ -237,7 +241,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         setSaving(true);
 
         try {
-            const productData = {
+            const productData: Record<string, unknown> = {
                 title: formData.title,
                 description: formData.description,
                 price: parseFloat(formData.price),
@@ -261,10 +265,20 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                 },
                 // Product images
                 assets: formData.images,
-                // Digital product data
-                digitalFile: formData.type === 'digital' && formData.digitalFile ? formData.digitalFile : undefined,
-                digitalFileName: formData.type === 'digital' ? formData.digitalFileName : undefined,
             };
+
+            // Digital product data - only include if it's a new file or explicit deletion
+            if (formData.type === 'digital') {
+                if (formData.deleteDigitalFile) {
+                    // Explicit deletion requested by admin
+                    productData.deleteDigitalFile = true;
+                } else if (formData.digitalFile) {
+                    // New file uploaded
+                    productData.digitalFile = formData.digitalFile;
+                    productData.digitalFileName = formData.digitalFileName;
+                }
+                // If neither flag is set and no new file, don't include - API will preserve existing
+            }
 
             if (isNew) {
                 await productsApi.create(productData);

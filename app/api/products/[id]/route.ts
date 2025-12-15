@@ -55,9 +55,36 @@ export async function PUT(request: Request, { params }: RouteParams) {
         // Note: We don't regenerate slug on update to preserve existing URLs
         // If you need to change the slug, it should be deleted and recreated
 
+        // Remove undefined values from body to prevent overwriting existing data
+        // This is especially important for digitalFile which is excluded from GET responses
+        // for security, but should be preserved unless explicitly replaced
+        const cleanedBody: any = {};
+        for (const [key, value] of Object.entries(body)) {
+            if (value !== undefined) {
+                cleanedBody[key] = value;
+            }
+        }
+
+        // Handle explicit digital file deletion
+        if (cleanedBody.deleteDigitalFile === true) {
+            // Admin explicitly requested to delete the digital file
+            cleanedBody.digitalFile = '';
+            cleanedBody.digitalFileName = '';
+            delete cleanedBody.deleteDigitalFile; // Remove the flag, it's not a schema field
+        } else {
+            // Only update digitalFile/digitalFileName if new values are explicitly provided
+            // This preserves existing files when admin edits other fields
+            if (cleanedBody.digitalFile === '' || cleanedBody.digitalFile === null) {
+                delete cleanedBody.digitalFile;
+            }
+            if (cleanedBody.digitalFileName === '' || cleanedBody.digitalFileName === null) {
+                delete cleanedBody.digitalFileName;
+            }
+        }
+
         const product = await Product.findByIdAndUpdate(
             id,
-            { $set: body },
+            { $set: cleanedBody },
             { new: true, runValidators: true }
         ).lean();
 

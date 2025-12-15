@@ -6,8 +6,8 @@
 
 .adminLayout {
     min-height: 100vh;
-    background-color: #0a0a0b;
-    color: #fafafa;
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
 }
 
 .adminMain {
@@ -33,8 +33,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 1.5rem;
-    background-color: #0a0a0b;
-    border-bottom: 1px solid #27272a;
+    background-color: var(--admin-bg);
+    border-bottom: 1px solid var(--admin-border);
     z-index: 50;
 }
 
@@ -53,15 +53,15 @@
     height: 40px;
     background: transparent;
     border: none;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .menuButton:hover {
-    background-color: #18181b;
-    color: #fafafa;
+    background-color: var(--admin-bg-hover);
+    color: var(--admin-text);
 }
 
 @media (max-width: 1023px) {
@@ -81,7 +81,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #52525b;
+    color: var(--admin-text-dim);
     pointer-events: none;
 }
 
@@ -89,22 +89,22 @@
     width: 100%;
     height: 40px;
     padding: 0 1rem 0 40px;
-    background-color: #18181b;
-    border: 1px solid #27272a;
+    background-color: var(--admin-bg-hover);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
-    color: #fafafa;
+    color: var(--admin-text);
     font-size: 0.875rem;
     transition: all 0.15s ease;
 }
 
 .searchInput::placeholder {
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .searchInput:focus {
     outline: none;
-    border-color: #6366f1;
-    background-color: #111113;
+    border-color: var(--admin-accent);
+    background-color: var(--admin-bg-card);
 }
 
 @media (max-width: 767px) {
@@ -127,7 +127,7 @@
     height: 40px;
     background: transparent;
     border: none;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -135,8 +135,8 @@
 }
 
 .headerButton:hover {
-    background-color: #18181b;
-    color: #fafafa;
+    background-color: var(--admin-bg-hover);
+    color: var(--admin-text);
 }
 
 .notificationDot {
@@ -145,9 +145,9 @@
     right: 10px;
     width: 8px;
     height: 8px;
-    background-color: #ef4444;
+    background-color: var(--admin-error);
     border-radius: 50%;
-    border: 2px solid #0a0a0b;
+    border: 2px solid var(--admin-bg);
 }
 
 /* Content */

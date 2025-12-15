@@ -35,13 +35,13 @@
 .pageTitle {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #fafafa;
+    color: var(--admin-text);
     margin-bottom: 0.25rem;
 }
 
 .pageSubtitle {
     font-size: 0.9375rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }
 
 .headerActions {
@@ -55,19 +55,19 @@
     gap: 0.5rem;
     padding: 0.625rem 1rem;
     background: transparent;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     font-size: 0.875rem;
     font-weight: 500;
-    border: 1px solid #27272a;
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .secondaryBtn:hover {
-    background: #18181b;
-    border-color: #3f3f46;
-    color: #fafafa;
+    background: var(--admin-bg-hover);
+    border-color: var(--admin-border-light);
+    color: var(--admin-text);
 }
 
 /* Stats Grid */
@@ -85,8 +85,8 @@
 }
 
 .statCard {
-    background: #111113;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-card);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     padding: 1.25rem;
     display: flex;
@@ -99,30 +99,30 @@
 .statIcon {
     width: 24px;
     height: 24px;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }
 
 .statValue {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 .statLabel {
     font-size: 0.75rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }
 
 .statWarning .statIcon {
-    color: #facc15;
+    color: var(--admin-warning);
 }
 
 .statInfo .statIcon {
-    color: #60a5fa;
+    color: var(--admin-info);
 }
 
 .statSuccess .statIcon {
-    color: #4ade80;
+    color: var(--admin-success-text);
 }
 
 /* Toolbar */
@@ -146,7 +146,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #52525b;
+    color: var(--admin-text-dim);
     pointer-events: none;
 }
 
@@ -154,22 +154,22 @@
     width: 100%;
     height: 40px;
     padding: 0 1rem 0 40px;
-    background-color: #18181b;
-    border: 1px solid #27272a;
+    background-color: var(--admin-bg-hover);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
-    color: #fafafa;
+    color: var(--admin-text);
     font-size: 0.875rem;
     transition: all 0.15s ease;
 }
 
 .searchInput::placeholder {
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .searchInput:focus {
     outline: none;
-    border-color: #6366f1;
-    background-color: #111113;
+    border-color: var(--admin-accent);
+    background-color: var(--admin-bg-card);
 }
 
 .filters {
@@ -179,10 +179,10 @@
 
 .filterSelect {
     padding: 0.5rem 2rem 0.5rem 0.75rem;
-    background: #18181b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E") no-repeat right 8px center;
-    color: #a1a1aa;
+    background: var(--admin-bg-hover) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E") no-repeat right 8px center;
+    color: var(--admin-text-secondary);
     font-size: 0.8125rem;
-    border: 1px solid #27272a;
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     cursor: pointer;
     appearance: none;
@@ -190,13 +190,13 @@
 
 .filterSelect:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: var(--admin-accent);
 }
 
 /* Table Card */
 .tableCard {
-    background: #111113;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-card);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -210,16 +210,16 @@
 .table td {
     padding: 0.875rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--admin-border);
 }
 
 .table th {
-    background: #0a0a0b;
+    background: var(--admin-bg);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .table tbody tr {
@@ -227,7 +227,7 @@
 }
 
 .table tbody tr:hover {
-    background: #18181b;
+    background: var(--admin-bg-hover);
 }
 
 .table tbody tr:last-child td {
@@ -243,12 +243,12 @@
 .orderId {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 .itemCount {
     font-size: 0.75rem;
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .customerCell {
@@ -258,23 +258,23 @@
 
 .customerName {
     font-size: 0.875rem;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 .customerEmail {
     font-size: 0.75rem;
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .dateCell {
     font-size: 0.8125rem;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
 }
 
 .totalCell {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 /* Badge */
@@ -288,28 +288,28 @@
 }
 
 .badge.success {
-    background: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
+    background: var(--admin-success-bg);
+    color: var(--admin-success-text);
 }
 
 .badge.warning {
-    background: rgba(234, 179, 8, 0.15);
-    color: #facc15;
+    background: var(--admin-warning-bg);
+    color: var(--admin-warning);
 }
 
 .badge.error {
-    background: rgba(239, 68, 68, 0.15);
-    color: #f87171;
+    background: var(--admin-error-bg);
+    color: var(--admin-error);
 }
 
 .badge.info {
-    background: rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
+    background: var(--admin-info-bg);
+    color: var(--admin-info);
 }
 
 .badge.purple {
-    background: rgba(139, 92, 246, 0.15);
-    color: #a78bfa;
+    background: var(--admin-purple-bg);
+    color: var(--admin-purple-text);
 }
 
 /* Fulfillment Select */
@@ -327,23 +327,23 @@
 }
 
 .fulfillmentSelect.success {
-    background-color: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
+    background-color: var(--admin-success-bg);
+    color: var(--admin-success-text);
 }
 
 .fulfillmentSelect.warning {
-    background-color: rgba(234, 179, 8, 0.15);
-    color: #facc15;
+    background-color: var(--admin-warning-bg);
+    color: var(--admin-warning);
 }
 
 .fulfillmentSelect.info {
-    background-color: rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
+    background-color: var(--admin-info-bg);
+    color: var(--admin-info);
 }
 
 .fulfillmentSelect.purple {
-    background-color: rgba(139, 92, 246, 0.15);
-    color: #a78bfa;
+    background-color: var(--admin-purple-bg);
+    color: var(--admin-purple-text);
 }
 
 /* Actions */
@@ -360,7 +360,7 @@
     height: 32px;
     background: transparent;
     border: none;
-    color: #71717a;
+    color: var(--admin-text-muted);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -368,8 +368,8 @@
 }
 
 .actionBtn:hover {
-    background: #27272a;
-    color: #fafafa;
+    background: var(--admin-border);
+    color: var(--admin-text);
 }
 
 /* Empty & Loading */
@@ -379,13 +379,13 @@
     align-items: center;
     justify-content: center;
     padding: 4rem 2rem;
-    color: #52525b;
+    color: var(--admin-text-dim);
     text-align: center;
 }
 
 .empty h3 {
     font-size: 1.125rem;
-    color: #fafafa;
+    color: var(--admin-text);
     margin: 1rem 0 0.5rem;
 }
 
@@ -394,5 +394,5 @@
     align-items: center;
     justify-content: center;
     min-height: 300px;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }

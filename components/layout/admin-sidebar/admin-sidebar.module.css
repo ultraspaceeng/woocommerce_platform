@@ -5,8 +5,8 @@
     left: 0;
     bottom: 0;
     width: 260px;
-    background-color: #0a0a0b;
-    border-right: 1px solid #27272a;
+    background-color: var(--admin-bg);
+    border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
     z-index: 100;
@@ -25,7 +25,7 @@
 
 .sidebarHeader {
     padding: .62rem;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--admin-border);
 }
 
 .sidebarLogo {
@@ -40,7 +40,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: var(--admin-gradient-primary);
     color: white;
     border-radius: 10px;
     font-weight: 700;
@@ -51,12 +51,12 @@
 .logoText {
     font-size: 1rem;
     font-weight: 600;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 .logoSubtext {
     font-size: 0.6875rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }
@@ -76,7 +76,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #52525b;
+    color: var(--admin-text-dim);
     padding: 0.5rem 0.75rem;
     margin-bottom: 0.25rem;
 }
@@ -86,7 +86,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.625rem 0.75rem;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     text-decoration: none;
     border-radius: 8px;
     transition: all 0.15s ease;
@@ -96,13 +96,13 @@
 }
 
 .navLink:hover {
-    background-color: #18181b;
-    color: #fafafa;
+    background-color: var(--admin-bg-hover);
+    color: var(--admin-text);
 }
 
 .navLink.active {
-    background-color: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
+    background-color: var(--admin-accent-light);
+    color: var(--admin-accent);
 }
 
 .navLinkIcon {
@@ -119,14 +119,14 @@
     padding: 2px 8px;
     font-size: 0.625rem;
     font-weight: 600;
-    background-color: #6366f1;
+    background-color: var(--admin-accent);
     color: white;
     border-radius: 9999px;
 }
 
 .sidebarFooter {
     padding: 1rem;
-    border-top: 1px solid #27272a;
+    border-top: 1px solid var(--admin-border);
 }
 
 .userCard {
@@ -143,9 +143,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #27272a;
+    background-color: var(--admin-bg-active);
     border-radius: 9999px;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     font-size: 0.875rem;
     font-weight: 600;
     flex-shrink: 0;
@@ -159,7 +159,7 @@
 .userName {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #fafafa;
+    color: var(--admin-text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -167,7 +167,7 @@
 
 .userRole {
     font-size: 0.75rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -181,7 +181,7 @@
     height: 32px;
     background: transparent;
     border: none;
-    color: #71717a;
+    color: var(--admin-text-muted);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -189,6 +189,6 @@
 }
 
 .logoutBtn:hover {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background-color: var(--admin-error-bg);
+    color: var(--admin-error);
 }

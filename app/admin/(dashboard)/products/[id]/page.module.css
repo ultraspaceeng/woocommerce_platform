@@ -37,29 +37,29 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: #18181b;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-hover);
+    border: 1px solid var(--admin-border);
     border-radius: 10px;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     text-decoration: none;
     transition: all 0.15s ease;
 }
 
 .backBtn:hover {
-    background: #27272a;
-    color: #fafafa;
+    background: var(--admin-border);
+    color: var(--admin-text);
 }
 
 .pageTitle {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #fafafa;
+    color: var(--admin-text);
     margin-bottom: 0.125rem;
 }
 
 .pageSubtitle {
     font-size: 0.875rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }
 
 .headerActions {
@@ -70,8 +70,8 @@
 
 .statusToggle {
     display: flex;
-    background: #18181b;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-hover);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     padding: 4px;
 }
@@ -80,7 +80,7 @@
     padding: 0.5rem 1rem;
     font-size: 0.8125rem;
     font-weight: 500;
-    color: #71717a;
+    color: var(--admin-text-muted);
     background: transparent;
     border: none;
     border-radius: 6px;
@@ -89,8 +89,8 @@
 }
 
 .statusBtn.active {
-    background: #27272a;
-    color: #fafafa;
+    background: var(--admin-border);
+    color: var(--admin-text);
 }
 
 /* Tabs */
@@ -98,7 +98,7 @@
     display: flex;
     gap: 0.25rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--admin-border);
     margin-bottom: 1.5rem;
     overflow-x: auto;
 }
@@ -110,7 +110,7 @@
     padding: 0.625rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #71717a;
+    color: var(--admin-text-muted);
     background: transparent;
     border: none;
     border-radius: 8px;
@@ -120,13 +120,13 @@
 }
 
 .tab:hover {
-    background: #18181b;
-    color: #a1a1aa;
+    background: var(--admin-bg-hover);
+    color: var(--admin-text-secondary);
 }
 
 .tab.active {
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
+    background: var(--admin-accent-light);
+    color: var(--admin-accent-hover);
 }
 
 /* Form Content */
@@ -148,8 +148,8 @@
 
 /* Form Card */
 .formCard {
-    background: #111113;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-card);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -165,7 +165,7 @@
 .cardTitle {
     font-size: 1rem;
     font-weight: 600;
-    color: #fafafa;
+    color: var(--admin-text);
     margin-bottom: 1.25rem;
 }
 
@@ -189,13 +189,13 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     margin-bottom: 0.5rem;
 }
 
 .fieldDescription {
     font-size: 0.8125rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
     margin-bottom: 1rem;
 }
 
@@ -209,10 +209,10 @@
     width: 100%;
     height: 44px;
     padding: 0 2.5rem 0 1rem;
-    background: #18181b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E") no-repeat right 12px center;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-hover) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
-    color: #fafafa;
+    color: var(--admin-text);
     font-size: 0.875rem;
     appearance: none;
     cursor: pointer;
@@ -221,13 +221,13 @@
 
 .select:focus {
     outline: none;
-    border-color: #6366f1;
-    background-color: #111113;
+    border-color: var(--admin-accent);
+    background-color: var(--admin-bg-card);
 }
 
 .select option {
-    background: #18181b;
-    color: #fafafa;
+    background: var(--admin-bg-hover);
+    color: var(--admin-text);
 }
 
 /* Type Selector */
@@ -247,20 +247,20 @@
     align-items: center;
     gap: 0.5rem;
     padding: 1.25rem;
-    background: #18181b;
-    border: 2px solid #27272a;
+    background: var(--admin-bg-hover);
+    border: 2px solid var(--admin-border);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .typeOption:hover {
-    border-color: #3f3f46;
+    border-color: var(--admin-border-light);
 }
 
 .typeOption.selected {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: #6366f1;
+    background: var(--admin-accent-light);
+    border-color: var(--admin-accent);
 }
 
 .typeIcon {
@@ -270,7 +270,7 @@
 .typeLabel {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 /* Media Upload */
@@ -284,28 +284,28 @@
     align-items: center;
     justify-content: center;
     padding: 3rem 2rem;
-    border: 2px dashed #27272a;
+    border: 2px dashed var(--admin-border);
     border-radius: 12px;
-    color: #52525b;
+    color: var(--admin-text-dim);
     text-align: center;
     transition: all 0.15s ease;
     cursor: pointer;
 }
 
 .uploadZone:hover {
-    border-color: #3f3f46;
-    background: #18181b;
+    border-color: var(--admin-border-light);
+    background: var(--admin-bg-hover);
 }
 
 .uploadZone p {
     margin: 1rem 0 0.25rem;
     font-size: 0.9375rem;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
 }
 
 .uploadZone span {
     font-size: 0.8125rem;
-    color: #52525b;
+    color: var(--admin-text-dim);
     margin-bottom: 1rem;
 }
 
@@ -313,9 +313,9 @@
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #6366f1;
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid #6366f1;
+    color: var(--admin-accent);
+    background: var(--admin-accent-light);
+    border: 1px solid var(--admin-accent);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -327,7 +327,7 @@
 
 .mediaNote {
     font-size: 0.75rem;
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 /* Image Gallery */
@@ -343,8 +343,8 @@
     aspect-ratio: 1;
     border-radius: 10px;
     overflow: hidden;
-    border: 2px solid #27272a;
-    background: #18181b;
+    border: 2px solid var(--admin-border);
+    background: var(--admin-bg-hover);
 }
 
 .imageItem img {
@@ -376,7 +376,7 @@
 }
 
 .removeImageBtn:hover {
-    background: #ef4444;
+    background: var(--admin-error);
 }
 
 .mainBadge {
@@ -398,13 +398,13 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    background: #18181b;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-hover);
+    border: 1px solid var(--admin-border);
     border-radius: 10px;
 }
 
 .uploadedFile svg {
-    color: #6366f1;
+    color: var(--admin-accent);
 }
 
 .fileInfo {
@@ -417,12 +417,12 @@
 .fileName {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 .fileSize {
     font-size: 0.75rem;
-    color: #4ade80;
+    color: var(--admin-success-text);
 }
 
 .removeFileBtn {
@@ -433,15 +433,15 @@
     height: 32px;
     background: transparent;
     border: none;
-    color: #71717a;
+    color: var(--admin-text-muted);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .removeFileBtn:hover {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    background: var(--admin-error-bg);
+    color: var(--admin-error);
 }
 
 /* Options */
@@ -452,22 +452,22 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;
     font-weight: 500;
-    color: #6366f1;
+    color: var(--admin-accent);
     background: transparent;
-    border: 1px solid #6366f1;
+    border: 1px solid var(--admin-accent);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .addBtn:hover {
-    background: rgba(99, 102, 241, 0.1);
+    background: var(--admin-accent-light);
 }
 
 .emptyOptions {
     padding: 2rem;
     text-align: center;
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .optionsList {
@@ -491,7 +491,7 @@
     height: 40px;
     background: transparent;
     border: none;
-    color: #71717a;
+    color: var(--admin-text-muted);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -499,34 +499,34 @@
 }
 
 .removeBtn:hover {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    background: var(--admin-error-bg);
+    color: var(--admin-error);
 }
 
 /* SEO Preview */
 .seoPreview {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #27272a;
+    border-top: 1px solid var(--admin-border);
 }
 
 .seoPreview h4 {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #71717a;
+    color: var(--admin-text-muted);
     margin-bottom: 0.75rem;
 }
 
 .previewCard {
     padding: 1rem;
-    background: #0a0a0b;
-    border: 1px solid #27272a;
+    background: var(--admin-bg);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
 }
 
 .previewTitle {
     font-size: 1.125rem;
-    color: #60a5fa;
+    color: var(--admin-info-text);
     margin-bottom: 0.25rem;
     white-space: nowrap;
     overflow: hidden;
@@ -535,16 +535,17 @@
 
 .previewUrl {
     font-size: 0.8125rem;
-    color: #4ade80;
+    color: var(--admin-success-text);
     margin-bottom: 0.375rem;
 }
 
 .previewDescription {
     font-size: 0.875rem;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -555,5 +556,5 @@
     align-items: center;
     justify-content: center;
     min-height: 400px;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }

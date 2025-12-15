@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FiLock, FiMail, FiArrowRight } from 'react-icons/fi';
 import { useAdminStore } from '@/lib/stores/admin-store';
 import { authApi } from '@/lib/services/api';
+import './admin.css';
 import styles from './page.module.css';
 
 export default function AdminLoginPage() {

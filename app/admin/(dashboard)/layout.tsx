@@ -4,13 +4,14 @@ import { ReactNode, useState } from 'react';
 import { FiMenu, FiBell, FiSearch } from 'react-icons/fi';
 import AdminSidebar from '@/components/layout/admin-sidebar';
 import ThemeToggle from '@/components/ui/theme-toggle';
+import '../admin.css';
 import styles from './layout.module.css';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <div className={styles.adminLayout}>
+        <div className={`${styles.adminLayout} adminLayout`}>
             <AdminSidebar isOpen={sidebarOpen} />
 
             <div className={styles.adminMain}>

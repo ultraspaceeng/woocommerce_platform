@@ -111,4 +111,4 @@ export interface ApiResponse<T> {
 }
 
 // Theme Types
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'system';

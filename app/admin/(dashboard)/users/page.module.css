@@ -35,13 +35,13 @@
 .pageTitle {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #fafafa;
+    color: var(--admin-text);
     margin-bottom: 0.25rem;
 }
 
 .pageSubtitle {
     font-size: 0.9375rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }
 
 .headerActions {
@@ -55,19 +55,19 @@
     gap: 0.5rem;
     padding: 0.625rem 1rem;
     background: transparent;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     font-size: 0.875rem;
     font-weight: 500;
-    border: 1px solid #27272a;
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .secondaryBtn:hover {
-    background: #18181b;
-    border-color: #3f3f46;
-    color: #fafafa;
+    background: var(--admin-bg-hover);
+    border-color: var(--admin-border-light);
+    color: var(--admin-text);
 }
 
 /* Stats Grid */
@@ -79,8 +79,8 @@
 }
 
 .statCard {
-    background: #111113;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-card);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     padding: 1.25rem;
     display: flex;
@@ -94,20 +94,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
+    background: var(--admin-accent-light);
+    color: var(--admin-accent-hover);
     border-radius: 10px;
 }
 
 .statValue {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 .statLabel {
     font-size: 0.8125rem;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }
 
 /* Toolbar */
@@ -131,7 +131,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #52525b;
+    color: var(--admin-text-dim);
     pointer-events: none;
 }
 
@@ -139,28 +139,28 @@
     width: 100%;
     height: 40px;
     padding: 0 1rem 0 40px;
-    background-color: #18181b;
-    border: 1px solid #27272a;
+    background-color: var(--admin-bg-hover);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
-    color: #fafafa;
+    color: var(--admin-text);
     font-size: 0.875rem;
     transition: all 0.15s ease;
 }
 
 .searchInput::placeholder {
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .searchInput:focus {
     outline: none;
-    border-color: #6366f1;
-    background-color: #111113;
+    border-color: var(--admin-accent);
+    background-color: var(--admin-bg-card);
 }
 
 /* Table Card */
 .tableCard {
-    background: #111113;
-    border: 1px solid #27272a;
+    background: var(--admin-bg-card);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -176,16 +176,16 @@
 .table td {
     padding: 0.875rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--admin-border);
 }
 
 .table th {
-    background: #0a0a0b;
+    background: var(--admin-bg);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 .table tbody tr {
@@ -193,7 +193,7 @@
 }
 
 .table tbody tr:hover {
-    background: #18181b;
+    background: var(--admin-bg-hover);
 }
 
 .table tbody tr:last-child td {
@@ -213,7 +213,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: var(--admin-gradient-primary);
     color: white;
     font-size: 0.875rem;
     font-weight: 600;
@@ -223,7 +223,7 @@
 .customerName {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #fafafa;
+    color: var(--admin-text);
 }
 
 .emailCell,
@@ -233,13 +233,13 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.875rem;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
 }
 
 .emailCell svg,
 .ordersCell svg,
 .dateCell svg {
-    color: #52525b;
+    color: var(--admin-text-dim);
 }
 
 /* Empty & Loading */
@@ -249,13 +249,13 @@
     align-items: center;
     justify-content: center;
     padding: 4rem 2rem;
-    color: #52525b;
+    color: var(--admin-text-dim);
     text-align: center;
 }
 
 .empty h3 {
     font-size: 1.125rem;
-    color: #fafafa;
+    color: var(--admin-text);
     margin: 1rem 0 0.5rem;
 }
 
@@ -264,5 +264,5 @@
     align-items: center;
     justify-content: center;
     min-height: 300px;
-    color: #71717a;
+    color: var(--admin-text-muted);
 }

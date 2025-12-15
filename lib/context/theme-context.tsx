@@ -22,23 +22,41 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     useEffect(() => {
         setMounted(true);
-        const savedTheme = localStorage.getItem('royal-commerce-theme') as Theme;
-        if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
-            setThemeState(savedTheme);
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
+        const savedTheme = (localStorage.getItem('royal-commerce-theme') as Theme) || 'system';
+        setThemeState(savedTheme);
+        applyTheme(savedTheme);
     }, []);
+
+    const applyTheme = (themeValue: Theme) => {
+        const root = document.documentElement;
+
+        if (themeValue === 'system') {
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            root.setAttribute('data-theme', systemTheme);
+        } else {
+            root.setAttribute('data-theme', themeValue);
+        }
+    };
 
     const setTheme = (newTheme: Theme) => {
         setThemeState(newTheme);
         localStorage.setItem('royal-commerce-theme', newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
+        applyTheme(newTheme);
     };
 
+    useEffect(() => {
+        if (theme === 'system') {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            const handleChange = () => applyTheme('system');
+
+            mediaQuery.addEventListener('change', handleChange);
+            return () => mediaQuery.removeEventListener('change', handleChange);
+        }
+    }, [theme]);
+
     const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
+        // Toggle logic: dark -> light -> system -> dark
+        const newTheme = theme === 'dark' ? 'light' : theme === 'light' ? 'system' : 'dark';
         setTheme(newTheme);
     };
 

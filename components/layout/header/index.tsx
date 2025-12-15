@@ -2,21 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { FiShoppingCart, FiMenu, FiX } from 'react-icons/fi';
-import ThemeToggle from '@/components/ui/theme-toggle';
+import { usePathname, useRouter } from 'next/navigation';
+import { FiShoppingCart, FiMenu, FiX, FiSearch } from 'react-icons/fi';
 import { useCartStore } from '@/lib/stores/cart-store';
 import styles from './header.module.css';
 
 const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/market', label: 'Market' },
+    { href: '/market', label: 'Shop' },
     { href: '/order-tracking', label: 'Track Order' },
 ];
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     // Prevent hydration mismatch by only showing cart count after mount
     const [hasMounted, setHasMounted] = useState(false);
     const itemCount = useCartStore((state) => state.getItemCount());
@@ -29,18 +29,26 @@ export default function Header() {
     const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
     const closeMobileMenu = () => setMobileMenuOpen(false);
 
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/market?search=${encodeURIComponent(searchQuery)}`);
+            closeMobileMenu();
+        }
+    };
+
     return (
         <header className={styles.header}>
             <div className={styles.container}>
                 <Link href="/" className={styles.logo}>
                     <span className={styles.logoIcon}>U</span>
-                    UltraSpaceStore
+                    UltraSpace
                 </Link>
 
                 <nav className={styles.nav}>
-                    {navLinks.map((link) => (
+                    {navLinks.map((link, index) => (
                         <Link
-                            key={link.href}
+                            key={`${link.href}-${index}`}
                             href={link.href}
                             className={`${styles.navLink} ${hasMounted && pathname === link.href ? styles.active : ''}`}
                         >
@@ -49,11 +57,22 @@ export default function Header() {
                     ))}
                 </nav>
 
-                <div className={styles.actions}>
-                    {/* <ThemeToggle /> */}
+                <div className={styles.searchContainer}>
+                    <form className={styles.searchForm} onSubmit={handleSearch}>
+                        <FiSearch className={styles.searchIcon} size={20} />
+                        <input
+                            type="text"
+                            placeholder="What are you looking for?"
+                            className={styles.searchInput}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </form>
+                </div>
 
+                <div className={styles.actions}>
                     <button
-                        className={styles.cartButton}
+                        className={styles.iconButton}
                         onClick={toggleCart}
                         aria-label="Open cart"
                     >
@@ -77,9 +96,21 @@ export default function Header() {
 
             {mobileMenuOpen && (
                 <nav className={styles.mobileMenu}>
-                    {navLinks.map((link) => (
+                    <div className={styles.mobileSearch}>
+                        <form className={styles.searchForm} onSubmit={handleSearch}>
+                            <FiSearch className={styles.searchIcon} size={20} />
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                className={styles.searchInput}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </form>
+                    </div>
+                    {navLinks.map((link, index) => (
                         <Link
-                            key={link.href}
+                            key={`mobile-${link.href}-${index}`}
                             href={link.href}
                             className={styles.mobileNavLink}
                             onClick={closeMobileMenu}

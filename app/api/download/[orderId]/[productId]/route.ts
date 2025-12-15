@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import Order from '@/lib/models/order';
 import Product from '@/lib/models/product';
+import Analytics from '@/lib/models/analytics';
 
 interface RouteParams {
     params: Promise<{
@@ -58,6 +59,14 @@ export async function GET(request: Request, { params }: RouteParams) {
                 { status: 500 }
             );
         }
+
+        // Track download asynchronously (don't block response)
+        const today = new Date().toISOString().split('T')[0];
+        Analytics.findOneAndUpdate(
+            { date: today },
+            { $inc: { downloads: 1 } },
+            { upsert: true }
+        ).catch(err => console.error('Download tracking failed:', err));
 
         const buffer = Buffer.from(fileData, 'base64');
         const filename = product.digitalFileName || 'download.file';

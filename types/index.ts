@@ -30,6 +30,7 @@ export interface Product {
   seoData: ProductSeoData;
   createdAt: string;
   updatedAt: string;
+  brand?: string;
 }
 
 // Order Types

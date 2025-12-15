@@ -11,6 +11,7 @@ import ProductCard from '@/components/product/product-card';
 import { Product } from '@/types';
 import { productsApi } from '@/lib/services/api';
 import styles from './page.module.css';
+import PageTracker from '@/components/analytics/page-tracker';
 
 export default function HomePage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -33,6 +34,7 @@ export default function HomePage() {
 
     return (
         <div className={styles.page}>
+            <PageTracker />
             <Header />
 
             {/* Hero Section */}

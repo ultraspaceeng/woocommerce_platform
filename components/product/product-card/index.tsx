@@ -49,25 +49,14 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     const optionsPreview = getOptionsPreview();
 
-    // Truncate description for preview
-    const descriptionPreview = product.description
-        ? product.description.slice(0, 60) + (product.description.length > 60 ? '...' : '')
-        : null;
-
-    const { priceInCurrency }:any = useCurrency();
-
-    const formatPrice = (price: number) => {
-        return priceInCurrency(price);
-    };
+    const { priceInCurrency }: any = useCurrency();
+    const formatPrice = (price: number) => priceInCurrency(price);
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (availableToAdd > 0) {
-            addItem(product, 1);
-        }
+        if (availableToAdd > 0) addItem(product, 1);
     };
-
 
     const productLink = `/market/${product.slug || product._id}`;
 
@@ -101,7 +90,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     return (
         <article className={styles.card}>
             <Link href={productLink} className={styles.cardLink}>
+                {/* Image Section */}
                 <div className={styles.imageWrapper}>
+                    {/* Top Left: New Badge */}
+                    {isNew && <span className={styles.newBadge}>NEW ARRIVAL</span>}
+
+                    {/* Main Image */}
                     {product.assets && product.assets.length > 0 ? (
                         <Image
                             src={product.assets[0]}
@@ -111,114 +105,79 @@ export default function ProductCard({ product }: ProductCardProps) {
                             className={styles.image}
                         />
                     ) : (
-                        <div className={styles.placeholder}>
-                            <FiPackage />
-                        </div>
+                        <div className={styles.placeholder}><FiPackage /></div>
                     )}
 
-                    {/* Badges Container */}
-                    <div className={styles.badgeContainer}>
-                        {isNew && (
-                            <span className={`${styles.badge} ${styles.newBadge}`}>
-                                <FiClock size={9} />
-                                New
-                            </span>
-                        )}
-
-                        {isDigital && (
-                            <span className={`${styles.badge} ${styles.digitalBadge}`}>
-                                <FiDownload size={9} />
-                                Digital
-                            </span>
-                        )}
-
-                        {hasDiscount && (
-                            <span className={`${styles.badge} ${styles.saleBadge}`}>
-                                -{discountPercentage}%
-                            </span>
-                        )}
-
-                        {isOutOfStock && (
-                            <span className={`${styles.badge} ${styles.outOfStockBadge}`}>
-                                Sold Out
-                            </span>
-                        )}
-                    </div>
-
-                    {/* Quick View Overlay */}
-                    <div className={styles.overlay}>
-                        <span className={styles.viewText}>View Details</span>
+                    {/* Bottom Left: Tag/Type Badge */}
+                    <div className={styles.statusBadgeWrapper}>
+                        <span className={`${styles.statusBadge} ${isDigital ? styles.digitalBadge : styles.inStockBadge}`}>
+                            <span className={styles.statusDot}></span>
+                            {isDigital ? 'DIGITAL DOWNLOAD' : (product.category || 'PHYSICAL GOOD')}
+                        </span>
                     </div>
                 </div>
 
+                {/* Content Section */}
                 <div className={styles.content}>
-                    {/* Category & Type Row */}
+                    {/* Brand & Stock Row */}
                     <div className={styles.metaRow}>
-                        {product.category && (
-                            <span className={styles.category}>{product.category}</span>
-                        )}
-                        {product.inventory?.sku && (
-                            <span className={styles.sku}>SKU: {product.inventory.sku}</span>
-                        )}
-                    </div>
-
-                    <h3 className={styles.title}>{product.title}</h3>
-
-                    {/* Description Preview */}
-                    {descriptionPreview && (
-                        <p className={styles.description}>{descriptionPreview}</p>
-                    )}
-
-                    {/* Options Preview */}
-                    {optionsPreview && (optionsPreview.sizes || optionsPreview.colors) && (
-                        <div className={styles.optionsRow}>
-                            {optionsPreview.colors && optionsPreview.colors.values.length > 0 && (
-                                <div className={styles.colorOptions}>
-                                    {optionsPreview.colors.values.slice(0, 4).map((color, i) => (
-                                        <span
-                                            key={i}
-                                            className={styles.colorDot}
-                                            style={{ backgroundColor: color.toLowerCase() }}
-                                            title={color}
-                                        />
-                                    ))}
-                                    {optionsPreview.colors.values.length > 4 && (
-                                        <span className={styles.moreOptions}>
-                                            +{optionsPreview.colors.values.length - 4}
-                                        </span>
-                                    )}
-                                </div>
-                            )}
-                            {optionsPreview.sizes && optionsPreview.sizes.values.length > 0 && (
-                                <span className={styles.sizeInfo}>
-                                    {optionsPreview.sizes.values.length} sizes
-                                </span>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Price Row */}
-                    <div className={styles.priceRow}>
-                        <div className={styles.priceGroup}>
-                            <span className={styles.price}>{formatPrice(displayPrice!)}</span>
-                            {hasDiscount && (
-                                <span className={styles.originalPrice}>
-                                    {formatPrice(product.price)}
-                                </span>
-                            )}
-                        </div>
-                        {hasDiscount && (
-                            <span className={styles.savings}>
-                                Save {formatPrice(product.price - product.discountedPrice!)}
+                        <span className={styles.brand}>
+                            {product.brand || 'ULTRASPACE'}
+                        </span>
+                        {/* Show Stock for Physical Products */}
+                        {!isDigital && totalStock > 0 && (
+                            <span className={styles.stockCount}>
+                                {totalStock} in stock
                             </span>
                         )}
                     </div>
 
-                    {/* Stock indicator for physical products */}
-                    {product.type === 'physical' && product.inventory?.stock > 0 && product.inventory.stock <= 5 && (
-                        <span className={styles.lowStock}>
-                            🔥 Only {product.inventory.stock} left!
-                        </span>
+                    {/* Title */}
+                    <h3 className={styles.title}>{product.title}</h3>
+
+                    {/* Price */}
+                    <div className={styles.priceRow}>
+                        <span className={styles.price}>{formatPrice(displayPrice!)}</span>
+                        {hasDiscount && (
+                            <>
+                                <span className={styles.originalPrice}>{formatPrice(product.price)}</span>
+                                <span className={styles.discountBadge}>-{discountPercentage}%</span>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Options Preview (Colors & Sizes) */}
+                    {(optionsPreview?.colors || optionsPreview?.sizes) && (
+                        <div className={styles.optionsContainer}>
+                            {optionsPreview.colors && (
+                                <div className={styles.optionGroup}>
+                                    <span className={styles.optionLabel}>Color:</span>
+                                    <div className={styles.colorSwatches}>
+                                        {optionsPreview.colors.values.slice(0, 3).map((color, i) => (
+                                            <span
+                                                key={i}
+                                                className={styles.swatch}
+                                                style={{ backgroundColor: color.toLowerCase() }}
+                                                title={color}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {optionsPreview.sizes && (
+                                <div className={styles.optionGroup}>
+                                    <span className={styles.optionLabel}>Size:</span>
+                                    <div className={styles.sizeBadges}>
+                                        {optionsPreview.sizes.values.slice(0, 3).map((size, i) => (
+                                            <span key={i} className={styles.sizeBadge}>{size}</span>
+                                        ))}
+                                        {optionsPreview.sizes.values.length > 3 && (
+                                            <span className={styles.moreSizes}>+{optionsPreview.sizes.values.length - 3}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             </Link>

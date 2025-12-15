@@ -98,3 +98,8 @@ export const usersApi = {
     delete: (id: string) => api.delete(`/users/${id}`),
 };
 
+export const analyticsApi = {
+    getStats: () => api.get('/analytics/stats'),
+    track: (type: 'view' | 'download') => api.post('/analytics/track', { type }),
+};
+

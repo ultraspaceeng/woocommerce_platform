@@ -5,34 +5,37 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {
     FiDollarSign, FiShoppingCart, FiPackage, FiUsers,
-    FiArrowRight, FiClock
+    FiArrowRight, FiClock, FiEye, FiDownload
 } from 'react-icons/fi';
-import { dashboardApi, ordersApi } from '@/lib/services/api';
+import { dashboardApi, ordersApi, analyticsApi } from '@/lib/services/api';
 import { DashboardMetrics, Order } from '@/types';
 import styles from './page.module.css';
 
 // Dynamic import Recharts
-const BarChart:any = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
-const Bar:any = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const XAxis:any = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
-const YAxis:any = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
-const Tooltip:any = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
-const ResponsiveContainer:any = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const BarChart: any = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar: any = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis: any = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis: any = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip: any = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer: any = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
 
 export default function DashboardPage() {
     const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
     const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+    const [stats, setStats] = useState<{ totalViews: number; totalDownloads: number } | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [metricsRes, ordersRes] = await Promise.all([
+                const [metricsRes, ordersRes, statsRes] = await Promise.all([
                     dashboardApi.getMetrics(),
                     ordersApi.getAll({ limit: 5 } as Parameters<typeof ordersApi.getAll>[0]),
+                    analyticsApi.getStats(),
                 ]);
                 setMetrics(metricsRes.data.data);
                 setRecentOrders(ordersRes.data.data.orders || []);
+                setStats(statsRes.data.data);
             } catch (error) {
                 console.error('Failed to fetch dashboard data:', error);
             } finally {
@@ -115,6 +118,26 @@ export default function DashboardPage() {
                     <div className={styles.metricValue}>{metrics?.totalUsers || 0}</div>
                     <div className={styles.metricLabel}>Customers</div>
                 </div>
+
+                <div className={styles.metricCard}>
+                    <div className={styles.metricHeader}>
+                        <div className={`${styles.metricIcon} ${styles.iconBlue}`}>
+                            <FiEye size={20} />
+                        </div>
+                    </div>
+                    <div className={styles.metricValue}>{stats?.totalViews?.toLocaleString() || 0}</div>
+                    <div className={styles.metricLabel}>Total Views</div>
+                </div>
+
+                <div className={styles.metricCard}>
+                    <div className={styles.metricHeader}>
+                        <div className={`${styles.metricIcon} ${styles.iconPurple}`}>
+                            <FiDownload size={20} />
+                        </div>
+                    </div>
+                    <div className={styles.metricValue}>{stats?.totalDownloads?.toLocaleString() || 0}</div>
+                    <div className={styles.metricLabel}>Total Downloads</div>
+                </div>
             </div>
 
             {/* Charts and Tables Row */}
@@ -130,10 +153,10 @@ export default function DashboardPage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v:any) => `₦${(v / 1000).toFixed(0)}k`} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v: any) => `₦${(v / 1000).toFixed(0)}k`} />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
-                                        formatter={(value:any) => [formatCurrency(value), 'Revenue']}
+                                        formatter={(value: any) => [formatCurrency(value), 'Revenue']}
                                         labelStyle={{ color: '#a1a1aa' }}
                                     />
                                     <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} />

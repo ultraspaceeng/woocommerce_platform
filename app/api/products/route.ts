@@ -55,7 +55,7 @@ export async function GET(request: Request) {
         const skip = (page - 1) * limit;
 
         // Determine sort object
-        let sortQuery: Record<string, number> = { createdAt: -1 };
+        let sortQuery: any = { createdAt: -1 };
         if (sort === 'price_asc') sortQuery = { price: 1 };
         else if (sort === 'price_desc') sortQuery = { price: -1 };
         else if (sort === 'recommended') sortQuery = { isFeatured: -1, createdAt: -1 }; // Promote featured items

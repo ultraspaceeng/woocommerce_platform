@@ -19,13 +19,13 @@ export default function Footer() {
                             Experience premium shopping.
                         </p>
                         <div className={styles.social}>
-                            <a href="#" className={styles.socialLink} aria-label="Twitter">
+                            <a href="https://x.com/UltraSpaceTech" className={styles.socialLink} aria-label="Twitter">
                                 <FiTwitter size={18} />
                             </a>
-                            <a href="#" className={styles.socialLink} aria-label="Instagram">
+                            {/* <a href="#" className={styles.socialLink} aria-label="Instagram">
                                 <FiInstagram size={18} />
-                            </a>
-                            <a href="#" className={styles.socialLink} aria-label="Facebook">
+                            </a> */}
+                            <a href="https://web.facebook.com/profile.php?id=61584268426595" className={styles.socialLink} aria-label="Facebook">
                                 <FiFacebook size={18} />
                             </a>
                         </div>
@@ -45,7 +45,7 @@ export default function Footer() {
                         <div className={styles.links}>
                             <Link href="/order-tracking">Track Order</Link>
                             <Link href="/#contact">Contact Us</Link>
-                            <Link href="#">FAQs</Link>
+                            {/* <Link href="#">FAQs</Link> */}
                         </div>
                     </div>
 
@@ -53,8 +53,8 @@ export default function Footer() {
                         <h3>Company</h3>
                         <div className={styles.links}>
                             <Link href="/#about">About Us</Link>
-                            <Link href="#">Privacy Policy</Link>
-                            <Link href="#">Terms of Service</Link>
+                            <Link href="https://ultraspacetech.vercel.app">Parent Company</Link>
+                            {/* <Link href="#">Terms of Service</Link> */}
                         </div>
                     </div>
                 </div>
@@ -66,9 +66,11 @@ export default function Footer() {
                         © {currentYear} UltraSpaceStore. All rights reserved.
                     </p>
                     <div className={styles.bottomLinks}>
-                        <Link href="#">Privacy</Link>
+                            <Link href="https://ultraspacetech.vercel.app">Parent Company</Link>
+
+                        {/* <Link href="#">Privacy</Link>
                         <Link href="#">Terms</Link>
-                        <Link href="#">Cookies</Link>
+                        <Link href="#">Cookies</Link> */}
                     </div>
                 </div>
             </div>

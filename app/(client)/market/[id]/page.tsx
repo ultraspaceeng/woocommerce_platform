@@ -57,7 +57,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         }
     };
 
-    const { priceInCurrency } = useCurrency(); // Use global currency formatter
+    const { priceInCurrency }:any = useCurrency(); // Use global currency formatter
 
     const formatPrice = (price: number) => priceInCurrency(price);
 

@@ -10,7 +10,7 @@ interface CurrencyContextType {
     setCurrency: (currency: string) => void;
     format: (amount: number) => string;
     convert: (amount: number) => number;
-    priceInCurrency: (amount: number) => string;
+    priceInCurrency: (amount: any) => string;
 }
 
 const CurrencyContext:any = createContext<CurrencyContextType | undefined>(undefined);

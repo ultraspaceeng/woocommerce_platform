@@ -54,7 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         ? product.description.slice(0, 60) + (product.description.length > 60 ? '...' : '')
         : null;
 
-    const { priceInCurrency } = useCurrency();
+    const { priceInCurrency }:any = useCurrency();
 
     const formatPrice = (price: number) => {
         return priceInCurrency(price);

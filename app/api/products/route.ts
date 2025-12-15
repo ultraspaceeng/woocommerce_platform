@@ -42,9 +42,27 @@ export async function GET(request: Request) {
         }
 
         if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) (query.price as Record<string, number>).$gte = parseFloat(minPrice);
-            if (maxPrice) (query.price as Record<string, number>).$lte = parseFloat(maxPrice);
+            const min = minPrice ? parseFloat(minPrice) : 0;
+            const max = maxPrice ? parseFloat(maxPrice) : Number.MAX_VALUE;
+
+            // Use $expr to comparing against the effective price
+            // if discountedPrice exists and > 0, use it, else use price
+            query.$expr = {
+                $and: [
+                    {
+                        $gte: [
+                            { $cond: { if: { $gt: ["$discountedPrice", 0] }, then: "$discountedPrice", else: "$price" } },
+                            min
+                        ]
+                    },
+                    {
+                        $lte: [
+                            { $cond: { if: { $gt: ["$discountedPrice", 0] }, then: "$discountedPrice", else: "$price" } },
+                            max
+                        ]
+                    }
+                ]
+            };
         }
 
         const brand = searchParams.get('brand');

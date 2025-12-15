@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { FiFilter, FiPackage } from 'react-icons/fi';
 import Header from '@/components/layout/header';
@@ -51,17 +51,57 @@ function MarketContent() {
     const [sortBy, setSortBy] = useState('recommended');
 
     const [debouncedSearch, setDebouncedSearch] = useState(search);
-    const { priceInCurrency }: any = useCurrency();
+    const { priceInCurrency, currency, exchangeRate, format, convert }: any = useCurrency();
 
     // Dynamic price ranges based on currency
-    const priceRanges = [
-        { value: 'all', label: 'All Prices' },
-        { value: '0-50', label: `${priceInCurrency(0)} - ${priceInCurrency(50)}`, min: 0, max: 50 },
-        { value: '50-150', label: `${priceInCurrency(50)} - ${priceInCurrency(150)}`, min: 50, max: 150 },
-        { value: '150-500', label: `${priceInCurrency(150)} - ${priceInCurrency(500)}`, min: 150, max: 500 },
-        { value: '500-1000', label: `${priceInCurrency(500)} - ${priceInCurrency(1000)}`, min: 500, max: 1000 },
-        { value: '1000+', label: `${priceInCurrency(1000)}+`, min: 1000, max: 999999 },
-    ];
+    // Helper to round numbers to clean 'nice' values (e.g. 33.5 -> 30, 480 -> 500)
+    const getCleanValue = (val: number) => {
+        if (val === 0) return 0;
+        const magnitude = Math.pow(10, Math.floor(Math.log10(val)));
+        const normalized = val / magnitude;
+
+        let cleanNormalized;
+        if (normalized < 1.5) cleanNormalized = 1;
+        else if (normalized < 3.5) cleanNormalized = 2.5; // Allow 25, 250
+        else if (normalized < 7.5) cleanNormalized = 5;
+        else cleanNormalized = 10;
+
+        return cleanNormalized * magnitude;
+    };
+
+    // Calculate dynamic price ranges
+    const priceRanges = useMemo(() => {
+        // Base anchors in NGN (assuming NGN is base)
+        const anchors = [0, 25000, 50000, 100000, 250000, 500000];
+
+        const ranges = [];
+        for (let i = 0; i < anchors.length; i++) {
+            const minBase = anchors[i];
+            const maxBase = anchors[i + 1] || null;
+
+            // Convert to current currency and clean up
+            const minDisp = getCleanValue(convert(minBase));
+            const maxDisp = maxBase ? getCleanValue(convert(maxBase)) : null;
+
+            // Create label
+            let label = '';
+            if (!maxDisp) label = `${format(minDisp)}+`;
+            else label = `${format(minDisp)} - ${format(maxDisp)}`;
+
+            // Value is used to ID the range, loop index is safest or composite string
+            ranges.push({
+                value: i.toString(), // Use index or composite
+                label,
+                minDisp, // Store display values for UI logic if needed
+                maxDisp,
+                // We will recalculate 'Base' for API from these Disp values to ensure alignment
+            });
+        }
+        // Add 'All' option
+        ranges.unshift({ value: 'all', label: 'All Prices', minDisp: 0, maxDisp: null });
+        return ranges;
+
+    }, [currency, exchangeRate, convert, format]); // Recalculate when currency changes
 
     // Fetch categories and brands (initially)
     useEffect(() => {
@@ -117,8 +157,10 @@ function MarketContent() {
             if (priceRange !== 'all') {
                 const range = priceRanges.find(r => r.value === priceRange);
                 if (range) {
-                    if (range.min !== undefined) params.minPrice = range.min;
-                    if (range.max !== undefined) params.maxPrice = range.max;
+                    // Reverse convert Display -> Base for API
+                    // Since Display = Base / Rate, then Base = Display * Rate
+                    if (range.minDisp !== undefined) params.minPrice = range.minDisp * exchangeRate;
+                    if (range.maxDisp !== undefined && range.maxDisp !== null) params.maxPrice = range.maxDisp * exchangeRate;
                 }
             }
 

@@ -11,7 +11,7 @@ import styles from './cart-drawer.module.css';
 export default function CartDrawer() {
     const { items, isOpen, closeCart, updateQuantity, removeItem, getSubtotal } = useCartStore();
 
-    const { priceInCurrency } = useCurrency();
+    const { priceInCurrency }:any = useCurrency();
 
     const formatPrice = (price: number) => priceInCurrency(price);
 

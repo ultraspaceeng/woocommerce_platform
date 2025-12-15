@@ -265,7 +265,7 @@ export const sendOrderShippedEmail = async (
                 </div>
                 ` : ''}
                 <div style="text-align: center;">
-                    <a href="${process.env.NEXT_PUBLIC_BASE_URL}/order-tracking?orderId=${orderId}" 
+                    <a href="${process.env.NEXT_PUBLIC_APP_URL}/order-tracking?orderId=${orderId}" 
                        style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;">
                         Track Your Package
                     </a>

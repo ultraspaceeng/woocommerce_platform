@@ -66,7 +66,7 @@ export default function Footer() {
                         © {currentYear} UltraSpaceStore. All rights reserved.
                     </p>
                     <div className={styles.bottomLinks}>
-                            <Link href="https://ultraspacetech.vercel.app">Parent Company</Link>
+                        <Link href="https://ultraspacetech.vercel.app">Parent Company</Link>
 
                         {/* <Link href="#">Privacy</Link>
                         <Link href="#">Terms</Link>

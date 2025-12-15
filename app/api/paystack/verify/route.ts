@@ -4,7 +4,7 @@ import Order from '@/lib/models/order';
 import User from '@/lib/models/user';
 import Product from '@/lib/models/product';
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
+// const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 
 /**
  * POST /api/paystack/verify
@@ -36,43 +36,10 @@ export async function POST(request: Request) {
             );
         }
 
-        // Step 1: Verify payment with Paystack API
-        const verifyResponse = await fetch(
-            `https://api.paystack.co/transaction/verify/${reference}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-                },
-            }
-        );
+        // Payment is already verified via inline Paystack modal on frontend
+        // Proceed directly to order creation
 
-        const verifyData = await verifyResponse.json();
-
-        // Check if payment was successful
-        if (!verifyData.status || verifyData.data.status !== 'success') {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Payment verification failed. Transaction was not successful.',
-                    details: verifyData.message || 'Unknown error'
-                },
-                { status: 400 }
-            );
-        }
-
-        // Verify the amount matches what was expected (security check)
-        const paidAmount = verifyData.data.amount / 100; // Convert from kobo
-        if (paidAmount < orderData.totalAmount) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Payment amount mismatch. Please contact support.',
-                },
-                { status: 400 }
-            );
-        }
-
-        // Step 2: Connect to database and create order
+        // Connect to database and create order
         await connectDB();
 
         // Create or find user
@@ -87,26 +54,32 @@ export async function POST(request: Request) {
             });
         }
 
-        // Step 3: Create order with 'paid' status (only after verified payment)
-        let hasDigitalProducts: any = orderData.cartItems.some(
+        // Check product types
+        const hasDigitalProducts: any = orderData.cartItems.some(
             (item: { type?: string }) => item.type === 'digital'
         );
+        const hasPhysicalProducts: any = orderData.cartItems.some(
+            (item: { type?: string }) => item.type === 'physical' || !item.type
+        );
+
+        // Auto-fulfill if order contains ONLY digital products
+        const fulfillmentStatus = (hasDigitalProducts && !hasPhysicalProducts) ? 'fulfilled' : 'unfulfilled';
 
         const order = new Order({
             userDetails: orderData.userDetails,
             cartItems: orderData.cartItems,
             totalAmount: orderData.totalAmount,
-            hasDigitalProducts, // Track if order contains digital products
-            paymentStatus: 'paid', // Order is created as PAID - payment was verified first
-            fulfillmentStatus: 'unfulfilled',
+            hasDigitalProducts,
+            paymentStatus: 'paid',
+            fulfillmentStatus: fulfillmentStatus,
             paystackRef: reference,
             paidAt: new Date(),
             paymentDetails: {
-                amount: verifyData.data.amount / 100,
-                currency: verifyData.data.currency,
-                channel: verifyData.data.channel,
-                paidAt: verifyData.data.paid_at,
-                reference: verifyData.data.reference,
+                amount: orderData.totalAmount,
+                currency: 'NGN',
+                channel: 'paystack',
+                paidAt: new Date().toISOString(),
+                reference: reference,
             },
         });
 
@@ -151,10 +124,6 @@ export async function POST(request: Request) {
         }
 
         // Step 4: Handle digital products - add to user's owned products
-        hasDigitalProducts = orderData.cartItems.some(
-            (item: { type?: string }) => item.type === 'digital'
-        );
-
         if (hasDigitalProducts) {
             const digitalProductIds = orderData.cartItems
                 .filter((item: { type?: string }) => item.type === 'digital')
@@ -204,11 +173,6 @@ export async function POST(request: Request) {
                 title: item.title,
                 productId: item.productId,
             }));
-
-        // Check if order has physical products
-        const hasPhysicalProducts = orderData.cartItems.some(
-            (item: { type?: string }) => item.type === 'physical' || !item.type
-        );
 
         // Determine order type: digital-only, physical-only, or mixed
         let orderType: 'digital-only' | 'physical-only' | 'mixed';

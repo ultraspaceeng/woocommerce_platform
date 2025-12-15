@@ -262,13 +262,19 @@ export default function SettingsPage() {
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
                                 <label>Base Currency (Stored)</label>
-                                <input
-                                    type="text"
+                                <select
+                                    name="baseCurrency"
                                     value={settings.baseCurrency}
-                                    className={styles.input}
-                                    disabled
-                                />
-                                <span className={styles.helperText}>Prices are stored in this currency</span>
+                                    onChange={handleChange}
+                                    className={styles.select}
+                                >
+                                    {SUPPORTED_CURRENCIES.map(currency => (
+                                        <option key={currency.code} value={currency.code}>
+                                            {currency.symbol} {currency.code} - {currency.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <span className={styles.helperText}>Prices are stored in this currency (change for Stripe integration)</span>
                             </div>
                             <div className={styles.formGroup}>
                                 <label>Display Currency</label>

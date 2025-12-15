@@ -62,6 +62,26 @@ Define these in your global CSS or a dedicated variables file.
     --transition-fast: 0.15s ease;
     --transition-base: 0.2s ease;
 }
+
+[data-theme='light'] {
+    /* Admin-specific colors (Light Mode) */
+    --admin-bg: #f9fafb;        /* Zinc 50 */
+    --admin-bg-card: #ffffff;   /* White */
+    --admin-bg-hover: #f3f4f6;  /* Zinc 100 */
+    --admin-bg-active: #e5e7eb; /* Zinc 200 */
+    --admin-border: #e4e4e7;    /* Zinc 200 */
+    --admin-border-light: #f4f4f5; /* Zinc 100 */
+
+    --admin-text: #09090b;      /* Zinc 950 */
+    --admin-text-secondary: #52525b; /* Zinc 600 */
+    --admin-text-muted: #a1a1aa;     /* Zinc 400 */
+
+    --admin-accent: #6366f1;         /* Indigo 500 */
+    --admin-accent-hover: #4f46e5;   /* Indigo 600 */
+    --admin-accent-light: rgba(99, 102, 241, 0.08);
+
+    --admin-border: #e4e4e7;
+}
 ```
 
 ---

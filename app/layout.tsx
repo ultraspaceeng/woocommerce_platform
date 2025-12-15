@@ -14,7 +14,7 @@ const font = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
     title: 'UltraSpaceStore | Premium Shopping Experience',
-    description: 'Discover premium products with UltraSpaceStore - your destination for quality physical and digital goods.',
+    description: 'Discover Advanced premium products with UltraSpaceStore - your destination for quality physical and digital goods.',
     keywords: ['e-commerce', 'shopping', 'premium products', 'digital goods', 'ultraspace store'],
     authors: [{ name: 'UltraSpaceStore' }],
     openGraph: {

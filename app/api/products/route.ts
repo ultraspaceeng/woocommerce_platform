@@ -16,11 +16,21 @@ export async function GET(request: Request) {
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '20');
 
+        const sort = searchParams.get('sort') || 'newest';
+
         // Build query
         const query: Record<string, unknown> = { isActive: true };
 
         if (search) {
-            query.$text = { $search: search };
+            // Enhanced search across multiple fields
+            const searchRegex = new RegExp(search, 'i');
+            query.$or = [
+                { title: searchRegex },
+                { description: searchRegex },
+                { brand: searchRegex },
+                { category: searchRegex },
+                { type: searchRegex }
+            ];
         }
 
         if (category && category !== 'all') {
@@ -37,11 +47,23 @@ export async function GET(request: Request) {
             if (maxPrice) (query.price as Record<string, number>).$lte = parseFloat(maxPrice);
         }
 
+        const brand = searchParams.get('brand');
+        if (brand && brand !== 'all') {
+            query.brand = brand;
+        }
+
         const skip = (page - 1) * limit;
+
+        // Determine sort object
+        let sortQuery: Record<string, number> = { createdAt: -1 };
+        if (sort === 'price_asc') sortQuery = { price: 1 };
+        else if (sort === 'price_desc') sortQuery = { price: -1 };
+        else if (sort === 'recommended') sortQuery = { isFeatured: -1, createdAt: -1 }; // Promote featured items
+        else if (sort === 'newest') sortQuery = { createdAt: -1 };
 
         const [products, total] = await Promise.all([
             Product.find(query)
-                .sort({ createdAt: -1 })
+                .sort(sortQuery)
                 .skip(skip)
                 .limit(limit)
                 .lean(),

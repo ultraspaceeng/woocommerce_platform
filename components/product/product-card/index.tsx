@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiShoppingCart, FiPackage, FiDownload, FiCheck, FiStar, FiClock } from 'react-icons/fi';
+import { FiShoppingCart, FiPackage, FiDownload, FiCheck } from 'react-icons/fi';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { useCurrency } from '@/lib/hooks/use-currency';
@@ -34,7 +34,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         ? Math.round(((product.price - product.discountedPrice!) / product.price) * 100)
         : 0;
 
-    // Check if product is new (created within last 7 days)
     const isNew = product.createdAt
         ? (Date.now() - new Date(product.createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000
         : false;
@@ -195,4 +194,3 @@ export default function ProductCard({ product }: ProductCardProps) {
         </article>
     );
 }
-

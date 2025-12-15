@@ -29,16 +29,14 @@
 .imageWrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: 4/5;
-    /* Taller aspect ratio as per reference */
+    aspect-ratio: 1/1;
+    /* Square aspect ratio */
     background-color: var(--color-bg-secondary);
     overflow: hidden;
 }
 
 .image {
     object-fit: cover;
-    width: 100%;
-    height: 100%;
     transition: transform 0.5s ease;
 }
 
@@ -52,11 +50,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text-muted);
     font-size: 2rem;
 }
 
-/* Badges & Overlays */
 /* Badges & Overlays */
 .newBadge {
     position: absolute;
@@ -128,14 +124,11 @@
     flex-grow: 1;
 }
 
-/* ... existing metaRow ... */
 .metaRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
-/* ... existing styles ... */
 
 .brand {
     font-size: 0.7rem;
@@ -155,7 +148,7 @@
 }
 
 .title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: var(--color-text-primary);
     margin: 0;

@@ -2,7 +2,7 @@
 // For browser-based push notifications
 
 import webpush from 'web-push';
-import dbConnect from '@/lib/db';
+import dbConnect from '@/lib/db/mongodb';
 import PushSubscription from '@/lib/models/subscription';
 
 // Configure web-push with VAPID keys

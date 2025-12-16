@@ -73,13 +73,17 @@ export const notifyOrderShipped = async (
             .catch(err => console.error('Shipped email error:', err)),
     ];
 
-    if (userId) {
-        notifications.push(
-            sendOrderShippedPush(userId, orderId)
-                .then(sent => console.log(sent ? '✓ Shipped push sent' : '✗ Push failed'))
-                .catch(err => console.error('Shipped push error:', err))
-        );
-    }
+    // Notify admins about shipment
+    notifications.push(
+        broadcastToAdmins({
+            title: '🚚 Order Shipped',
+            body: `Order ${orderId} has been shipped to ${customerName}`,
+            url: `/admin/orders/${orderId}`,
+            tag: `shipped-${orderId}`,
+        })
+            .then(result => console.log(`✓ Shipped push sent (${result.success} success)`))
+            .catch(err => console.error('Shipped push error:', err))
+    );
 
     await Promise.allSettled(notifications);
 };
@@ -93,13 +97,15 @@ export const notifyOrderDelivered = async (
 ): Promise<void> => {
     console.log(`Sending delivered notifications for ${orderId}`);
 
-    // For now, only send push notification for delivery
-    // You can add a delivery confirmation email template later
-    if (userId) {
-        await sendOrderDeliveredPush(userId, orderId)
-            .then(sent => console.log(sent ? '✓ Delivered push sent' : '✗ Push failed'))
-            .catch(err => console.error('Delivered push error:', err));
-    }
+    // Notify admins about delivery
+    await broadcastToAdmins({
+        title: '📦 Order Delivered',
+        body: `Order ${orderId} has been delivered to ${customerName}`,
+        url: `/admin/orders/${orderId}`,
+        tag: `delivered-${orderId}`,
+    })
+        .then(result => console.log(`✓ Delivered push sent (${result.success} success)`))
+        .catch(err => console.error('Delivered push error:', err));
 };
 
 export default {
@@ -107,3 +113,4 @@ export default {
     notifyOrderShipped,
     notifyOrderDelivered,
 };
+

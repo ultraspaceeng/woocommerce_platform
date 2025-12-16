@@ -5,6 +5,7 @@ import { FiMenu, FiBell, FiSearch } from 'react-icons/fi';
 import { Toaster } from 'react-hot-toast';
 import AdminSidebar from '@/components/layout/admin-sidebar';
 import ThemeToggle from '@/components/ui/theme-toggle';
+import PushNotificationPrompt from '@/components/ui/push-notification-prompt';
 import '../admin.css';
 import styles from './layout.module.css';
 
@@ -77,6 +78,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
+
+            {/* Admin Push Notification Prompt */}
+            <PushNotificationPrompt type="admin" />
         </div>
     );
 }
+

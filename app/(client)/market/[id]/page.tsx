@@ -3,10 +3,11 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
+import ProductReviews from '@/components/product/product-reviews';
 import { Product } from '@/types';
 import { productsApi } from '@/lib/services/api';
 import { useCartStore } from '@/lib/stores/cart-store';
@@ -24,6 +25,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     const [error, setError] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     const addItem = useCartStore((state) => state.addItem);
     const openCart = useCartStore((state) => state.openCart);
@@ -57,7 +59,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         }
     };
 
-    const { priceInCurrency }:any = useCurrency(); // Use global currency formatter
+    const { priceInCurrency }: any = useCurrency(); // Use global currency formatter
 
     const formatPrice = (price: number) => priceInCurrency(price);
 
@@ -117,11 +119,40 @@ export default function ProductPage({ params }: ProductPageProps) {
                     </nav>
 
                     <div className={styles.productLayout}>
-                        <div className={styles.mainImage}>
-                            {product.assets?.[0] ? (
-                                <Image src={product.assets[0]} alt={product.title} fill className={styles.image} priority />
-                            ) : (
-                                <div className={styles.imagePlaceholder}><FiPackage /></div>
+                        {/* Image Gallery */}
+                        <div className={styles.imageSection}>
+                            <div className={styles.mainImage}>
+                                {product.assets && product.assets.length > 0 ? (
+                                    <Image
+                                        src={product.assets[selectedImageIndex] || product.assets[0]}
+                                        alt={product.title}
+                                        fill
+                                        className={styles.image}
+                                        priority
+                                    />
+                                ) : (
+                                    <div className={styles.imagePlaceholder}><FiPackage /></div>
+                                )}
+                            </div>
+
+                            {/* Image Thumbnails */}
+                            {product.assets && product.assets.length > 1 && (
+                                <div className={styles.thumbnailRow}>
+                                    {product.assets.map((asset, index) => (
+                                        <button
+                                            key={index}
+                                            className={`${styles.thumbnail} ${selectedImageIndex === index ? styles.activeThumbnail : ''}`}
+                                            onClick={() => setSelectedImageIndex(index)}
+                                        >
+                                            <Image
+                                                src={asset}
+                                                alt={`${product.title} - Image ${index + 1}`}
+                                                fill
+                                                className={styles.thumbnailImage}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
                             )}
                         </div>
 
@@ -129,6 +160,23 @@ export default function ProductPage({ params }: ProductPageProps) {
                             {product.type === 'digital' && <span className={styles.badge}>Digital</span>}
                             {product.category && <span className={styles.category}>{product.category}</span>}
                             <h1 className={styles.title}>{product.title}</h1>
+
+                            {/* Rating Display */}
+                            {(product.rating !== undefined && product.rating > 0) && (
+                                <div className={styles.ratingRow}>
+                                    <div className={styles.stars}>
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <FiStar
+                                                key={star}
+                                                className={`${styles.star} ${star <= Math.round(product.rating || 0) ? styles.starFilled : ''}`}
+                                            />
+                                        ))}
+                                    </div>
+                                    <span className={styles.ratingText}>
+                                        {product.rating?.toFixed(1)} ({product.ratingCount} reviews)
+                                    </span>
+                                </div>
+                            )}
 
                             <div className={styles.priceBlock}>
                                 <span className={styles.price}>{formatPrice(displayPrice!)}</span>
@@ -180,9 +228,17 @@ export default function ProductPage({ params }: ProductPageProps) {
                             </div>
                         </div>
                     </div>
+
+                    {/* Customer Reviews Section */}
+                    <ProductReviews
+                        productId={product._id}
+                        productRating={product.rating}
+                        ratingCount={product.ratingCount}
+                    />
                 </div>
             </main>
             <Footer />
         </div>
     );
 }
+

@@ -2,6 +2,8 @@
 // For browser-based push notifications
 
 import webpush from 'web-push';
+import dbConnect from '@/lib/db';
+import PushSubscription from '@/lib/models/subscription';
 
 // Configure web-push with VAPID keys
 // Generate keys using: npx web-push generate-vapid-keys
@@ -16,7 +18,7 @@ if (vapidPublicKey && vapidPrivateKey) {
     );
 }
 
-export interface PushSubscription {
+export interface PushSubscriptionData {
     endpoint: string;
     keys: {
         p256dh: string;
@@ -33,15 +35,28 @@ export interface NotificationPayload {
     tag?: string;
 }
 
-// Store for subscriptions (in production, use database)
-// This is a simple in-memory store for demonstration
-const subscriptions: Map<string, PushSubscription> = new Map();
-
-// Save push subscription
-export const saveSubscription = async (userId: string, subscription: PushSubscription): Promise<boolean> => {
+// Save push subscription to database
+export const saveSubscription = async (
+    subscription: PushSubscriptionData,
+    type: 'admin' | 'visitor' = 'visitor',
+    userId?: string
+): Promise<boolean> => {
     try {
-        subscriptions.set(userId, subscription);
-        console.log(`Push subscription saved for user: ${userId}`);
+        await dbConnect();
+
+        // Upsert subscription (update if exists, create if not)
+        await PushSubscription.findOneAndUpdate(
+            { endpoint: subscription.endpoint },
+            {
+                endpoint: subscription.endpoint,
+                keys: subscription.keys,
+                type,
+                userId,
+            },
+            { upsert: true, new: true }
+        );
+
+        console.log(`Push subscription saved (${type})`);
         return true;
     } catch (error) {
         console.error('Failed to save subscription:', error);
@@ -50,9 +65,10 @@ export const saveSubscription = async (userId: string, subscription: PushSubscri
 };
 
 // Remove push subscription
-export const removeSubscription = async (userId: string): Promise<boolean> => {
+export const removeSubscription = async (endpoint: string): Promise<boolean> => {
     try {
-        subscriptions.delete(userId);
+        await dbConnect();
+        await PushSubscription.deleteOne({ endpoint });
         return true;
     } catch (error) {
         console.error('Failed to remove subscription:', error);
@@ -60,19 +76,24 @@ export const removeSubscription = async (userId: string): Promise<boolean> => {
     }
 };
 
-// Send push notification to a specific user
-export const sendPushNotification = async (
-    userId: string,
+// Check if subscription exists
+export const checkSubscription = async (endpoint: string): Promise<boolean> => {
+    try {
+        await dbConnect();
+        const sub = await PushSubscription.findOne({ endpoint });
+        return !!sub;
+    } catch (error) {
+        console.error('Failed to check subscription:', error);
+        return false;
+    }
+};
+
+// Send push notification to a single subscription
+const sendToSubscription = async (
+    subscription: PushSubscriptionData,
     payload: NotificationPayload
 ): Promise<boolean> => {
     try {
-        const subscription = subscriptions.get(userId);
-
-        if (!subscription) {
-            console.log(`No subscription found for user: ${userId}`);
-            return false;
-        }
-
         if (!vapidPublicKey || !vapidPrivateKey) {
             console.log('VAPID keys not configured');
             return false;
@@ -90,138 +111,82 @@ export const sendPushNotification = async (
         });
 
         await webpush.sendNotification(subscription, pushPayload);
-        console.log(`Push notification sent to user: ${userId}`);
         return true;
     } catch (error) {
         console.error('Failed to send push notification:', error);
         // Remove invalid subscription
         if ((error as { statusCode?: number }).statusCode === 410) {
-            subscriptions.delete(userId);
+            await removeSubscription(subscription.endpoint);
         }
         return false;
     }
 };
 
-// Broadcast push notification to all subscribers
-export const broadcastPushNotification = async (
+// Broadcast to all admin subscribers
+export const broadcastToAdmins = async (
     payload: NotificationPayload
 ): Promise<{ success: number; failed: number }> => {
     const results = { success: 0, failed: 0 };
 
-    for (const [userId] of subscriptions) {
-        const sent = await sendPushNotification(userId, payload);
-        if (sent) {
-            results.success++;
-        } else {
-            results.failed++;
+    try {
+        await dbConnect();
+        const adminSubs = await PushSubscription.find({ type: 'admin' });
+
+        for (const sub of adminSubs) {
+            const sent = await sendToSubscription(
+                { endpoint: sub.endpoint, keys: sub.keys },
+                payload
+            );
+            if (sent) results.success++;
+            else results.failed++;
         }
+    } catch (error) {
+        console.error('Broadcast to admins error:', error);
     }
 
     return results;
 };
 
-// Order-specific notifications
-export const sendOrderConfirmationPush = async (
-    userId: string,
-    orderId: string
-): Promise<boolean> => {
-    return sendPushNotification(userId, {
-        title: 'Order Confirmed! 🎉',
-        body: `Your order ${orderId} has been confirmed and is being processed.`,
-        url: `/track?orderId=${orderId}`,
-        tag: `order-${orderId}`,
-    });
+// Broadcast to all visitor subscribers
+export const broadcastToVisitors = async (
+    payload: NotificationPayload
+): Promise<{ success: number; failed: number }> => {
+    const results = { success: 0, failed: 0 };
+
+    try {
+        await dbConnect();
+        const visitorSubs = await PushSubscription.find({ type: 'visitor' });
+
+        for (const sub of visitorSubs) {
+            const sent = await sendToSubscription(
+                { endpoint: sub.endpoint, keys: sub.keys },
+                payload
+            );
+            if (sent) results.success++;
+            else results.failed++;
+        }
+    } catch (error) {
+        console.error('Broadcast to visitors error:', error);
+    }
+
+    return results;
 };
 
-export const sendOrderShippedPush = async (
-    userId: string,
-    orderId: string
-): Promise<boolean> => {
-    return sendPushNotification(userId, {
-        title: 'Your Order is On Its Way! 🚚',
-        body: `Order ${orderId} has been shipped. Track your package now!`,
-        url: `/track?orderId=${orderId}`,
-        tag: `order-${orderId}-shipped`,
-    });
-};
+// ===================
+// ADMIN NOTIFICATIONS
+// ===================
 
-export const sendOrderDeliveredPush = async (
-    userId: string,
-    orderId: string
-): Promise<boolean> => {
-    return sendPushNotification(userId, {
-        title: 'Order Delivered! 📦',
-        body: `Your order ${orderId} has been delivered. Enjoy your purchase!`,
-        url: `/orders/${orderId}`,
-        tag: `order-${orderId}-delivered`,
-    });
-};
-
-// Admin notifications
+// New order notification for admin
 export const sendNewOrderAdminPush = async (
     orderId: string,
-    amount: number
-): Promise<boolean> => {
-    // Send to admin user ID (you'd fetch this from config/database)
-    const adminUserId = 'admin';
-
-    return sendPushNotification(adminUserId, {
+    amount: number,
+    customerName: string
+): Promise<{ success: number; failed: number }> => {
+    return broadcastToAdmins({
         title: '💰 New Order Received!',
-        body: `Order ${orderId} - ₦${amount.toLocaleString()}`,
-        url: '/admin/orders',
-        tag: `admin-order-${orderId}`,
-    });
-};
-
-// Low stock alert for admin
-export const sendLowStockAdminPush = async (
-    productTitle: string,
-    currentStock: number
-): Promise<boolean> => {
-    const adminUserId = 'admin';
-
-    return sendPushNotification(adminUserId, {
-        title: '⚠️ Low Stock Alert!',
-        body: `"${productTitle}" - Only ${currentStock} left in stock`,
-        url: '/admin/products',
-        tag: `admin-lowstock-${productTitle}`,
-    });
-};
-
-// New user registration notification for admin
-export const sendNewUserAdminPush = async (
-    userEmail: string,
-    userName: string
-): Promise<boolean> => {
-    const adminUserId = 'admin';
-
-    return sendPushNotification(adminUserId, {
-        title: '👤 New User Registered!',
-        body: `${userName} (${userEmail}) just signed up`,
-        url: '/admin/users',
-        tag: `admin-newuser-${userEmail}`,
-    });
-};
-
-// Order status change notification for admin
-export const sendOrderStatusAdminPush = async (
-    orderId: string,
-    newStatus: string
-): Promise<boolean> => {
-    const adminUserId = 'admin';
-
-    const statusEmoji: Record<string, string> = {
-        'paid': '✅',
-        'shipped': '🚚',
-        'fulfilled': '📦',
-        'failed': '❌',
-    };
-
-    return sendPushNotification(adminUserId, {
-        title: `${statusEmoji[newStatus] || '📋'} Order Status Updated`,
-        body: `Order ${orderId} is now ${newStatus}`,
+        body: `Order ${orderId} - ₦${amount.toLocaleString()} from ${customerName}`,
         url: `/admin/orders/${orderId}`,
-        tag: `admin-status-${orderId}`,
+        tag: `admin-order-${orderId}`,
     });
 };
 
@@ -230,10 +195,8 @@ export const sendPaymentReceivedAdminPush = async (
     orderId: string,
     amount: number,
     customerName: string
-): Promise<boolean> => {
-    const adminUserId = 'admin';
-
-    return sendPushNotification(adminUserId, {
+): Promise<{ success: number; failed: number }> => {
+    return broadcastToAdmins({
         title: '💳 Payment Received!',
         body: `₦${amount.toLocaleString()} from ${customerName} (Order: ${orderId})`,
         url: `/admin/orders/${orderId}`,
@@ -241,17 +204,81 @@ export const sendPaymentReceivedAdminPush = async (
     });
 };
 
+// Low stock alert for admin
+export const sendLowStockAdminPush = async (
+    productTitle: string,
+    currentStock: number
+): Promise<{ success: number; failed: number }> => {
+    return broadcastToAdmins({
+        title: '⚠️ Low Stock Alert!',
+        body: `"${productTitle}" - Only ${currentStock} left in stock`,
+        url: '/admin/products',
+        tag: `admin-lowstock-${productTitle}`,
+    });
+};
+
+// Order status change notification for admin
+export const sendOrderStatusAdminPush = async (
+    orderId: string,
+    newStatus: string
+): Promise<{ success: number; failed: number }> => {
+    const statusEmoji: Record<string, string> = {
+        'paid': '✅',
+        'shipped': '🚚',
+        'fulfilled': '📦',
+        'failed': '❌',
+    };
+
+    return broadcastToAdmins({
+        title: `${statusEmoji[newStatus] || '📋'} Order Status Updated`,
+        body: `Order ${orderId} is now ${newStatus}`,
+        url: `/admin/orders/${orderId}`,
+        tag: `admin-status-${orderId}`,
+    });
+};
+
+// =======================
+// VISITOR NOTIFICATIONS
+// =======================
+
+// New product notification for visitors
+export const sendNewProductNotification = async (
+    productTitle: string,
+    productSlug: string,
+    price: number
+): Promise<{ success: number; failed: number }> => {
+    return broadcastToVisitors({
+        title: '🆕 New Product Alert!',
+        body: `${productTitle} - ₦${price.toLocaleString()} just landed!`,
+        url: `/market/${productSlug}`,
+        tag: `new-product-${productSlug}`,
+    });
+};
+
+// Sale/discount notification for visitors
+export const sendSaleNotification = async (
+    productTitle: string,
+    productSlug: string,
+    discountPercentage: number
+): Promise<{ success: number; failed: number }> => {
+    return broadcastToVisitors({
+        title: '🔥 Flash Sale!',
+        body: `${productTitle} is now ${discountPercentage}% OFF!`,
+        url: `/market/${productSlug}`,
+        tag: `sale-${productSlug}`,
+    });
+};
+
 export default {
     saveSubscription,
     removeSubscription,
-    sendPushNotification,
-    broadcastPushNotification,
-    sendOrderConfirmationPush,
-    sendOrderShippedPush,
-    sendOrderDeliveredPush,
+    checkSubscription,
+    broadcastToAdmins,
+    broadcastToVisitors,
     sendNewOrderAdminPush,
-    sendLowStockAdminPush,
-    sendNewUserAdminPush,
-    sendOrderStatusAdminPush,
     sendPaymentReceivedAdminPush,
+    sendLowStockAdminPush,
+    sendOrderStatusAdminPush,
+    sendNewProductNotification,
+    sendSaleNotification,
 };

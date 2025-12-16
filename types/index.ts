@@ -31,6 +31,9 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   brand?: string;
+  rating?: number;
+  ratingCount?: number;
+  isActive?: boolean;
 }
 
 // Order Types

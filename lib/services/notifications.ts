@@ -7,10 +7,8 @@ import {
     sendNewOrderAdminNotification
 } from './email';
 import {
-    sendOrderConfirmationPush,
-    sendOrderShippedPush,
-    sendOrderDeliveredPush,
-    sendNewOrderAdminPush
+    sendNewOrderAdminPush,
+    broadcastToAdmins
 } from './push';
 
 interface OrderNotificationData {
@@ -49,19 +47,10 @@ export const notifyOrderPlaced = async (order: any): Promise<void> => {
             .catch(err => console.error('Admin email error:', err)),
     ];
 
-    // Add push notifications if userId is available
-    if (order.userId) {
-        notifications.push(
-            sendOrderConfirmationPush(order.userId, order.orderId)
-                .then(sent => console.log(sent ? '✓ Push notification sent' : '✗ Push failed or not subscribed'))
-                .catch(err => console.error('Push error:', err))
-        );
-    }
-
     // Add admin push notification
     notifications.push(
-        sendNewOrderAdminPush(order.orderId, order.totalAmount)
-            .then(sent => console.log(sent ? '✓ Admin push sent' : '✗ Admin push not configured'))
+        sendNewOrderAdminPush(order.orderId, order.totalAmount, order.userDetails?.name || 'Customer')
+            .then(result => console.log(`✓ Admin push sent (${result.success} success, ${result.failed} failed)`))
             .catch(err => console.error('Admin push error:', err))
     );
 

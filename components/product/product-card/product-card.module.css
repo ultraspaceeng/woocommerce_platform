@@ -188,6 +188,33 @@
     border-radius: 4px;
 }
 
+/* Rating */
+.ratingRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.stars {
+    display: flex;
+    gap: 1px;
+}
+
+.star {
+    color: var(--color-border);
+}
+
+.starFilled {
+    color: #fbbf24;
+    fill: #fbbf24;
+}
+
+.ratingCount {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
 /* Options */
 .optionsContainer {
     display: flex;

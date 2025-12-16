@@ -8,6 +8,7 @@ import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
 import ProductCard from '@/components/product/product-card';
+import PushNotificationPrompt from '@/components/ui/push-notification-prompt';
 import { Product } from '@/types';
 import { productsApi } from '@/lib/services/api';
 import styles from './page.module.css';
@@ -222,6 +223,9 @@ export default function HomePage() {
             </section>
 
             <Footer />
+
+            {/* Push Notification Prompt for Visitors */}
+            <PushNotificationPrompt type="visitor" />
         </div>
     );
 }

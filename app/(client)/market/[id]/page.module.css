@@ -220,3 +220,74 @@
     font-weight: 600;
     margin-bottom: var(--space-md);
 }
+
+/* Image Section with Gallery */
+.imageSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* Thumbnail Row */
+.thumbnailRow {
+    display: flex;
+    gap: var(--space-sm);
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
+}
+
+.thumbnail {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid var(--color-border);
+    cursor: pointer;
+    background: var(--color-bg-secondary);
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.thumbnail:hover {
+    border-color: var(--color-text-muted);
+}
+
+.activeThumbnail {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px var(--color-accent-light);
+}
+
+.thumbnailImage {
+    object-fit: cover;
+}
+
+/* Rating Display */
+.ratingRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.stars {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    width: 16px;
+    height: 16px;
+    color: var(--color-border);
+    stroke-width: 2px;
+}
+
+.starFilled {
+    color: #fbbf24;
+    fill: #fbbf24;
+}
+
+.ratingText {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}

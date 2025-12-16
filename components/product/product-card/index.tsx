@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiShoppingCart, FiPackage, FiDownload, FiCheck } from 'react-icons/fi';
+import { FiShoppingCart, FiPackage, FiDownload, FiCheck, FiStar } from 'react-icons/fi';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { useCurrency } from '@/lib/hooks/use-currency';
@@ -144,6 +144,22 @@ export default function ProductCard({ product }: ProductCardProps) {
                             </>
                         )}
                     </div>
+
+                    {/* Rating */}
+                    {product.rating !== undefined && product.rating > 0 && (
+                        <div className={styles.ratingRow}>
+                            <div className={styles.stars}>
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <FiStar
+                                        key={star}
+                                        size={12}
+                                        className={`${styles.star} ${star <= Math.round(product.rating || 0) ? styles.starFilled : ''}`}
+                                    />
+                                ))}
+                            </div>
+                            <span className={styles.ratingCount}>({product.ratingCount})</span>
+                        </div>
+                    )}
 
                     {/* Options Preview (Colors & Sizes) */}
                     {(optionsPreview?.colors || optionsPreview?.sizes) && (

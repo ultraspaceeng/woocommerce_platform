@@ -32,6 +32,8 @@ export interface IProduct extends Document {
     brand?: string;
     seoData: IProductSeoData;
     isActive: boolean;
+    rating: number; // Average rating 0-5
+    ratingCount: number; // Number of ratings
     createdAt: Date;
     updatedAt: Date;
 }
@@ -103,6 +105,17 @@ const ProductSchema = new Schema<IProduct>({
     isActive: {
         type: Boolean,
         default: true,
+    },
+    rating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5,
+    },
+    ratingCount: {
+        type: Number,
+        default: 0,
+        min: 0,
     },
 }, {
     timestamps: true,

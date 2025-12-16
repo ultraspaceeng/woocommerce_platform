@@ -1,25 +1,33 @@
 import { NextResponse } from 'next/server';
-import { saveSubscription, removeSubscription } from '@/lib/services/push';
+import { saveSubscription, removeSubscription, checkSubscription } from '@/lib/services/push';
 
 // POST /api/push/subscribe - Save push subscription
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { userId, subscription } = body;
+        const { subscription, type = 'visitor', userId } = body;
 
-        if (!userId || !subscription) {
+        if (!subscription || !subscription.endpoint || !subscription.keys) {
             return NextResponse.json(
-                { success: false, error: 'Missing userId or subscription' },
+                { success: false, error: 'Missing or invalid subscription data' },
                 { status: 400 }
             );
         }
 
-        const saved = await saveSubscription(userId, subscription);
+        // Validate type
+        if (type !== 'admin' && type !== 'visitor') {
+            return NextResponse.json(
+                { success: false, error: 'Invalid subscription type' },
+                { status: 400 }
+            );
+        }
+
+        const saved = await saveSubscription(subscription, type, userId);
 
         if (saved) {
             return NextResponse.json({
                 success: true,
-                message: 'Push subscription saved',
+                message: `Push subscription saved for ${type}`,
             });
         } else {
             return NextResponse.json(
@@ -39,17 +47,17 @@ export async function POST(request: Request) {
 // DELETE /api/push/subscribe - Remove push subscription
 export async function DELETE(request: Request) {
     try {
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
+        const body = await request.json();
+        const { endpoint } = body;
 
-        if (!userId) {
+        if (!endpoint) {
             return NextResponse.json(
-                { success: false, error: 'Missing userId' },
+                { success: false, error: 'Missing endpoint' },
                 { status: 400 }
             );
         }
 
-        await removeSubscription(userId);
+        await removeSubscription(endpoint);
 
         return NextResponse.json({
             success: true,
@@ -59,6 +67,34 @@ export async function DELETE(request: Request) {
         console.error('Push unsubscribe error:', error);
         return NextResponse.json(
             { success: false, error: 'Failed to unsubscribe' },
+            { status: 500 }
+        );
+    }
+}
+
+// GET /api/push/subscribe - Check subscription status
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const endpoint = searchParams.get('endpoint');
+
+        if (!endpoint) {
+            return NextResponse.json(
+                { success: false, error: 'Missing endpoint' },
+                { status: 400 }
+            );
+        }
+
+        const isSubscribed = await checkSubscription(endpoint);
+
+        return NextResponse.json({
+            success: true,
+            isSubscribed,
+        });
+    } catch (error) {
+        console.error('Check subscription error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to check subscription' },
             { status: 500 }
         );
     }

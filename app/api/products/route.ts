@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import Product from '@/lib/models/product';
 import { requireAdmin } from '@/lib/auth/require-admin';
+import { sendNewProductNotification } from '@/lib/services/push';
 
 // GET /api/products - Get all products with optional filters
 export async function GET(request: Request) {
@@ -16,14 +17,13 @@ export async function GET(request: Request) {
         const maxPrice = searchParams.get('maxPrice');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '20');
-
         const sort = searchParams.get('sort') || 'newest';
+        const brand = searchParams.get('brand');
 
         // Build query
         const query: Record<string, unknown> = { isActive: true };
 
         if (search) {
-            // Enhanced search across multiple fields
             const searchRegex = new RegExp(search, 'i');
             query.$or = [
                 { title: searchRegex },
@@ -42,12 +42,14 @@ export async function GET(request: Request) {
             query.type = type;
         }
 
+        if (brand && brand !== 'all') {
+            query.brand = brand;
+        }
+
         if (minPrice || maxPrice) {
             const min = minPrice ? parseFloat(minPrice) : 0;
             const max = maxPrice ? parseFloat(maxPrice) : Number.MAX_VALUE;
 
-            // Use $expr to comparing against the effective price
-            // if discountedPrice exists and > 0, use it, else use price
             query.$expr = {
                 $and: [
                     {
@@ -66,23 +68,33 @@ export async function GET(request: Request) {
             };
         }
 
-        const brand = searchParams.get('brand');
-        if (brand && brand !== 'all') {
-            query.brand = brand;
+        // Sorting
+        let sortOption: Record<string, 1 | -1> = { createdAt: -1 };
+        switch (sort) {
+            case 'oldest':
+                sortOption = { createdAt: 1 };
+                break;
+            case 'price_asc':
+            case 'price-asc':
+                sortOption = { price: 1 };
+                break;
+            case 'price_desc':
+            case 'price-desc':
+                sortOption = { price: -1 };
+                break;
+            case 'name-asc':
+                sortOption = { title: 1 };
+                break;
+            case 'name-desc':
+                sortOption = { title: -1 };
+                break;
         }
 
         const skip = (page - 1) * limit;
 
-        // Determine sort object
-        let sortQuery: any = { createdAt: -1 };
-        if (sort === 'price_asc') sortQuery = { price: 1 };
-        else if (sort === 'price_desc') sortQuery = { price: -1 };
-        else if (sort === 'recommended') sortQuery = { isFeatured: -1, createdAt: -1 }; // Promote featured items
-        else if (sort === 'newest') sortQuery = { createdAt: -1 };
-
         const [products, total] = await Promise.all([
             Product.find(query)
-                .sort(sortQuery)
+                .sort(sortOption)
                 .skip(skip)
                 .limit(limit)
                 .lean(),
@@ -136,6 +148,12 @@ export async function POST(request: Request) {
         });
 
         await product.save();
+
+        // Send push notification to all subscribed visitors
+        const displayPrice = body.discountedPrice && body.discountedPrice < body.price
+            ? body.discountedPrice
+            : body.price;
+        sendNewProductNotification(body.title, slug, displayPrice).catch(console.error);
 
         return NextResponse.json({
             success: true,

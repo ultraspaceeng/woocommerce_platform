@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiPlus, FiEdit2, FiTrash2, FiTag, FiFolder, FiX } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { categoriesApi } from '@/lib/services/api';
 import styles from './page.module.css';
 
@@ -67,7 +68,7 @@ export default function CategoriesPage() {
             closeModal();
         } catch (error) {
             console.error('Failed to save category:', error);
-            alert('Failed to save category');
+            toast.error('Failed to save category');
         } finally {
             setSaving(false);
         }
@@ -81,7 +82,7 @@ export default function CategoriesPage() {
             await fetchCategories();
         } catch (error) {
             console.error('Failed to delete category:', error);
-            alert('Failed to delete category');
+            toast.error('Failed to delete category');
         }
     };
 

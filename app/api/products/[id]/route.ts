@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import Product from '@/lib/models/product';
+import { requireAdmin } from '@/lib/auth/require-admin';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -45,11 +46,13 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 // PUT /api/products/[id] - Update product (Admin only)
 export async function PUT(request: Request, { params }: RouteParams) {
+    const authError = requireAdmin(request);
+    if (authError) return authError;
+
     try {
         await connectDB();
         const { id } = await params;
 
-        // TODO: Add admin auth verification
         const body = await request.json();
 
         // Note: We don't regenerate slug on update to preserve existing URLs
@@ -111,11 +114,12 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
 // DELETE /api/products/[id] - Delete product (Admin only)
 export async function DELETE(request: Request, { params }: RouteParams) {
+    const authError = requireAdmin(request);
+    if (authError) return authError;
+
     try {
         await connectDB();
         const { id } = await params;
-
-        // TODO: Add admin auth verification
 
         const product = await Product.findByIdAndDelete(id);
 

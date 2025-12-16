@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import User from '@/lib/models/user';
+import { requireAdmin } from '@/lib/auth/require-admin';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -36,6 +37,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 // PUT /api/users/[id] - Update user
 export async function PUT(request: Request, { params }: RouteParams) {
+    const authError = requireAdmin(request);
+    if (authError) return authError;
+
     try {
         const { id } = await params;
         await connectDB();
@@ -70,6 +74,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
 // DELETE /api/users/[id] - Delete user
 export async function DELETE(request: Request, { params }: RouteParams) {
+    const authError = requireAdmin(request);
+    if (authError) return authError;
+
     try {
         const { id } = await params;
         await connectDB();

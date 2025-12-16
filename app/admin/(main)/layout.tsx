@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { FiMenu, FiBell, FiSearch } from 'react-icons/fi';
+import { Toaster } from 'react-hot-toast';
 import AdminSidebar from '@/components/layout/admin-sidebar';
 import ThemeToggle from '@/components/ui/theme-toggle';
 import '../admin.css';
@@ -12,6 +13,29 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
     return (
         <div className={`${styles.adminLayout} adminLayout`}>
+            <Toaster
+                position="top-right"
+                toastOptions={{
+                    duration: 4000,
+                    style: {
+                        background: 'var(--card-bg)',
+                        color: 'var(--text-primary)',
+                        border: '1px solid var(--border-color)',
+                    },
+                    success: {
+                        iconTheme: {
+                            primary: 'var(--success-color, #22c55e)',
+                            secondary: 'white',
+                        },
+                    },
+                    error: {
+                        iconTheme: {
+                            primary: 'var(--error-color, #ef4444)',
+                            secondary: 'white',
+                        },
+                    },
+                }}
+            />
             <AdminSidebar isOpen={sidebarOpen} />
 
             <div className={styles.adminMain}>

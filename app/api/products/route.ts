@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import Product from '@/lib/models/product';
+import { requireAdmin } from '@/lib/auth/require-admin';
 
 // GET /api/products - Get all products with optional filters
 export async function GET(request: Request) {
@@ -111,10 +112,12 @@ export async function GET(request: Request) {
 
 // POST /api/products - Create new product (Admin only)
 export async function POST(request: Request) {
+    const authError = requireAdmin(request);
+    if (authError) return authError;
+
     try {
         await connectDB();
 
-        // TODO: Add admin auth verification
         const body = await request.json();
 
         // Generate slug from title with random suffix for uniqueness

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FiSettings, FiGlobe, FiDollarSign, FiTruck, FiBell, FiMapPin, FiSave, FiRefreshCw } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { settingsApi } from '@/lib/services/api';
 import { SUPPORTED_CURRENCIES, CURRENCY_SYMBOLS } from '@/lib/constants/currencies';
 import styles from './page.module.css';
@@ -119,11 +120,11 @@ export default function SettingsPage() {
                     exchangeRateUpdatedAt: data.data.exchangeRateUpdatedAt,
                 }));
             } else {
-                alert('Failed to refresh exchange rate');
+                toast.error('Failed to refresh exchange rate');
             }
         } catch (error) {
             console.error('Failed to refresh rate:', error);
-            alert('Failed to refresh exchange rate');
+            toast.error('Failed to refresh exchange rate');
         } finally {
             setRefreshingRate(false);
         }
@@ -137,7 +138,7 @@ export default function SettingsPage() {
             setTimeout(() => setSaved(false), 3000);
         } catch (error) {
             console.error('Failed to save settings:', error);
-            alert('Failed to save settings');
+            toast.error('Failed to save settings');
         } finally {
             setSaving(false);
         }

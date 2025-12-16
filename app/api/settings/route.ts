@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import SystemSettings from '@/lib/models/system-settings';
+import { requireAdmin } from '@/lib/auth/require-admin';
 
 // GET /api/settings - Get system settings
 export async function GET() {
@@ -34,10 +35,12 @@ export async function GET() {
 
 // PUT /api/settings - Update system settings (Admin only)
 export async function PUT(request: Request) {
+    const authError = requireAdmin(request);
+    if (authError) return authError;
+
     try {
         await connectDB();
 
-        // TODO: Add admin auth verification
         const body = await request.json();
 
         let settings = await SystemSettings.findOne();

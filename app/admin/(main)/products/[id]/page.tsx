@@ -7,6 +7,7 @@ import {
     FiArrowLeft, FiPlus, FiX, FiImage, FiUpload,
     FiDollarSign, FiPackage, FiTag, FiGlobe, FiSave, FiFile
 } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import Button from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
 import { productsApi, categoriesApi } from '@/lib/services/api';
@@ -143,7 +144,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
 
         // Max 50MB for digital files
         if (file.size > 50 * 1024 * 1024) {
-            alert('File size must be under 50MB');
+            toast.error('File size must be under 50MB');
             return;
         }
 
@@ -178,14 +179,14 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
 
         // Max 5 images
         if (formData.images.length + files.length > 5) {
-            alert('Maximum 5 images allowed');
+            toast.error('Maximum 5 images allowed');
             return;
         }
 
         Array.from(files).forEach(file => {
             // Max 5MB per image
             if (file.size > 5 * 1024 * 1024) {
-                alert(`${file.name} is too large. Max 5MB per image.`);
+                toast.error(`${file.name} is too large. Max 5MB per image.`);
                 return;
             }
 
@@ -289,7 +290,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
             router.push('/admin/products');
         } catch (error) {
             console.error('Failed to save product:', error);
-            alert('Failed to save product');
+            toast.error('Failed to save product');
         } finally {
             setSaving(false);
         }

@@ -8,6 +8,7 @@ import {
     FiUser, FiMail, FiPhone, FiMapPin, FiCreditCard, FiSave,
     FiDownload, FiEdit2, FiX
 } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { ordersApi } from '@/lib/services/api';
 import styles from './page.module.css';
 
@@ -132,7 +133,7 @@ export default function OrderDetailsPage() {
             setIsEditing(false);
         } catch (err) {
             console.error('Failed to update order:', err);
-            alert('Failed to update order. Please try again.');
+            toast.error('Failed to update order. Please try again.');
         } finally {
             setSaving(false);
         }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongodb';
 import Order from '@/lib/models/order';
+import { requireAdmin } from '@/lib/auth/require-admin';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -36,11 +37,13 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 // PATCH /api/orders/[id] - Update order status (Admin only)
 export async function PATCH(request: Request, { params }: RouteParams) {
+    const authError = requireAdmin(request);
+    if (authError) return authError;
+
     try {
         await connectDB();
         const { id } = await params;
 
-        // TODO: Add admin auth verification
         const body = await request.json();
         const { paymentStatus, fulfillmentStatus, notes } = body;
 

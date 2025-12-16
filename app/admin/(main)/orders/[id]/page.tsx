@@ -370,7 +370,7 @@ export default function OrderDetailsPage() {
                             <div className={styles.detailRow}>
                                 <span className={styles.detailLabel}>Amount</span>
                                 <span className={styles.detailValue}>
-                                    {formatCurrency(order.paymentDetails.amount / 100)}
+                                    {formatCurrency(order.paymentDetails.amount)}
                                 </span>
                             </div>
                             {order.paymentDetails.paidAt && (

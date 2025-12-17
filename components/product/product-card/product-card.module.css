@@ -215,6 +215,26 @@
     color: var(--color-text-muted);
 }
 
+/* Analytics Stats */
+.statsRow {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.statItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
+.statIcon {
+    width: 12px;
+    height: 12px;
+}
+
 /* Options */
 .optionsContainer {
     display: flex;

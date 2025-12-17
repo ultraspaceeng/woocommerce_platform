@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar, FiEye, FiDownload, FiShoppingBag } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
@@ -43,6 +43,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                     });
                     setSelectedOptions(defaults);
                 }
+                // Track product view (fire and forget)
+                fetch(`/api/products/${id}/view`, { method: 'POST' }).catch(() => { });
             } catch {
                 setError('Product not found');
             } finally {
@@ -51,6 +53,14 @@ export default function ProductPage({ params }: ProductPageProps) {
         };
         fetchProduct();
     }, [id]);
+
+    // Format large numbers for display
+    const formatCount = (count?: number) => {
+        if (!count) return '0';
+        if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+        if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+        return count.toString();
+    };
 
     const handleAddToCart = () => {
         if (product) {
@@ -177,6 +187,25 @@ export default function ProductPage({ params }: ProductPageProps) {
                                     </span>
                                 </div>
                             )}
+
+                            {/* Analytics Stats */}
+                            <div className={styles.statsRow}>
+                                <span className={styles.statItem}>
+                                    <FiEye className={styles.statIcon} />
+                                    {formatCount(product.totalViews)} views
+                                </span>
+                                {isDigital ? (
+                                    <span className={styles.statItem}>
+                                        <FiDownload className={styles.statIcon} />
+                                        {formatCount(product.totalDownloads)} downloads
+                                    </span>
+                                ) : (
+                                    <span className={styles.statItem}>
+                                        <FiShoppingBag className={styles.statIcon} />
+                                        {formatCount(product.totalSolds)} sold
+                                    </span>
+                                )}
+                            </div>
 
                             <div className={styles.priceBlock}>
                                 <span className={styles.price}>{formatPrice(displayPrice!)}</span>

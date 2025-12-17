@@ -34,6 +34,10 @@ export interface IProduct extends Document {
     isActive: boolean;
     rating: number; // Average rating 0-5
     ratingCount: number; // Number of ratings
+    totalViews: number; // View count when product page is opened
+    totalSolds: number; // Units sold (physical products)
+    totalDownloads: number; // Purchase count (digital products)
+    totalSales: number; // Total revenue from this product (for admin)
     createdAt: Date;
     updatedAt: Date;
 }
@@ -113,6 +117,26 @@ const ProductSchema = new Schema<IProduct>({
         max: 5,
     },
     ratingCount: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
+    totalViews: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
+    totalSolds: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
+    totalDownloads: {
+        type: Number,
+        default: 0,
+        min: 0,
+    },
+    totalSales: {
         type: Number,
         default: 0,
         min: 0,

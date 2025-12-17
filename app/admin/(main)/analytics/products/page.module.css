@@ -1,0 +1,374 @@
+/* Product Analytics Page - Admin Design System */
+.page {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+}
+
+/* Page Header */
+.pageHeader {
+    margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--admin-text);
+    margin: 0 0 0.25rem 0;
+}
+
+.pageSubtitle {
+    font-size: 0.9375rem;
+    color: var(--admin-text-muted);
+    margin: 0;
+}
+
+/* Totals Grid - Metric Cards */
+.totalsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.totalCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background-color: var(--admin-bg-card);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.totalCard:hover {
+    border-color: var(--admin-border-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.totalIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.iconPurple {
+    background: var(--admin-purple-bg);
+    color: var(--admin-purple-text);
+}
+
+.iconBlue {
+    background: var(--admin-info-bg);
+    color: var(--admin-info-text);
+}
+
+.iconGreen {
+    background: var(--admin-success-bg);
+    color: var(--admin-success-text);
+}
+
+.iconOrange {
+    background: var(--admin-orange-bg);
+    color: var(--admin-orange-text);
+}
+
+.totalInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.totalValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--admin-text);
+}
+
+.totalLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Table Card */
+.tableCard {
+    background-color: var(--admin-bg-card);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tableHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.tableTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    margin: 0;
+}
+
+.titleIcon {
+    color: var(--admin-accent);
+}
+
+.sortControls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sortLabel {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--admin-text-muted);
+}
+
+.sortSelect {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: var(--admin-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    color: var(--admin-text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sortSelect:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px var(--admin-accent-light);
+}
+
+/* Table */
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+}
+
+.table th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: var(--admin-bg-hover);
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.table td {
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+}
+
+.table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+    background-color: var(--admin-bg-hover);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.numericCol {
+    text-align: right !important;
+}
+
+/* Product Cell */
+.productCell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rank {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--admin-text-muted);
+    min-width: 28px;
+}
+
+.productImage {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: var(--admin-bg-hover);
+}
+
+.thumbnail {
+    object-fit: cover;
+}
+
+.noImage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--admin-bg-active);
+    color: var(--admin-text-muted);
+}
+
+.productName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--admin-text);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.productName:hover {
+    color: var(--admin-accent);
+}
+
+/* Type Badge */
+.typeBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.digitalBadge {
+    background: var(--admin-info-bg);
+    color: var(--admin-info-text);
+}
+
+.physicalBadge {
+    background: var(--admin-success-bg);
+    color: var(--admin-success-text);
+}
+
+/* Stats */
+.statValue {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--admin-text-secondary);
+}
+
+.statIcon {
+    width: 14px;
+    height: 14px;
+    color: var(--admin-text-muted);
+}
+
+.revenueValue {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--admin-success-text);
+}
+
+/* Empty State */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 4rem 2rem;
+    color: var(--admin-text-muted);
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .totalsGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .tableHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .productCell {
+        min-width: 180px;
+    }
+
+    .totalCard {
+        padding: 1rem;
+    }
+
+    .totalIcon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .totalValue {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .totalsGrid {
+        grid-template-columns: 1fr;
+    }
+}

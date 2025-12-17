@@ -33,6 +33,10 @@ export interface Product {
   brand?: string;
   rating?: number;
   ratingCount?: number;
+  totalViews?: number;
+  totalSolds?: number;
+  totalDownloads?: number;
+  totalSales?: number;
   isActive?: boolean;
 }
 

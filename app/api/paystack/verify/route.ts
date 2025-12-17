@@ -95,12 +95,18 @@ export async function POST(request: Request) {
         );
 
         if (physicalItems.length > 0) {
-            // Update stock for each physical product (atomic operation)
+            // Update stock, increment solds count, and add to revenue for each physical product
             const stockUpdatePromises = physicalItems.map(
-                (item: { productId: string; quantity: number }) =>
+                (item: { productId: string; quantity: number; price: number }) =>
                     Product.findByIdAndUpdate(
                         item.productId,
-                        { $inc: { 'inventory.stock': -item.quantity } },
+                        {
+                            $inc: {
+                                'inventory.stock': -item.quantity,
+                                totalSolds: item.quantity,
+                                totalSales: item.price * item.quantity
+                            }
+                        },
                         { new: true }
                     )
             );
@@ -123,15 +129,41 @@ export async function POST(request: Request) {
             }
         }
 
-        // Step 4: Handle digital products - add to user's owned products
+        // Step 5: Handle digital products - add to user's owned products and update analytics
         if (hasDigitalProducts) {
-            const digitalProductIds = orderData.cartItems
-                .filter((item: { type?: string }) => item.type === 'digital')
-                .map((item: { productId?: string }) => item.productId);
+            const digitalItems = orderData.cartItems.filter(
+                (item: { type?: string }) => item.type === 'digital'
+            );
+
+            const digitalProductIds = digitalItems.map(
+                (item: { productId?: string }) => item.productId
+            );
 
             await User.findByIdAndUpdate(user._id, {
                 $addToSet: { ownedProducts: { $each: digitalProductIds } },
             });
+
+            // Increment downloads count and revenue for each digital product
+            const downloadUpdatePromises = digitalItems.map(
+                (item: { productId: string; price: number }) =>
+                    Product.findByIdAndUpdate(
+                        item.productId,
+                        {
+                            $inc: {
+                                totalDownloads: 1,
+                                totalSales: item.price
+                            }
+                        },
+                        { new: true }
+                    )
+            );
+
+            try {
+                await Promise.all(downloadUpdatePromises);
+                console.log(`📥 Downloads updated for ${digitalItems.length} digital products`);
+            } catch (downloadError) {
+                console.error('Failed to update download counts:', downloadError);
+            }
         }
 
         // Generate download links if applicable

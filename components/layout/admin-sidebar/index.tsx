@@ -12,6 +12,7 @@ import styles from './admin-sidebar.module.css';
 const mainNavItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: FiGrid },
     { href: '/admin/analytics', label: 'Analytics', icon: FiTrendingUp },
+    { href: '/admin/analytics/products', label: 'Product Analytics', icon: FiPackage },
 ];
 
 const commerceNavItems = [

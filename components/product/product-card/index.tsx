@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiShoppingCart, FiPackage, FiDownload, FiCheck, FiStar } from 'react-icons/fi';
+import { FiShoppingCart, FiPackage, FiDownload, FiCheck, FiStar, FiEye, FiShoppingBag } from 'react-icons/fi';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { useCurrency } from '@/lib/hooks/use-currency';
@@ -50,6 +50,14 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     const { priceInCurrency }: any = useCurrency();
     const formatPrice = (price: number) => priceInCurrency(price);
+
+    // Format large numbers for display
+    const formatCount = (count?: number) => {
+        if (!count) return '0';
+        if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+        if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+        return count.toString();
+    };
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -160,6 +168,25 @@ export default function ProductCard({ product }: ProductCardProps) {
                             <span className={styles.ratingCount}>({product.ratingCount})</span>
                         </div>
                     )}
+
+                    {/* Analytics Stats */}
+                    <div className={styles.statsRow}>
+                        <span className={styles.statItem}>
+                            <FiEye className={styles.statIcon} />
+                            {formatCount(product.totalViews)}
+                        </span>
+                        {isDigital ? (
+                            <span className={styles.statItem}>
+                                <FiDownload className={styles.statIcon} />
+                                {formatCount(product.totalDownloads)}
+                            </span>
+                        ) : (
+                            <span className={styles.statItem}>
+                                <FiShoppingBag className={styles.statIcon} />
+                                {formatCount(product.totalSolds)}
+                            </span>
+                        )}
+                    </div>
 
                     {/* Options Preview (Colors & Sizes) */}
                     {(optionsPreview?.colors || optionsPreview?.sizes) && (

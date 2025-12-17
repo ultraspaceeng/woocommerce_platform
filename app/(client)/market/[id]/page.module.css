@@ -291,3 +291,28 @@
     font-size: 0.875rem;
     color: var(--color-text-secondary);
 }
+
+/* Analytics Stats */
+.statsRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+}
+
+.statItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-secondary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+}
+
+.statIcon {
+    width: 14px;
+    height: 14px;
+    color: var(--color-text-muted);
+}

@@ -47,11 +47,10 @@ export default function ProductPage({ params }: ProductPageProps) {
                 // Track product view only once per user session (using localStorage)
                 const viewedKey = `product_viewed_${id}`;
                 const viewedData = localStorage.getItem(viewedKey);
-                const now = Date.now();
 
                 // Check if already viewed within last 24 hours
-                if (!viewedData || (now - parseInt(viewedData)) > 24 * 60 * 60 * 1000) {
-                    localStorage.setItem(viewedKey, now.toString());
+                if (viewedData != "true") {
+                    localStorage.setItem(viewedKey, "true");
                     fetch(`/api/products/${id}/view`, { method: 'POST' }).catch(() => { });
                 }
             } catch {

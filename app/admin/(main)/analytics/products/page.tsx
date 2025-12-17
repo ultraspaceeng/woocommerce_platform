@@ -56,8 +56,8 @@ export default function ProductAnalyticsPage() {
         fetchAnalytics();
     }, [sortBy]);
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount);
+    const formatCurrency = (amount?: number) =>
+        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount ?? 0);
 
     const formatCount = (count?: number) => {
         if (count === undefined || count === null) return '0';

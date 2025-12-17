@@ -7,6 +7,7 @@ import {
     FiDollarSign, FiEye, FiDownload, FiShoppingBag, FiPackage,
     FiTrendingUp, FiArrowUp, FiArrowDown
 } from 'react-icons/fi';
+import { analyticsApi } from '@/lib/services/api';
 import styles from './page.module.css';
 
 interface ProductAnalytics {
@@ -40,11 +41,11 @@ export default function ProductAnalyticsPage() {
     useEffect(() => {
         const fetchAnalytics = async () => {
             try {
-                const response = await fetch(`/api/analytics/products?sortBy=${sortBy}&limit=50`);
-                const data = await response.json();
-                if (data.success) {
-                    setProducts(data.data.products);
-                    setTotals(data.data.totals);
+                setLoading(true);
+                const response = await analyticsApi.getProductAnalytics({ sortBy, limit: 50 });
+                if (response.data.success) {
+                    setProducts(response.data.data.products);
+                    setTotals(response.data.data.totals);
                 }
             } catch (error) {
                 console.error('Failed to fetch product analytics:', error);
@@ -130,8 +131,8 @@ export default function ProductAnalyticsPage() {
                     </h2>
                     <div className={styles.sortControls}>
                         <label className={styles.sortLabel}>Sort by:</label>
-                        <select 
-                            value={sortBy} 
+                        <select
+                            value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
                             className={styles.sortSelect}
                         >

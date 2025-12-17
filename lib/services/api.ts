@@ -101,5 +101,7 @@ export const usersApi = {
 export const analyticsApi = {
     getStats: () => api.get('/analytics/stats'),
     track: (type: 'view' | 'download') => api.post('/analytics/track', { type }),
+    getProductAnalytics: (params?: { sortBy?: string; limit?: number; type?: string }) =>
+        api.get('/analytics/products', { params }),
 };
 

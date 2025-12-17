@@ -43,8 +43,17 @@ export default function ProductPage({ params }: ProductPageProps) {
                     });
                     setSelectedOptions(defaults);
                 }
-                // Track product view (fire and forget)
-                fetch(`/api/products/${id}/view`, { method: 'POST' }).catch(() => { });
+
+                // Track product view only once per user session (using localStorage)
+                const viewedKey = `product_viewed_${id}`;
+                const viewedData = localStorage.getItem(viewedKey);
+                const now = Date.now();
+
+                // Check if already viewed within last 24 hours
+                if (!viewedData || (now - parseInt(viewedData)) > 24 * 60 * 60 * 1000) {
+                    localStorage.setItem(viewedKey, now.toString());
+                    fetch(`/api/products/${id}/view`, { method: 'POST' }).catch(() => { });
+                }
             } catch {
                 setError('Product not found');
             } finally {

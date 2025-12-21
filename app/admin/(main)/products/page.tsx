@@ -18,13 +18,14 @@ export default function ProductsPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
     const { priceInCurrency }: any = useCurrency();
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const params: Record<string, unknown> = { limit: 100 };
+                const params: Record<string, unknown> = { limit: 100, status: statusFilter };
                 if (filterType !== 'all') params.type = filterType;
                 if (searchQuery) params.search = searchQuery;
 
@@ -37,7 +38,7 @@ export default function ProductsPage() {
             }
         };
         fetchProducts();
-    }, [filterType, searchQuery]);
+    }, [filterType, statusFilter, searchQuery]);
 
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this product?')) return;
@@ -100,10 +101,15 @@ export default function ProductsPage() {
                     />
                 </div>
                 <div className={styles.filters}>
-                    <button className={styles.filterBtn}>
-                        <FiFilter size={16} />
-                        Filters
-                    </button>
+                    <select
+                        className={styles.filterSelect}
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="draft">Draft</option>
+                    </select>
                     <select
                         className={styles.filterSelect}
                         value={filterType}

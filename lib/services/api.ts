@@ -51,7 +51,7 @@ export default api;
 
 // API helper functions
 export const productsApi = {
-    getAll: (params?: { limit?: number; search?: string; category?: string; type?: string; minPrice?: number; maxPrice?: number }) =>
+    getAll: (params?: { limit?: number; search?: string; category?: string; type?: string; minPrice?: number; maxPrice?: number; status?: string }) =>
         api.get('/products', { params }),
     getById: (id: string) => api.get(`/products/${id}`),
     create: (data: FormData | object) => api.post('/products', data),

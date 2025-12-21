@@ -20,8 +20,20 @@ export async function GET(request: Request) {
         const sort = searchParams.get('sort') || 'newest';
         const brand = searchParams.get('brand');
 
+        const status = searchParams.get('status');
+
         // Build query
-        const query: Record<string, unknown> = { isActive: true };
+        const query: Record<string, unknown> = {};
+
+        // Status filter (default to active if not specified)
+        if (status === 'all') {
+            // No status filter - show all
+        } else if (status === 'draft') {
+            query.isActive = false;
+        } else {
+            // Default: show only active products
+            query.isActive = true;
+        }
 
         if (search) {
             const searchRegex = new RegExp(search, 'i');

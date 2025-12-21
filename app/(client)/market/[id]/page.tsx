@@ -168,6 +168,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                                             src={product.assets[selectedImageIndex] || product.assets[0]}
                                             alt={product.title}
                                             priority
+                                            fill
+                                            className={styles.image}
                                         />
                                         {/* Play button overlay if needed? No, logic moved to video selection */}
                                         {product.assets.length + (product.videoUrl ? 1 : 0) > 1 && (
@@ -363,8 +365,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                         />
                     </div>
                 </div>
-            </main >
+            </main>
             <Footer />
-        </div >
+        </div>
     );
 }

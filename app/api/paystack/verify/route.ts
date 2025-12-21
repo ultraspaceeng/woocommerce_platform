@@ -3,6 +3,7 @@ import connectDB from '@/lib/db/mongodb';
 import Order from '@/lib/models/order';
 import User from '@/lib/models/user';
 import Product from '@/lib/models/product';
+import { sendNewOrderAdminPush } from '@/lib/services/push';
 
 // const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 
@@ -193,9 +194,17 @@ export async function POST(request: Request) {
             const { sendOrderConfirmationEmail, sendNewOrderAdminNotification } = await import('@/lib/services/email');
             await sendOrderConfirmationEmail(emailData);
             await sendNewOrderAdminNotification(emailData);
-        } catch (emailError) {
-            console.error('Failed to send confirmation email:', emailError);
-            // Don't fail the request if email fails, but log it
+
+            // Send push notification to admin
+            const pushResult = await sendNewOrderAdminPush(
+                order.orderId,
+                orderData.totalAmount,
+                orderData.userDetails.name || 'Customer'
+            );
+            console.log(`📱 Admin push notification sent (${pushResult.success} success, ${pushResult.failed} failed)`);
+        } catch (notificationError) {
+            console.error('Failed to send notifications:', notificationError);
+            // Don't fail the request if notifications fail, but log it
         }
 
         // Prepare digital items list for frontend download links

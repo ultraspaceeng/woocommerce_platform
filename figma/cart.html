@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shopify B2B Cart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3d72e6",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-800">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-3 text-slate-900 dark:text-white group" href="#">
+<div class="flex size-8 items-center justify-center rounded bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<span class="text-lg font-bold leading-tight tracking-tight">Shopify B2B</span>
+</a>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">Catalog</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">Quick Order</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">Account</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<!-- Search Bar -->
+<div class="hidden sm:block">
+<label class="relative flex items-center">
+<span class="absolute left-3 text-slate-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="h-10 w-64 rounded-lg border-none bg-slate-100 pl-10 pr-4 text-sm text-slate-900 focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-white placeholder:text-slate-400" placeholder="Search products, SKUs..." type="text"/>
+</label>
+</div>
+<!-- Cart Icon -->
+<button class="relative flex h-10 w-10 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">shopping_cart</span>
+<span class="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-sm">3</span>
+</button>
+<!-- Profile -->
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold hover:bg-primary/20 transition-colors">
+                    JD
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow">
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<!-- Breadcrumbs -->
+<nav class="mb-6 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-medium text-slate-900 dark:text-white">Cart</span>
+</nav>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+<!-- Left Column: Cart Items -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Page Heading -->
+<div class="border-b border-gray-200 pb-5 dark:border-gray-800">
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Your Cart (3 Items)</h1>
+<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Review your selected items before proceeding.</p>
+</div>
+<!-- Cart Table -->
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-gray-100 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-800/50">
+<th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Product</th>
+<th class="hidden sm:table-cell px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Price</th>
+<th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Quantity</th>
+<th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-right">Total</th>
+<th class="w-10 px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+<!-- Item 1 -->
+<tr class="group hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex gap-4">
+<div class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+<img alt="Heavy Duty Cordless Drill" class="h-full w-full object-cover" data-alt="Yellow cordless drill on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDujXFpD2eq4RM0GKTUKu_GhxbKcrpE07PlNuXbQyIbKtoGEUKJ-EieDD6B-FjvfIQ2DzLyDUPE35vhPJNhRNNIleXzAy0ipUOhhxHvTgRPnwDaKyWYjvoqMm2enQq9OOVdl_rExIoEmRxaVJYI8g641n7v_REM1VmAs6muwt-AMFAq4gdZmKC5nexkPHeYs3nPIWEe42_NT734GJi7LoNR0Gh7P2ywG-xCqEy1L3Zo8FW3Mx3wLQMdLUvTkcNlNy2M8INh6RpVpQ"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="font-semibold text-slate-900 dark:text-white">Cordless Drill Pro</h3>
+<span class="mt-1 text-xs font-medium text-slate-500">SKU: HDD-4002-XL</span>
+<span class="mt-1 sm:hidden text-sm font-medium text-primary">$149.00</span>
+</div>
+</div>
+</td>
+<td class="hidden sm:table-cell px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
+                                        $149.00
+                                    </td>
+<td class="px-6 py-4">
+<div class="flex w-32 items-center rounded-lg border border-gray-200 dark:border-gray-700">
+<button class="flex h-9 w-9 items-center justify-center text-slate-500 hover:bg-gray-100 hover:text-primary dark:text-slate-400 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<input class="h-9 w-full border-none bg-transparent text-center text-sm font-medium text-slate-900 focus:ring-0 dark:text-white" readonly="" type="text" value="5"/>
+<button class="flex h-9 w-9 items-center justify-center text-slate-500 hover:bg-gray-100 hover:text-primary dark:text-slate-400 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">
+                                        $745.00
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</td>
+</tr>
+<!-- Item 2 -->
+<tr class="group hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex gap-4">
+<div class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+<img alt="Industrial Safety Gloves" class="h-full w-full object-cover" data-alt="Yellow and black industrial safety gloves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_lg-3s4rf31CQoMUpqvAfX3jNkiOL9YQDLbNh9P98YZBfcWbJ3Nj8cyqgXkIGfnljN2QAKQwDBUUnmcWdyapHwrOClro3Pjp1StzHdJIIh_4_w52qkXhOtChrObZbqb7CJHIqyhXfaZa7VRuWP3AEuxxRrE8Xe4xQNHraH5YnkDnqZwENLj5ZlGcFvYu8zdbxLcfsmn04FA9sdd6MVWUTzCh42j-60s7axSbPVe4cdn19vqKPL5bSCowrto9VHWkjaUgxzrbvEw"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="font-semibold text-slate-900 dark:text-white">Safety Gloves (10 Pack)</h3>
+<span class="mt-1 text-xs font-medium text-slate-500">SKU: GLV-992</span>
+<span class="mt-1 sm:hidden text-sm font-medium text-primary">$25.00</span>
+</div>
+</div>
+</td>
+<td class="hidden sm:table-cell px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
+                                        $25.00
+                                    </td>
+<td class="px-6 py-4">
+<div class="flex w-32 items-center rounded-lg border border-gray-200 dark:border-gray-700">
+<button class="flex h-9 w-9 items-center justify-center text-slate-500 hover:bg-gray-100 hover:text-primary dark:text-slate-400 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<input class="h-9 w-full border-none bg-transparent text-center text-sm font-medium text-slate-900 focus:ring-0 dark:text-white" readonly="" type="text" value="10"/>
+<button class="flex h-9 w-9 items-center justify-center text-slate-500 hover:bg-gray-100 hover:text-primary dark:text-slate-400 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">
+                                        $250.00
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</td>
+</tr>
+<!-- Item 3 -->
+<tr class="group hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex gap-4">
+<div class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+<img alt="Precision Screwdriver Set" class="h-full w-full object-cover" data-alt="Set of screwdrivers laid out in order" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ7-TS7jF8v8mOr2dfmXtLuKnhwYUAM8VSL_6kNlnZc2H6BYix76c8A_hv9i5LCXMrGbKKUQwe9L5YJKbP0CSzb5ku6FDnjtnKMMMYSO21_JNXPk7lmz8X9_mbKPXe4dBA82ZSrRsX8QIiLHu_D2dzaMNoOYxamqTJOj71VX9-fu80BeyiPZytf_YqYJlEfpwhdxN-yrzpJzirSYL9714PMt6siAQdRrz27q8EOEk-IiEzqGWOViROWUg8swoOtzm4xFHl7iDKIA"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="font-semibold text-slate-900 dark:text-white">Precision Screwdriver Set</h3>
+<span class="mt-1 text-xs font-medium text-slate-500">SKU: SCR-200</span>
+<span class="mt-1 sm:hidden text-sm font-medium text-primary">$45.00</span>
+</div>
+</div>
+</td>
+<td class="hidden sm:table-cell px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
+                                        $45.00
+                                    </td>
+<td class="px-6 py-4">
+<div class="flex w-32 items-center rounded-lg border border-gray-200 dark:border-gray-700">
+<button class="flex h-9 w-9 items-center justify-center text-slate-500 hover:bg-gray-100 hover:text-primary dark:text-slate-400 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<input class="h-9 w-full border-none bg-transparent text-center text-sm font-medium text-slate-900 focus:ring-0 dark:text-white" readonly="" type="text" value="2"/>
+<button class="flex h-9 w-9 items-center justify-center text-slate-500 hover:bg-gray-100 hover:text-primary dark:text-slate-400 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">
+                                        $90.00
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Related Items Section -->
+<div class="mt-8">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">Frequently Bought Together</h2>
+<a class="text-sm font-medium text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+<!-- Related Card 1 -->
+<div class="group rounded-lg bg-white p-4 shadow-sm border border-gray-200 hover:border-primary/50 transition-all dark:bg-gray-900 dark:border-gray-800">
+<div class="relative mb-3 aspect-square overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
+<img alt="Safety Goggles" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Clear safety goggles on a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgGOtxwcULjE2WAReHGqv8do9EV1cTTEQWS3X0vMNILhpOfkdDGMt9JBFK_kb5Y-ra9UMgaApwQEasPg3F3nDB6eNlHppNArOQaEgRbgFaCxJy48ARkUljhMaoVgvocM7cYX8UvZBiNvKl7FmF5J8ygimPdmes_a8-LlNYxEQUUm4oF2qvJpMgtnt4us2Pjllg_bNwhJ3xBpqAD-kyfR2sbYnbDKhk2ScfgZLa6HJx9ottcLpAG2TZNmkf6gzjOVaneSEufGUGlA"/>
+<button class="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md text-primary hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+</button>
+</div>
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1">Pro Safety Goggles</h3>
+<div class="mt-1 flex items-center justify-between">
+<span class="text-sm font-bold text-slate-600 dark:text-slate-300">$18.50</span>
+<span class="text-[10px] uppercase tracking-wide text-slate-400">SKU: SG-101</span>
+</div>
+</div>
+<!-- Related Card 2 -->
+<div class="group rounded-lg bg-white p-4 shadow-sm border border-gray-200 hover:border-primary/50 transition-all dark:bg-gray-900 dark:border-gray-800">
+<div class="relative mb-3 aspect-square overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
+<img alt="Tool Box" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Red heavy duty metal tool box" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD_orsvNueVtpV-4pZ46Hwoh2F6yzTg1k9uiRarxEd775Tvvz_MExQHbxIcU5odMNivPJ2EstEx9JV7zXVXcOB7zYdZC536TFB8tYGwMk7Qp1uC_H9vtfzjPCRC8PYbze5iCjfasdbQhlB6bBdvFr57y6WY996zcfcuKp8wJPdpPrMeU-8daPWT5HlJuQNRWjwtoHXOF3lOGWMVXTCo583kWS3dqtLq90w01iUGxUygV2_VQI2tpd5accRI4vepdO7lIY58u7rnA"/>
+<button class="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md text-primary hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+</button>
+</div>
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1">Metal Tool Box XL</h3>
+<div class="mt-1 flex items-center justify-between">
+<span class="text-sm font-bold text-slate-600 dark:text-slate-300">$59.99</span>
+<span class="text-[10px] uppercase tracking-wide text-slate-400">SKU: TB-400</span>
+</div>
+</div>
+<!-- Related Card 3 -->
+<div class="group rounded-lg bg-white p-4 shadow-sm border border-gray-200 hover:border-primary/50 transition-all dark:bg-gray-900 dark:border-gray-800">
+<div class="relative mb-3 aspect-square overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
+<img alt="Extension Cord" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Coiled orange industrial extension cord" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmnUj0Pn-zeUHIGtf2vxk7oH7-YhIJIGXuEBHFhfEbZJUquimMqFQjg4owVUbSt-CeBlTkXn0gt-uzGgzZO7XSA0hk_H_M6mYN4l1FlY7s7lVUbfzzm5WUrCtr0VPlfaYA1IuImwhae7PV5xsPmFg67TQMcfzYTausKL-YBgFU7EhCD39czCfHyM8zUvsF7jfi0Ov5Qyu99TEHNGUd9o7RFfmRJ1Xry4UAeerEQqohZ4kikBA_J-IRXoiC1P-pNCf4Ewg_XRq5aw"/>
+<button class="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md text-primary hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+</button>
+</div>
+<h3 class="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1">Heavy Duty Cord 50ft</h3>
+<div class="mt-1 flex items-center justify-between">
+<span class="text-sm font-bold text-slate-600 dark:text-slate-300">$32.00</span>
+<span class="text-[10px] uppercase tracking-wide text-slate-400">SKU: EC-50</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Order Summary -->
+<div class="lg:col-span-4">
+<div class="sticky top-24 flex flex-col gap-6">
+<!-- Summary Card -->
+<div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+<h2 class="mb-5 text-lg font-bold text-slate-900 dark:text-white">Order Summary</h2>
+<!-- Calculations -->
+<div class="flex flex-col gap-3 border-b border-gray-100 pb-4 dark:border-gray-800">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Subtotal</span>
+<span class="font-medium text-slate-900 dark:text-white">$1,085.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Estimated Shipping</span>
+<span class="font-medium text-slate-600 dark:text-slate-300 italic">Calculated at checkout</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Estimated Tax</span>
+<span class="font-medium text-slate-900 dark:text-white">$86.80</span>
+</div>
+</div>
+<!-- Grand Total -->
+<div class="mt-4 flex items-end justify-between">
+<span class="text-base font-semibold text-slate-900 dark:text-white">Total</span>
+<span class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">$1,171.80</span>
+</div>
+<!-- B2B Actions -->
+<div class="mt-6 flex flex-col gap-3">
+<button class="flex w-full items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all">
+                                    PROCEED TO CHECKOUT
+                                </button>
+<button class="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-slate-300 dark:hover:bg-gray-750 transition-colors">
+<span class="material-symbols-outlined mr-2 text-[18px]">download</span>
+                                    Download Quote
+                                </button>
+</div>
+</div>
+<!-- Order Notes -->
+<div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+<h3 class="mb-3 text-sm font-semibold text-slate-900 dark:text-white">Order Notes</h3>
+<textarea class="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary focus:bg-white focus:ring-0 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-primary dark:focus:bg-gray-800" placeholder="Special instructions for delivery or packaging..." rows="3"></textarea>
+</div>
+<!-- Help / Trust -->
+<div class="flex items-start gap-3 rounded-lg bg-blue-50/50 p-4 dark:bg-blue-900/10">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">verified_user</span>
+<div>
+<h4 class="text-sm font-semibold text-slate-900 dark:text-white">Secure Checkout</h4>
+<p class="mt-1 text-xs text-slate-600 dark:text-slate-400">All transactions are encrypted and secured. Need help? <a class="text-primary hover:underline" href="#">Contact Support</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Simple -->
+<footer class="mt-auto border-t border-gray-200 bg-white py-8 dark:border-gray-800 dark:bg-gray-900">
+<div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+<p class="text-sm text-slate-500 dark:text-slate-400">© 2023 Shopify B2B Clone. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

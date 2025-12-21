@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>B2B Commerce Platform</title>
+<!-- Tailwind CSS with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3d72e6",
+                        "background-light": "#ffffff",
+                        "background-subtle": "#f8f9fb",
+                        "background-dark": "#111621",
+                        "text-main": "#0e121b",
+                        "text-secondary": "#4f6696",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.375rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main font-display antialiased overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-[#e8ebf3]">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<!-- Logo -->
+<div class="flex items-center gap-2 cursor-pointer">
+<div class="bg-primary text-white rounded-lg p-1">
+<span class="material-symbols-outlined text-[24px]">storefront</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-text-main">B2B Commerce</span>
+</div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-text-main hover:text-primary transition-colors" href="#">Features</a>
+<a class="text-sm font-medium text-text-main hover:text-primary transition-colors" href="#">Solutions</a>
+<a class="text-sm font-medium text-text-main hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="text-sm font-medium text-text-main hover:text-primary transition-colors" href="#">Resources</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex text-sm font-bold text-text-main hover:text-primary transition-colors px-3 py-2">
+                        Log In
+                    </button>
+<button class="flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-5 transition-transform hover:scale-105 shadow-sm shadow-blue-200">
+                        Get Started
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<main class="flex flex-col min-h-screen">
+<!-- Hero Section -->
+<section class="relative pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="grid lg:grid-cols-2 gap-12 items-center">
+<div class="flex flex-col gap-6 max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 w-fit">
+<span class="bg-primary rounded-full w-2 h-2"></span>
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">New B2B Features Live</span>
+</div>
+<h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-text-main leading-[1.1] tracking-tight">
+                            Scale Your Wholesale Business 
+                            <span class="text-primary">Without Limits</span>
+</h1>
+<p class="text-lg text-text-secondary leading-relaxed max-w-lg">
+                            The all-in-one platform for high-volume merchants. Powerful features, seamless integration, and custom pricing tiers designed to grow with you.
+                        </p>
+<div class="flex flex-wrap gap-4 pt-2">
+<button class="flex items-center justify-center rounded-lg bg-primary text-white h-12 px-8 text-base font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-all">
+                                Start Free Trial
+                            </button>
+<button class="flex items-center justify-center rounded-lg bg-background-subtle border border-[#d0d7e6] text-text-main h-12 px-8 text-base font-bold hover:bg-gray-100 transition-all">
+                                Book Demo
+                            </button>
+</div>
+<div class="pt-4 flex items-center gap-4 text-sm text-text-secondary">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white bg-cover" data-alt="User avatar 1" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD9QfYHqfT8a4txMxaZbh2XwhobbqxQGVeOOqbNgX2ZpYuPKcGKlPnT0PZ7urPTFwKt3kBITVycrvzN8LhVx1CFeDnV2G66qjlZ3AMkRBnG66f4P2UYYD97wk7h84E_iWcTsnyKWW-XgjlJVibdlb-V6RaXix1PC9E0ddYVSp8Le5nziDNWAbHWcv4PPA1d1XulQ4_lAEpJNULIL4YmqjcwGUkt2JIAEX-LOVza-vgqP_lGmRmDFg_MuGppDmJsoVmei4S5R5hNNw');"></div>
+<div class="w-8 h-8 rounded-full bg-gray-300 border-2 border-white bg-cover" data-alt="User avatar 2" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC9b0DrW64zzuWYlLcHo9kgR1sabnjZhOFUEsjXidt_ZPTThOJ6vruT-K3IQYH-Sqky6IOi47MabKVypCj1gmxx2kUJdHoQvHZ0KvBweBqzgoH3QPMwu6K5KPNxOPojs3MGz1HMSycdg6M6SURja1duPiPGXBb_46VDp7i0G3oXrV2SwCelqWgf7KaVcTzzcat5y_6lV1YiOZABEA7Dq59pXYuasc-6gFRalS8OuH7jLiF4_eqhEoYp7StQinKCJmROJ0enBRosTw');"></div>
+<div class="w-8 h-8 rounded-full bg-gray-400 border-2 border-white bg-cover" data-alt="User avatar 3" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD2lJNd3D1kfmwlOsgOUP8oBxQbQcqESRvhwA3wLHuPXBTjix8F_HYJudUdlVGlH_9ywgqfa_bL0rQdKQPORvnYwHz-T3KGah0VFQ54mW74TqOF0h24LCNbuMF5Y5fsKp8DbNj63esDTlK3Rv7KEIzSY9sm818JHYpvg-SEQfCUwqpN64xM1pNGgBU2JDs7_FiPkcDZjbruCAiS6jk3BGrTGH_XFGkE18RwRwb64ThIKRwiwEozC-rbhPn-_Qa_RQYd0_-PjknGvg');"></div>
+</div>
+<p>Trusted by 10,000+ merchants</p>
+</div>
+</div>
+<div class="relative lg:h-auto">
+<div class="absolute -top-20 -right-20 w-[140%] h-[140%] bg-gradient-to-br from-blue-50 to-transparent rounded-full opacity-50 blur-3xl pointer-events-none"></div>
+<div class="relative rounded-xl overflow-hidden shadow-2xl border border-gray-100 bg-white">
+<!-- Browser Chrome styling -->
+<div class="bg-gray-50 border-b border-gray-100 px-4 py-3 flex gap-2">
+<div class="w-3 h-3 rounded-full bg-red-400"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+<div class="w-3 h-3 rounded-full bg-green-400"></div>
+</div>
+<div class="aspect-[4/3] bg-cover bg-top" data-alt="Analytics dashboard showing sales growth graphs" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBd_3EV3-45IsLD8RKEmFkBXqqHDPqk4VIJ9xXJRtSjUfH3iR4b8N5YdUqqaLZP1mnvrzlq13PVYYq4MpO5oGA6dBJ1cinF7aZjEgB0O3PrNHoBFDgVBBusErVqzJKZENcr1X7fTEMFp-uv35gh-WzRKSzzgdTfic2F6-KV7EhnFAMxP2jreU_LNqgK8EjW4ApoNGYlKwndfZ6Y8FUUzDEQYx7k_Gkhnaxxqp6BxB0y3KbUnsE0S7OeeNgKawKmWFiMGUsVwkHVZA');"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Strip -->
+<section class="border-y border-[#e8ebf3] bg-background-subtle py-10">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+<p class="text-center text-sm font-semibold text-text-secondary mb-6 uppercase tracking-wider">Powering the next generation of wholesalers</p>
+<div class="flex flex-wrap justify-center items-center gap-x-12 gap-y-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<!-- Placeholder Logos using text for demo purposes, normally SVGs -->
+<span class="text-xl font-bold font-sans text-gray-800 flex items-center gap-2"><span class="material-symbols-outlined">diamond</span> ACME Corp</span>
+<span class="text-xl font-bold font-sans text-gray-800 flex items-center gap-2"><span class="material-symbols-outlined">bolt</span> EnergyInc</span>
+<span class="text-xl font-bold font-sans text-gray-800 flex items-center gap-2"><span class="material-symbols-outlined">water_drop</span> FlowState</span>
+<span class="text-xl font-bold font-sans text-gray-800 flex items-center gap-2"><span class="material-symbols-outlined">rocket_launch</span> StarTech</span>
+<span class="text-xl font-bold font-sans text-gray-800 flex items-center gap-2"><span class="material-symbols-outlined">forest</span> GreenLeaf</span>
+</div>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="py-20 bg-white">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="text-3xl font-bold text-text-main sm:text-4xl mb-4">Everything you need to sell B2B</h2>
+<p class="text-lg text-text-secondary">Designed for wholesalers, distributors, and manufacturers who need enterprise-grade power with consumer-grade simplicity.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300">
+<div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">price_change</span>
+</div>
+<h3 class="text-lg font-bold text-text-main mb-2">Dynamic Pricing</h3>
+<p class="text-sm text-text-secondary leading-relaxed">Set custom price lists for different customer groups, tiers, and volume breaks automatically.</p>
+</div>
+<!-- Card 2 -->
+<div class="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300">
+<div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">list_alt</span>
+</div>
+<h3 class="text-lg font-bold text-text-main mb-2">Bulk Order Forms</h3>
+<p class="text-sm text-text-secondary leading-relaxed">Allow customers to order hundreds of SKUs in seconds with quick order tabular forms.</p>
+</div>
+<!-- Card 3 -->
+<div class="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300">
+<div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+</div>
+<h3 class="text-lg font-bold text-text-main mb-2">Customer Portals</h3>
+<p class="text-sm text-text-secondary leading-relaxed">Give your clients a self-service portal to manage invoices, track shipments, and reorder.</p>
+</div>
+<!-- Card 4 -->
+<div class="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300">
+<div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<h3 class="text-lg font-bold text-text-main mb-2">ERP Integrations</h3>
+<p class="text-sm text-text-secondary leading-relaxed">Sync inventory and orders seamlessly with your existing Netsuite, SAP, or Microsoft backend.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Feature Highlight / About Section -->
+<section class="py-20 bg-background-subtle">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col lg:flex-row gap-16 items-center">
+<div class="flex-1 space-y-8">
+<div>
+<h2 class="text-3xl font-bold text-text-main sm:text-4xl mb-6">Simplify your complex operations</h2>
+<p class="text-lg text-text-secondary leading-relaxed mb-6">
+                                We bridge the gap between complex enterprise systems and user-friendly ecommerce. Empowering over 10,000 wholesalers globally to ditch spreadsheets and start selling online like a modern tech company.
+                            </p>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-green-500 mt-0.5">check_circle</span>
+<span class="text-text-main font-medium">Automated tax compliance worldwide</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-green-500 mt-0.5">check_circle</span>
+<span class="text-text-main font-medium">Multi-warehouse inventory routing</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-green-500 mt-0.5">check_circle</span>
+<span class="text-text-main font-medium">Net 30/60 payment term management</span>
+</li>
+</ul>
+</div>
+<div class="flex items-center gap-4 pt-2">
+<button class="flex items-center justify-center rounded-lg bg-white border border-[#d0d7e6] text-primary h-12 px-6 text-base font-bold hover:bg-gray-50 transition-all">
+                                Learn about our mission
+                            </button>
+<a class="text-primary font-bold hover:underline" href="#">Read Case Studies →</a>
+</div>
+</div>
+<div class="flex-1 w-full">
+<div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-xl bg-gray-200">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Modern automated warehouse interior with packages" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQn3dEBS0OVhf5bEFMvGA7df9PPIiqnpLNnSk0G5504jcqugCsFXrDEbzzVm5Y6NhjUMTH11ed-rXqKBqlSIC0Q_WK99nmT7xItlgTr825AWp_4V2esi96MnDJH-uzfjoYvP9VE2ia8mgWgLRDbpMVJh3YQDnfFLeFPvdwhQC0eULoAy8T27pbHPLOaeTAlNug1teticOZW5wBJ8XIY76Yt8QfcVSJoyqQf4DO0IPQOdqU9N2pa56VnuZF8V-YQ2EsynBagjpBtQ');"></div>
+<div class="absolute inset-0 bg-primary/10 mix-blend-multiply"></div>
+<!-- Floating Stats Card -->
+<div class="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur rounded-xl p-6 shadow-lg border border-white/50">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-semibold text-gray-500 uppercase">Order Efficiency</span>
+<span class="material-symbols-outlined text-green-500">trending_up</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-black text-text-main">+142%</span>
+<span class="text-sm text-green-600 font-medium">Year over Year</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 bg-primary text-white relative overflow-hidden">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 30px 30px;"></div>
+<div class="max-w-[800px] mx-auto px-4 relative z-10 text-center">
+<h2 class="text-3xl sm:text-5xl font-black mb-6 tracking-tight">Ready to transform your B2B sales?</h2>
+<p class="text-blue-100 text-lg sm:text-xl mb-10 max-w-2xl mx-auto">Join the fastest growing B2B commerce platform today. No credit card required for trial.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-4">
+<button class="flex items-center justify-center rounded-lg bg-white text-primary h-14 px-8 text-lg font-bold shadow-xl hover:bg-gray-50 transition-all">
+                        Start 14-Day Free Trial
+                    </button>
+<button class="flex items-center justify-center rounded-lg bg-transparent border-2 border-white/30 text-white h-14 px-8 text-lg font-bold hover:bg-white/10 transition-all">
+                        Talk to Sales
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-gray-900 text-white pt-20 pb-10 border-t border-gray-800">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+<div class="col-span-2 lg:col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<div class="bg-primary text-white rounded-lg p-1">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<span class="text-xl font-bold tracking-tight">B2B Commerce</span>
+</div>
+<p class="text-gray-400 mb-6 max-w-xs leading-relaxed">
+                        Making enterprise-grade wholesale commerce accessible to everyone. Built for scale, security, and speed.
+                    </p>
+<div class="flex gap-4">
+<a aria-label="Twitter" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white" href="#">
+<span class="text-xs font-bold">X</span>
+</a>
+<a aria-label="LinkedIn" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white" href="#">
+<span class="text-xs font-bold">in</span>
+</a>
+<a aria-label="Instagram" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white" href="#">
+<span class="text-xs font-bold">Ig</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">Product</h4>
+<ul class="space-y-4 text-sm text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Integrations</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Enterprise</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Changelog</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">Resources</h4>
+<ul class="space-y-4 text-sm text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Community</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Blog</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Help Center</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">Company</h4>
+<ul class="space-y-4 text-sm text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">About</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Legal</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Privacy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+<p>© 2024 B2B Commerce Platform. All rights reserved.</p>
+<div class="flex gap-8">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar, FiEye, FiDownload, FiShoppingBag } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar, FiEye, FiDownload, FiShoppingBag, FiChevronRight, FiChevronLeft, FiHeart, FiTruck, FiShield, FiRotateCcw } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
@@ -44,11 +44,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                     setSelectedOptions(defaults);
                 }
 
-                // Track product view only once per user session (using localStorage)
                 const viewedKey = `product_viewed_${id}`;
                 const viewedData = localStorage.getItem(viewedKey);
-
-                // Check if already viewed within last 24 hours
                 if (viewedData != "true") {
                     localStorage.setItem(viewedKey, "true");
                     fetch(`/api/products/${id}/view`, { method: 'POST' }).catch(() => { });
@@ -62,7 +59,6 @@ export default function ProductPage({ params }: ProductPageProps) {
         fetchProduct();
     }, [id]);
 
-    // Format large numbers for display
     const formatCount = (count?: number) => {
         if (!count) return '0';
         if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
@@ -77,8 +73,19 @@ export default function ProductPage({ params }: ProductPageProps) {
         }
     };
 
-    const { priceInCurrency }: any = useCurrency(); // Use global currency formatter
+    const handlePrevImage = () => {
+        if (product?.assets) {
+            setSelectedImageIndex((prev) => (prev === 0 ? product.assets!.length - 1 : prev - 1));
+        }
+    };
 
+    const handleNextImage = () => {
+        if (product?.assets) {
+            setSelectedImageIndex((prev) => (prev === product.assets!.length - 1 ? 0 : prev + 1));
+        }
+    };
+
+    const { priceInCurrency }: any = useCurrency();
     const formatPrice = (price: number) => priceInCurrency(price);
 
     if (loading) {
@@ -111,9 +118,9 @@ export default function ProductPage({ params }: ProductPageProps) {
     const hasDiscount = product.discountedPrice && product.discountedPrice < product.price;
     const displayPrice = hasDiscount ? product.discountedPrice : product.price;
     const isInStock = product?.type === 'digital' || (product?.inventory?.stock || 0) > 0;
-
     const inCart = product ? checkIfInCart(product._id) : false;
     const isDigital = product?.type === 'digital';
+    const discountPercent = hasDiscount ? Math.round((1 - product.discountedPrice! / product.price) * 100) : 0;
 
     const getButtonState = () => {
         if (isDigital && inCart) {
@@ -132,8 +139,13 @@ export default function ProductPage({ params }: ProductPageProps) {
             <Header />
             <main className={styles.main}>
                 <div className={styles.container}>
+                    {/* Breadcrumb */}
                     <nav className={styles.breadcrumb}>
-                        <Link href="/">Home</Link> / <Link href="/market">Market</Link> / {product.title}
+                        <Link href="/">Home</Link>
+                        <FiChevronRight size={14} />
+                        <Link href="/market">Products</Link>
+                        <FiChevronRight size={14} />
+                        <span>{product.title}</span>
                     </nav>
 
                     <div className={styles.productLayout}>
@@ -141,19 +153,30 @@ export default function ProductPage({ params }: ProductPageProps) {
                         <div className={styles.imageSection}>
                             <div className={styles.mainImage}>
                                 {product.assets && product.assets.length > 0 ? (
-                                    <Image
-                                        src={product.assets[selectedImageIndex] || product.assets[0]}
-                                        alt={product.title}
-                                        fill
-                                        className={styles.image}
-                                        priority
-                                    />
+                                    <>
+                                        <Image
+                                            src={product.assets[selectedImageIndex] || product.assets[0]}
+                                            alt={product.title}
+                                            fill
+                                            className={styles.image}
+                                            priority
+                                        />
+                                        {product.assets.length > 1 && (
+                                            <>
+                                                <button className={`${styles.imageNav} ${styles.imageNavPrev}`} onClick={handlePrevImage}>
+                                                    <FiChevronLeft size={20} />
+                                                </button>
+                                                <button className={`${styles.imageNav} ${styles.imageNavNext}`} onClick={handleNextImage}>
+                                                    <FiChevronRight size={20} />
+                                                </button>
+                                            </>
+                                        )}
+                                    </>
                                 ) : (
                                     <div className={styles.imagePlaceholder}><FiPackage /></div>
                                 )}
                             </div>
 
-                            {/* Image Thumbnails */}
                             {product.assets && product.assets.length > 1 && (
                                 <div className={styles.thumbnailRow}>
                                     {product.assets.map((asset, index) => (
@@ -174,12 +197,18 @@ export default function ProductPage({ params }: ProductPageProps) {
                             )}
                         </div>
 
+                        {/* Product Info */}
                         <div className={styles.productInfo}>
-                            {product.type === 'digital' && <span className={styles.badge}>Digital</span>}
-                            {product.category && <span className={styles.category}>{product.category}</span>}
-                            <h1 className={styles.title}>{product.title}</h1>
+                            <div className={styles.productHeader}>
+                                <div className={styles.badgeRow}>
+                                    {isDigital && <span className={`${styles.badge} ${styles.badgeDigital}`}>Digital Product</span>}
+                                    {hasDiscount && <span className={styles.badge}>Save {discountPercent}%</span>}
+                                </div>
+                                {product.category && <span className={styles.category}>{product.category}</span>}
+                                <h1 className={styles.title}>{product.title}</h1>
+                            </div>
 
-                            {/* Rating Display */}
+                            {/* Rating */}
                             {(product.rating !== undefined && product.rating > 0) && (
                                 <div className={styles.ratingRow}>
                                     <div className={styles.stars}>
@@ -193,6 +222,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                                     <span className={styles.ratingText}>
                                         {product.rating?.toFixed(1)} ({product.ratingCount} reviews)
                                     </span>
+                                    <a href="#reviews" className={styles.ratingLink}>See all reviews</a>
                                 </div>
                             )}
 
@@ -215,30 +245,50 @@ export default function ProductPage({ params }: ProductPageProps) {
                                 )}
                             </div>
 
-                            <div className={styles.priceBlock}>
-                                <span className={styles.price}>{formatPrice(displayPrice!)}</span>
-                                <span className={styles.originalPrice}>{hasDiscount && formatPrice(product.price)}</span>
+                            {/* Price Card */}
+                            <div className={styles.priceCard}>
+                                <div className={styles.priceBlock}>
+                                    <span className={styles.price}>{formatPrice(displayPrice!)}</span>
+                                    {hasDiscount && <span className={styles.originalPrice}>{formatPrice(product.price)}</span>}
+                                    {hasDiscount && <span className={styles.saveBadge}>SAVE {discountPercent}%</span>}
+                                </div>
+                                <p className={styles.priceNote}>Inclusive of all taxes</p>
+
+                                <div className={`${styles.stockInfo} ${isInStock ? styles.inStock : styles.outOfStock}`}>
+                                    <span className={styles.stockDot}></span>
+                                    {isInStock ? 'In Stock' : 'Out of Stock'}
+                                </div>
                             </div>
 
+                            {/* Description */}
                             <p className={styles.description}>{product.description}</p>
 
-                            {product.options?.map((option) => (
-                                <div key={option.name} className={styles.optionGroup}>
-                                    <span className={styles.optionLabel}>{option.name}</span>
-                                    <div className={styles.optionValues}>
-                                        {option.values.map((value) => (
-                                            <button
-                                                key={value}
-                                                className={`${styles.optionButton} ${selectedOptions[option.name] === value ? styles.selected : ''}`}
-                                                onClick={() => setSelectedOptions({ ...selectedOptions, [option.name]: value })}
-                                            >
-                                                {value}
-                                            </button>
-                                        ))}
-                                    </div>
+                            {/* Options */}
+                            {product.options && product.options.length > 0 && (
+                                <div className={styles.optionsSection}>
+                                    {product.options?.map((option) => (
+                                        <div key={option.name} className={styles.optionGroup}>
+                                            <div className={styles.optionLabel}>
+                                                <span>{option.name}</span>
+                                                <span className={styles.optionSelected}>{selectedOptions[option.name]}</span>
+                                            </div>
+                                            <div className={styles.optionValues}>
+                                                {option.values.map((value) => (
+                                                    <button
+                                                        key={value}
+                                                        className={`${styles.optionButton} ${selectedOptions[option.name] === value ? styles.selected : ''}`}
+                                                        onClick={() => setSelectedOptions({ ...selectedOptions, [option.name]: value })}
+                                                    >
+                                                        {value}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            )}
 
+                            {/* Quantity (Physical only) */}
                             {product.type === 'physical' && (
                                 <div className={styles.quantityWrapper}>
                                     <span className={styles.optionLabel}>Quantity</span>
@@ -250,32 +300,47 @@ export default function ProductPage({ params }: ProductPageProps) {
                                 </div>
                             )}
 
-                            <Button
-                                size="lg"
-                                fullWidth
-                                onClick={handleAddToCart}
-                                disabled={buttonState.disabled}
-                                leftIcon={buttonState.icon}
-                            >
-                                {buttonState.text}
-                            </Button>
+                            {/* Actions */}
+                            <div className={styles.actionsRow}>
+                                <button
+                                    className={styles.addToCartBtn}
+                                    onClick={handleAddToCart}
+                                    disabled={buttonState.disabled}
+                                >
+                                    {buttonState.icon}
+                                    {buttonState.text}
+                                </button>
+                                <button className={styles.wishlistBtn}>
+                                    <FiHeart size={20} />
+                                </button>
+                            </div>
 
-                            <div className={`${styles.stockInfo} ${isInStock ? styles.inStock : styles.outOfStock}`}>
-                                {isInStock ? <><FiCheck /> In Stock</> : <><FiX /> Out of Stock</>}
+                            {/* Trust Row */}
+                            <div className={styles.trustRow}>
+                                <span className={styles.trustItem}>
+                                    <FiTruck className={styles.trustIcon} /> Free Shipping
+                                </span>
+                                <span className={styles.trustItem}>
+                                    <FiShield className={styles.trustIcon} /> Secure Payment
+                                </span>
+                                <span className={styles.trustItem}>
+                                    <FiRotateCcw className={styles.trustIcon} /> Easy Returns
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     {/* Customer Reviews Section */}
-                    <ProductReviews
-                        productId={product._id}
-                        productRating={product.rating}
-                        ratingCount={product.ratingCount}
-                    />
+                    <div id="reviews">
+                        <ProductReviews
+                            productId={product._id}
+                            productRating={product.rating}
+                            ratingCount={product.ratingCount}
+                        />
+                    </div>
                 </div>
             </main>
             <Footer />
         </div>
     );
 }
-

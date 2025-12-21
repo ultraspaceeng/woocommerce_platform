@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Detail - B2B Shopify Wholesale</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3d72e6",
+                        "primary-dark": "#2956b2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a202c",
+                        "text-main": "#0e121b",
+                        "text-secondary": "#4f6696",
+                        "border-light": "#e8ebf3",
+                        "border-dark": "#2d3748",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white transition-colors duration-200">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<header class="flex shrink-0 items-center justify-between whitespace-nowrap border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-4 py-3 md:px-8 shadow-sm z-20">
+<div class="flex items-center gap-4 md:gap-8">
+<div class="flex items-center gap-3 text-text-main dark:text-white">
+<a class="flex items-center justify-center size-8 rounded bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl">storefront</span>
+</a>
+<h2 class="hidden md:block text-lg font-bold leading-tight tracking-[-0.015em]">Shopify Wholesale</h2>
+</div>
+<div class="hidden md:flex w-full max-w-md items-center">
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="material-symbols-outlined text-text-secondary dark:text-gray-400">search</span>
+</div>
+<input class="block w-full rounded-lg border-none bg-background-light dark:bg-background-dark py-2.5 pl-10 pr-4 text-sm text-text-main dark:text-white placeholder-text-secondary focus:ring-2 focus:ring-primary focus:bg-white dark:focus:bg-surface-dark transition-all duration-200" placeholder="Search products, SKUs..." type="text"/>
+</div>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-3 md:gap-6">
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-text-main dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold" href="#">Marketplace</a>
+<a class="text-text-main dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">Orders</a>
+<a class="text-text-main dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">Inventory</a>
+</nav>
+<div class="flex items-center gap-2 md:gap-3">
+<button class="flex items-center justify-center size-10 rounded-full bg-background-light dark:bg-border-dark text-text-main dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2.5 size-2 bg-red-500 rounded-full border border-white dark:border-surface-dark"></span>
+</button>
+<button class="flex items-center justify-center h-10 px-4 gap-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+<span class="hidden sm:inline">Cart (3)</span>
+</button>
+<div class="h-8 w-px bg-border-light dark:bg-border-dark mx-1"></div>
+<button class="flex items-center gap-2 pl-1">
+<div class="size-9 rounded-full bg-gray-200 bg-cover bg-center border border-border-light dark:border-border-dark" data-alt="User profile picture placeholder" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBaN4AXMnc95Mt6aqGUgInwbvRnJ_cG4owvBhNydsERnJ1krHZuPx4sw-mlw7Fd_GSeznclrbQ2NBCEZAtRnyDc7gtHY6a-Z79CSRItdLQx7jskf_IjWheOPQp_fxMak43D4PNS9vt-Fhgj9SJ-w7ddZQ8tp-ggjdkJBBmNxjxIenNLhQneOMwMH1Tcn6GkM016ON2m2phz3rLYFX3HAMMY1dwLakFRA-5SQ2JODGnZUPrjJoK25MwwYpO-oaOxcrvCAmFJVCWqMw');"></div>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<nav aria-label="Breadcrumb" class="mb-6 flex">
+<ol class="flex items-center space-x-2 text-sm text-text-secondary dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Marketplace</a></li>
+<li><span class="material-symbols-outlined text-[16px] text-gray-400">chevron_right</span></li>
+<li><a class="hover:text-primary transition-colors" href="#">Electronics</a></li>
+<li><span class="material-symbols-outlined text-[16px] text-gray-400">chevron_right</span></li>
+<li><a class="hover:text-primary transition-colors" href="#">Audio</a></li>
+<li><span class="material-symbols-outlined text-[16px] text-gray-400">chevron_right</span></li>
+<li aria-current="page" class="font-medium text-text-main dark:text-white">SonicFlow Headphones</li>
+</ol>
+</nav>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
+<div class="flex flex-col gap-4">
+<div class="relative overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark aspect-square lg:aspect-[4/3] group shadow-sm">
+<div class="absolute left-4 top-4 z-10 flex gap-2">
+<div class="rounded bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-sm">SALE</div>
+<div class="rounded bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Low Stock</div>
+</div>
+<div class="h-full w-full bg-contain bg-center bg-no-repeat p-8" data-alt="SonicFlow Noise Cancelling Headphones main view" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmqC4xkMYoV83QiocDkGIXsskiB8vUKOeV8GEIi_tYDjjGgHwZKlmPk95JRIj5KTs9Z1L8oHF5Pc3sSR2xR-MXufZbfhZ91Yg4LdohGZ7SLQxSX8QY2N0RHltUDEbqO4NaQkbEfvo3PneUDX7A8RblEWdEK9tRHSW31RLY8lU48AqCkoTOfi3qf7ktnQQ-Dz29bAlVdzvHuDmC3W2Db9O9-mBHJBny1r13UgY75USKWRFQoX6joqVP5g3Y4eig5vZLkgnSdiQr8Q');"></div>
+<button class="absolute right-4 bottom-4 rounded-full bg-white/90 p-2 text-text-main shadow-md hover:scale-110 transition-transform dark:bg-surface-dark/90 dark:text-white">
+<span class="material-symbols-outlined text-2xl">zoom_in</span>
+</button>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<button class="relative aspect-square rounded-lg border-2 border-primary overflow-hidden bg-white dark:bg-surface-dark p-2">
+<div class="h-full w-full bg-contain bg-center bg-no-repeat" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmqC4xkMYoV83QiocDkGIXsskiB8vUKOeV8GEIi_tYDjjGgHwZKlmPk95JRIj5KTs9Z1L8oHF5Pc3sSR2xR-MXufZbfhZ91Yg4LdohGZ7SLQxSX8QY2N0RHltUDEbqO4NaQkbEfvo3PneUDX7A8RblEWdEK9tRHSW31RLY8lU48AqCkoTOfi3qf7ktnQQ-Dz29bAlVdzvHuDmC3W2Db9O9-mBHJBny1r13UgY75USKWRFQoX6joqVP5g3Y4eig5vZLkgnSdiQr8Q');"></div>
+</button>
+<button class="relative aspect-square rounded-lg border border-border-light dark:border-border-dark overflow-hidden bg-white dark:bg-surface-dark p-2 hover:border-primary/50 transition-colors">
+<div class="h-full w-full bg-contain bg-center bg-no-repeat opacity-50" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmqC4xkMYoV83QiocDkGIXsskiB8vUKOeV8GEIi_tYDjjGgHwZKlmPk95JRIj5KTs9Z1L8oHF5Pc3sSR2xR-MXufZbfhZ91Yg4LdohGZ7SLQxSX8QY2N0RHltUDEbqO4NaQkbEfvo3PneUDX7A8RblEWdEK9tRHSW31RLY8lU48AqCkoTOfi3qf7ktnQQ-Dz29bAlVdzvHuDmC3W2Db9O9-mBHJBny1r13UgY75USKWRFQoX6joqVP5g3Y4eig5vZLkgnSdiQr8Q'); filter: hue-rotate(90deg);"></div>
+</button>
+<button class="relative aspect-square rounded-lg border border-border-light dark:border-border-dark overflow-hidden bg-white dark:bg-surface-dark p-2 hover:border-primary/50 transition-colors">
+<div class="h-full w-full bg-contain bg-center bg-no-repeat opacity-50" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmqC4xkMYoV83QiocDkGIXsskiB8vUKOeV8GEIi_tYDjjGgHwZKlmPk95JRIj5KTs9Z1L8oHF5Pc3sSR2xR-MXufZbfhZ91Yg4LdohGZ7SLQxSX8QY2N0RHltUDEbqO4NaQkbEfvo3PneUDX7A8RblEWdEK9tRHSW31RLY8lU48AqCkoTOfi3qf7ktnQQ-Dz29bAlVdzvHuDmC3W2Db9O9-mBHJBny1r13UgY75USKWRFQoX6joqVP5g3Y4eig5vZLkgnSdiQr8Q'); transform: scaleX(-1);"></div>
+</button>
+<button class="relative aspect-square rounded-lg border border-border-light dark:border-border-dark overflow-hidden bg-white dark:bg-surface-dark p-2 hover:border-primary/50 transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+<span class="material-symbols-outlined text-text-secondary">play_circle</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col">
+<div class="mb-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-semibold text-primary uppercase tracking-wider">TechPro Inc.</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-yellow-400 fill-1">star</span>
+<span class="material-symbols-outlined text-[18px] text-yellow-400 fill-1">star</span>
+<span class="material-symbols-outlined text-[18px] text-yellow-400 fill-1">star</span>
+<span class="material-symbols-outlined text-[18px] text-yellow-400 fill-1">star</span>
+<span class="material-symbols-outlined text-[18px] text-gray-300">star</span>
+<span class="ml-1 text-xs text-text-secondary underline cursor-pointer">12 Reviews</span>
+</div>
+</div>
+<h1 class="text-3xl lg:text-4xl font-bold text-text-main dark:text-white tracking-tight mb-2">SonicFlow Noise Cancelling Headphones</h1>
+<p class="text-sm text-text-secondary">SKU: AUD-552</p>
+</div>
+<div class="mb-6 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark p-6 shadow-sm">
+<div class="flex items-baseline gap-3 mb-2">
+<span class="text-3xl font-bold text-text-main dark:text-white">$125.00</span>
+<span class="text-lg text-text-secondary line-through">$159.00</span>
+<span class="text-sm font-medium text-green-600 dark:text-green-400">You save 21%</span>
+</div>
+<p class="text-sm text-text-secondary mb-4">Minimum Order Quantity: <span class="font-bold text-text-main dark:text-white">2 Units</span></p>
+<div class="mb-6 overflow-hidden rounded-md border border-border-light dark:border-border-dark">
+<div class="grid grid-cols-3 bg-gray-50 dark:bg-gray-800 p-2 text-xs font-semibold text-text-secondary uppercase text-center">
+<div>Qty 2-9</div>
+<div>Qty 10-49</div>
+<div>Qty 50+</div>
+</div>
+<div class="grid grid-cols-3 divide-x divide-border-light dark:divide-border-dark p-2 text-sm font-medium text-text-main dark:text-white text-center">
+<div>$125.00</div>
+<div class="text-primary font-bold">$115.00</div>
+<div class="text-primary font-bold">$105.00</div>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-sm font-medium text-text-main dark:text-white mb-2">Color</label>
+<div class="flex gap-3">
+<label class="cursor-pointer relative">
+<input checked="" class="peer sr-only" name="color" type="radio"/>
+<div class="size-8 rounded-full bg-zinc-800 ring-2 ring-offset-2 ring-transparent peer-checked:ring-primary ring-offset-white dark:ring-offset-surface-dark transition-all"></div>
+</label>
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="color" type="radio"/>
+<div class="size-8 rounded-full bg-gray-300 ring-2 ring-offset-2 ring-transparent peer-checked:ring-primary ring-offset-white dark:ring-offset-surface-dark transition-all"></div>
+</label>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<div class="flex h-12 w-full sm:w-32 items-center rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark">
+<button class="flex h-full w-10 items-center justify-center text-text-secondary hover:text-primary hover:bg-gray-200 dark:hover:bg-gray-700 rounded-l-lg transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="h-full flex-1 border-none bg-transparent p-0 text-center text-lg font-medium text-text-main dark:text-white focus:ring-0" min="2" type="number" value="2"/>
+<button class="flex h-full w-10 items-center justify-center text-text-secondary hover:text-primary hover:bg-gray-200 dark:hover:bg-gray-700 rounded-r-lg transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<button class="flex-1 h-12 rounded-lg bg-primary hover:bg-primary-dark text-white font-bold shadow-sm transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">shopping_cart</span>
+                                Add to Order
+                            </button>
+</div>
+<p class="mt-3 text-xs text-text-secondary text-center sm:text-left">
+<span class="material-symbols-outlined text-[14px] align-middle mr-1 text-green-600">check_circle</span>
+                            In Stock. Ready to ship within 24 hours.
+                        </p>
+</div>
+<div class="prose prose-sm dark:prose-invert text-text-secondary mb-6">
+<p>Experience premium sound quality with SonicFlow's latest noise-canceling technology. Designed for professionals and audiophiles alike, these headphones offer 30 hours of continuous playback and an ergonomic fit for all-day comfort.</p>
+<ul class="list-disc pl-4 mt-2 space-y-1">
+<li>Active Noise Cancellation (ANC)</li>
+<li>Bluetooth 5.2 Multi-point connection</li>
+<li>Quick charge: 10 mins for 3 hours playback</li>
+</ul>
+</div>
+<div class="flex gap-4 border-t border-border-light dark:border-border-dark pt-6">
+<button class="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+                            Add to Wishlist
+                        </button>
+<button class="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">compare_arrows</span>
+                            Compare
+                        </button>
+<button class="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-primary transition-colors ml-auto">
+<span class="material-symbols-outlined text-[20px]">share</span>
+                            Share
+                        </button>
+</div>
+</div>
+</div>
+<div class="mb-16">
+<div class="border-b border-border-light dark:border-border-dark mb-6">
+<nav class="-mb-px flex space-x-8">
+<a aria-current="page" class="border-b-2 border-primary py-4 px-1 text-sm font-bold text-primary" href="#">Description</a>
+<a class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-text-secondary hover:border-gray-300 hover:text-text-main dark:hover:text-white transition-colors" href="#">Specifications</a>
+<a class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-text-secondary hover:border-gray-300 hover:text-text-main dark:hover:text-white transition-colors" href="#">Shipping &amp; Returns</a>
+<a class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-text-secondary hover:border-gray-300 hover:text-text-main dark:hover:text-white transition-colors" href="#">Reviews (12)</a>
+</nav>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12 text-sm text-text-secondary">
+<div class="lg:col-span-2 space-y-4">
+<p class="leading-relaxed">
+                            The SonicFlow AUD-552 sets a new standard for office and personal audio. With our proprietary noise-cancellation algorithm, background chatter and hum are reduced by up to 98%, allowing for complete focus in open-plan offices or during travel.
+                        </p>
+<p class="leading-relaxed">
+                            Crafted with memory foam ear cushions and a lightweight aluminum headband, the AUD-552 is built for durability without sacrificing comfort. The intuitive touch controls on the right ear cup allow you to manage calls, volume, and track selection effortlessly.
+                        </p>
+<div class="mt-6 p-4 rounded-lg bg-primary/5 border border-primary/20">
+<h4 class="font-bold text-primary mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">business_center</span>
+                                B2B Exclusive Features
+                            </h4>
+<ul class="grid sm:grid-cols-2 gap-2">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">check</span> Bulk packaging available</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">check</span> Custom branding options (MOQ 50+)</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">check</span> Extended 2-year warranty</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">check</span> Priority support line</li>
+</ul>
+</div>
+</div>
+<div class="lg:col-span-1">
+<h3 class="font-bold text-text-main dark:text-white mb-4">Technical Specs</h3>
+<dl class="divide-y divide-border-light dark:divide-border-dark">
+<div class="py-3 flex justify-between">
+<dt class="font-medium text-text-main dark:text-white">Driver Unit</dt>
+<dd>40mm Dynamic</dd>
+</div>
+<div class="py-3 flex justify-between">
+<dt class="font-medium text-text-main dark:text-white">Frequency Response</dt>
+<dd>20Hz - 20kHz</dd>
+</div>
+<div class="py-3 flex justify-between">
+<dt class="font-medium text-text-main dark:text-white">Impedance</dt>
+<dd>32 Ohm</dd>
+</div>
+<div class="py-3 flex justify-between">
+<dt class="font-medium text-text-main dark:text-white">Battery Life</dt>
+<dd>30 Hours (ANC On)</dd>
+</div>
+<div class="py-3 flex justify-between">
+<dt class="font-medium text-text-main dark:text-white">Weight</dt>
+<dd>250g</dd>
+</div>
+<div class="py-3 flex justify-between">
+<dt class="font-medium text-text-main dark:text-white">Connectivity</dt>
+<dd>Bluetooth 5.2, 3.5mm Aux</dd>
+</div>
+</dl>
+</div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-2xl font-bold text-text-main dark:text-white">Related Products</h2>
+<a class="text-sm font-bold text-primary hover:text-primary-dark transition-colors" href="#">View All Audio</a>
+</div>
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+<div class="group relative flex flex-col overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-sm transition-all hover:shadow-md hover:border-primary/30">
+<div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbDUsMeC61LQUdkG4mffhZymnfbvlAaiEjn30cPjY_t3SjBVYCLXP24MMP8NkoP8UdWoAUFvMX0yTjrIAsReVRkvhtGwnEizc_WYThvpv6f8f-Qexvu7E1q-AZQ5aCkIt__BsTYVocBjKKR9nk0finmCWvkQXfzRy8m8FB7cdFBmBX9B5QKw1WcJ1Vz1dyURDe77mqpN2xgapXyOc8NnjQaFJh30vljiqZWjiRcj8rJiILIIIaiV7IovQfeg5YmnoZN4-sL9NFfQ');">
+</div>
+</div>
+<div class="flex flex-1 flex-col p-4">
+<div class="mb-1 flex items-center justify-between">
+<span class="text-xs font-medium text-text-secondary uppercase tracking-wider">SKU: ERG-001</span>
+</div>
+<h3 class="mb-1 text-base font-semibold text-text-main dark:text-white line-clamp-2 hover:text-primary cursor-pointer transition-colors">ErgoPro Mesh Office Chair</h3>
+<div class="mt-auto flex items-end justify-between">
+<div>
+<p class="text-lg font-bold text-primary">$189.00</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-medium text-text-secondary">Min Qty: 5</p>
+</div>
+</div>
+<button class="mt-3 w-full rounded-lg bg-background-light dark:bg-border-dark py-2 text-sm font-bold text-text-main dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">View Details</button>
+</div>
+</div>
+<div class="group relative flex flex-col overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-sm transition-all hover:shadow-md hover:border-primary/30">
+<div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAm9EGp9zSYZWq6WUSGbwv_U4lR8HKL5Uq2i-zoN4MUmzpz7r_2FiCqqEBNT6VqkxR3TtR6UBPVK6YUXgev-Zmqvn-dpWG_GhYEs5HjxTUqtGPbDT2D_eqaTiKkRdnThhY5lhyQgrF0juZRam4MrcEPyDgnCjUG2eOJGf0DcabxsLFcsfkNSaryh1Df_RMpVOYANZbO6TY04_ZAC3f8p5kGN4-LDfDjvVaYnBJ6V7YNXUSB-hbU6-VMAU20FYRx2vcHOIqBJON15g');"></div>
+</div>
+<div class="flex flex-1 flex-col p-4">
+<div class="mb-1 flex items-center justify-between">
+<span class="text-xs font-medium text-text-secondary uppercase tracking-wider">SKU: KEY-884</span>
+</div>
+<h3 class="mb-1 text-base font-semibold text-text-main dark:text-white line-clamp-2 hover:text-primary cursor-pointer transition-colors">MK-Ultra Mechanical Keyboard</h3>
+<div class="mt-auto flex items-end justify-between">
+<div>
+<p class="text-lg font-bold text-primary">$89.00</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-medium text-text-secondary">Min Qty: 5</p>
+</div>
+</div>
+<button class="mt-3 w-full rounded-lg bg-background-light dark:bg-border-dark py-2 text-sm font-bold text-text-main dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">View Details</button>
+</div>
+</div>
+<div class="group relative flex flex-col overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-sm transition-all hover:shadow-md hover:border-primary/30">
+<div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBtTgbwz0W-Mc83KbuOt4X7On9lSwgPT2-cyRlczdx7iSzziwRpnbpdjYzbmmw1iBWcrYi_J6uk8cT4r0qBMr8WXHnCmvditax68cIFm8G0cgRts8LKfQBfqQOhaWQ7jGdgS8hhIc4Cb2JCVkinF-SPBdMb5XxLgsTASiwSVWoZx-tvnOoXAfZpIlYOdgTjxH3yyjtOKDEsZR4yDDNPuYyQcC4AgnpfotHV1PBdMV7mfRAy2_jYLt9PDTXzhxfZbWS5GmxDo2PEiQ');"></div>
+</div>
+<div class="flex flex-1 flex-col p-4">
+<div class="mb-1 flex items-center justify-between">
+<span class="text-xs font-medium text-text-secondary uppercase tracking-wider">SKU: ACC-343</span>
+</div>
+<h3 class="mb-1 text-base font-semibold text-text-main dark:text-white line-clamp-2 hover:text-primary cursor-pointer transition-colors">Aluminum Adjustable Phone Stand</h3>
+<div class="mt-auto flex items-end justify-between">
+<div>
+<p class="text-lg font-bold text-primary">$12.50</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-medium text-text-secondary">Min Qty: 20</p>
+</div>
+</div>
+<button class="mt-3 w-full rounded-lg bg-background-light dark:bg-border-dark py-2 text-sm font-bold text-text-main dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">View Details</button>
+</div>
+</div>
+<div class="group relative flex flex-col overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-sm transition-all hover:shadow-md hover:border-primary/30">
+<div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAl2y321rK9PR15qLLblksNbaFxZ5N1Vq7FIdB8XpZ5g0FLG6LZqhsTIA456VtAQlcVSrjTj2Zey67IcXwnhrqbejgNQSHy4Uz8pcYw1zXwqas0eit8U0mQboIQS2i7g_9prccXwY-DZJS9u_cmgkpfzF6C--0GcZ3RpeKHmPwN2zp5yvP76yNcyjAXgPoiGBpohamydY-7gVG2atj3PIgDbim_bPWPRn7Zc-9R2t5bqkUnlA8SYOv5CGRHtxktbDeGFVoTbqsEIQ');"></div>
+</div>
+<div class="flex flex-1 flex-col p-4">
+<div class="mb-1 flex items-center justify-between">
+<span class="text-xs font-medium text-text-secondary uppercase tracking-wider">SKU: LIT-103</span>
+</div>
+<h3 class="mb-1 text-base font-semibold text-text-main dark:text-white line-clamp-2 hover:text-primary cursor-pointer transition-colors">Lumina Desk Lamp</h3>
+<div class="mt-auto flex items-end justify-between">
+<div>
+<p class="text-lg font-bold text-primary">$45.00</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-medium text-text-secondary">Min Qty: 10</p>
+</div>
+</div>
+<button class="mt-3 w-full rounded-lg bg-background-light dark:bg-border-dark py-2 text-sm font-bold text-text-main dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

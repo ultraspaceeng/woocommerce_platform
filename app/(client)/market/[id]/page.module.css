@@ -644,3 +644,25 @@
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+/* Video */
+.videoFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.videoThumbnailPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: white;
+    opacity: 0.8;
+}
+
+.videoThumbnailPlaceholder:hover {
+    opacity: 1;
+}

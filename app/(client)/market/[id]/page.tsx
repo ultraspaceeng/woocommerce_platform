@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar, FiEye, FiDownload, FiShoppingBag, FiChevronRight, FiChevronLeft, FiHeart, FiTruck, FiShield, FiRotateCcw } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar, FiEye, FiDownload, FiShoppingBag, FiChevronRight, FiChevronLeft, FiHeart, FiTruck, FiShield, FiRotateCcw, FiPlay } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
@@ -73,16 +73,14 @@ export default function ProductPage({ params }: ProductPageProps) {
         }
     };
 
-    const handlePrevImage = () => {
-        if (product?.assets) {
-            setSelectedImageIndex((prev) => (prev === 0 ? product.assets!.length - 1 : prev - 1));
-        }
+    const handleNextImage = () => {
+        const totalAssets = (product?.assets?.length || 0) + (product?.videoUrl ? 1 : 0);
+        setSelectedImageIndex((prev) => (prev === totalAssets - 1 ? 0 : prev + 1));
     };
 
-    const handleNextImage = () => {
-        if (product?.assets) {
-            setSelectedImageIndex((prev) => (prev === product.assets!.length - 1 ? 0 : prev + 1));
-        }
+    const handlePrevImage = () => {
+        const totalAssets = (product?.assets?.length || 0) + (product?.videoUrl ? 1 : 0);
+        setSelectedImageIndex((prev) => (prev === 0 ? totalAssets - 1 : prev - 1));
     };
 
     const { priceInCurrency }: any = useCurrency();
@@ -152,16 +150,27 @@ export default function ProductPage({ params }: ProductPageProps) {
                         {/* Image Gallery */}
                         <div className={styles.imageSection}>
                             <div className={styles.mainImage}>
-                                {product.assets && product.assets.length > 0 ? (
+                                {product.videoUrl && selectedImageIndex === (product.assets?.length || 0) ? (
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src={product.videoUrl.replace('watch?v=', 'embed/').split('&')[0]}
+                                        title="Product Video"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className={styles.videoFrame}
+                                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                                    ></iframe>
+                                ) : product.assets && product.assets.length > 0 ? (
                                     <>
                                         <Image
                                             src={product.assets[selectedImageIndex] || product.assets[0]}
                                             alt={product.title}
-                                            fill
-                                            className={styles.image}
                                             priority
                                         />
-                                        {product.assets.length > 1 && (
+                                        {/* Play button overlay if needed? No, logic moved to video selection */}
+                                        {product.assets.length + (product.videoUrl ? 1 : 0) > 1 && (
                                             <>
                                                 <button className={`${styles.imageNav} ${styles.imageNavPrev}`} onClick={handlePrevImage}>
                                                     <FiChevronLeft size={20} />
@@ -177,9 +186,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                                 )}
                             </div>
 
-                            {product.assets && product.assets.length > 1 && (
+
+
+                            {/* Thumbnails (Images + Video) */}
+                            {(product.assets && (product.assets.length > 1 || product.videoUrl)) && (
                                 <div className={styles.thumbnailRow}>
-                                    {product.assets.map((asset, index) => (
+                                    {product.assets?.map((asset, index) => (
                                         <button
                                             key={index}
                                             className={`${styles.thumbnail} ${selectedImageIndex === index ? styles.activeThumbnail : ''}`}
@@ -193,6 +205,18 @@ export default function ProductPage({ params }: ProductPageProps) {
                                             />
                                         </button>
                                     ))}
+
+                                    {/* Video Thumbnail */}
+                                    {product.videoUrl && (
+                                        <button
+                                            className={`${styles.thumbnail} ${selectedImageIndex === (product.assets?.length || 0) ? styles.activeThumbnail : ''}`}
+                                            onClick={() => setSelectedImageIndex(product.assets?.length || 0)}
+                                        >
+                                            <div className={styles.videoThumbnailPlaceholder}>
+                                                <FiPlay size={20} />
+                                            </div>
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -339,8 +363,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                         />
                     </div>
                 </div>
-            </main>
+            </main >
             <Footer />
-        </div>
+        </div >
     );
 }

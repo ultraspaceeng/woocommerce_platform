@@ -27,6 +27,7 @@ export interface IProduct extends Document {
     options: IProductOption[];
     inventory: IProductInventory;
     assets: string[];
+    videoUrl?: string;
     digitalFile?: string;
     digitalFileName?: string;
     brand?: string;
@@ -99,6 +100,7 @@ const ProductSchema = new Schema<IProduct>({
         default: { sku: '', stock: 0 },
     },
     assets: [{ type: String }],
+    videoUrl: { type: String },
     digitalFile: { type: String },
     digitalFileName: { type: String },
     brand: { type: String },

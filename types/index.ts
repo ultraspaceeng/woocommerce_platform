@@ -26,6 +26,7 @@ export interface Product {
   options: ProductOption[];
   inventory: ProductInventory;
   assets: string[];
+  videoUrl?: string;
   digitalFile?: string;
   seoData: ProductSeoData;
   createdAt: string;

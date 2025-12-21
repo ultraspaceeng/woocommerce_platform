@@ -40,6 +40,7 @@ interface ProductFormData {
     deleteDigitalFile: boolean; // Flag to explicitly delete existing file
     // Product images (base64)
     images: string[];
+    videoUrl: string;
 }
 
 interface ProductFormPageProps {
@@ -75,7 +76,10 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         digitalFile: '',
         digitalFileName: '',
         deleteDigitalFile: false,
+        digitalFileName: '',
+        deleteDigitalFile: false,
         images: [],
+        videoUrl: '',
     });
 
     // Fetch categories
@@ -118,7 +122,10 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         seoDescription: product.seoData?.metaDescription || '',
                         digitalFile: product.digitalFile || '',
                         digitalFileName: product.digitalFileName || '',
+                        digitalFile: product.digitalFile || '',
+                        digitalFileName: product.digitalFileName || '',
                         images: product.assets || [],
+                        videoUrl: product.videoUrl || '',
                         deleteDigitalFile: false,
                     });
                 } catch (error) {
@@ -265,7 +272,9 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                     metaDescription: formData.seoDescription,
                 },
                 // Product images
+                // Product images
                 assets: formData.images,
+                videoUrl: formData.videoUrl,
             };
 
             // Digital product data - only include if it's a new file or explicit deletion
@@ -540,6 +549,20 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                 {/* Media Tab */}
                 {activeTab === 'media' && (
                     <div className={styles.tabContent}>
+                        <div className={styles.formCard}>
+                            <h3 className={styles.cardTitle}>Video</h3>
+                            <div className={styles.formFields}>
+                                <Input
+                                    label="YouTube Video URL"
+                                    name="videoUrl"
+                                    value={formData.videoUrl}
+                                    onChange={handleChange}
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                    helperText="Embed a YouTube video to showcase your product."
+                                />
+                            </div>
+                        </div>
+
                         <div className={styles.formCard}>
                             <h3 className={styles.cardTitle}>Product Images</h3>
 

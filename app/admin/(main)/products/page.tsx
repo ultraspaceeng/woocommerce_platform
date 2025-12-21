@@ -10,6 +10,7 @@ import {
 import Button from '@/components/ui/button';
 import { productsApi } from '@/lib/services/api';
 import { Product } from '@/types';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 export default function ProductsPage() {
@@ -18,6 +19,7 @@ export default function ProductsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState('all');
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+    const { priceInCurrency }: any = useCurrency();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -63,8 +65,7 @@ export default function ProductsPage() {
         }
     };
 
-    const formatPrice = (price: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(price);
+    const formatPrice = (price: number) => priceInCurrency(price);
 
     return (
         <div className={styles.page}>
@@ -158,7 +159,7 @@ export default function ProductsPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {products.map((product:any) => (
+                            {products.map((product: any) => (
                                 <tr key={product._id} className={selectedProducts.includes(product._id) ? styles.selected : ''}>
                                     <td className={styles.checkboxCell}>
                                         <input

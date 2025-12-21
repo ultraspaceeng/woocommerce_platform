@@ -20,6 +20,8 @@ interface Settings {
     exchangeRateUpdatedAt: string | null;
     currencySymbol: string;
     paystackEnabled: boolean;
+    paypalEnabled: boolean;
+    defaultPaymentMethod: 'paystack' | 'paypal' | 'both';
     freeShippingThreshold: number;
     defaultShippingFee: number;
     orderEmailNotifications: boolean;
@@ -45,6 +47,8 @@ export default function SettingsPage() {
         exchangeRateUpdatedAt: null,
         currencySymbol: '₦',
         paystackEnabled: true,
+        paypalEnabled: false,
+        defaultPaymentMethod: 'paystack',
         freeShippingThreshold: 50000,
         defaultShippingFee: 2500,
         orderEmailNotifications: true,
@@ -91,6 +95,65 @@ export default function SettingsPage() {
         setSaved(false);
     };
 
+    // Helper to format exchange rate for display (always shows readable numbers)
+    const formatRateDisplay = (rate: number, baseCurr: string, displayCurr: string): string => {
+        if (rate < 1) {
+            // Show inverse: 1 display = X base (e.g., 1 USD = 1460 NGN)
+            return `1 ${displayCurr} = ${(1 / rate).toFixed(2)} ${baseCurr}`;
+        }
+        // Show as-is: 1 base = X display (e.g., 1 USD = 1460 NGN)
+        return `1 ${baseCurr} = ${rate.toFixed(2)} ${displayCurr}`;
+    };
+
+    // Handle base currency change - needs to refresh exchange rate
+    const handleBaseCurrencyChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newBaseCurrency = e.target.value;
+
+        setSettings(prev => ({
+            ...prev,
+            baseCurrency: newBaseCurrency,
+        }));
+        setSaved(false);
+
+        // Auto-refresh exchange rate if display currency is different
+        if (newBaseCurrency !== settings.displayCurrency) {
+            setRefreshingRate(true);
+            try {
+                const response = await fetch('/api/exchange-rate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        displayCurrency: settings.displayCurrency,
+                        baseCurrency: newBaseCurrency
+                    }),
+                });
+                const data = await response.json();
+                if (data.success && data.data) {
+                    setSettings(prev => ({
+                        ...prev,
+                        exchangeRate: data.data.exchangeRate,
+                        exchangeRateUpdatedAt: data.data.exchangeRateUpdatedAt,
+                    }));
+                    const source = data.data.source || 'API';
+                    toast.success(`Rate from ${source}: ${formatRateDisplay(data.data.exchangeRate, newBaseCurrency, settings.displayCurrency)}`);
+                }
+            } catch (error) {
+                console.error('Failed to refresh rate:', error);
+                toast.error('Failed to fetch exchange rate');
+            } finally {
+                setRefreshingRate(false);
+            }
+        } else {
+            // Same currency, reset rate to 1
+            setSettings(prev => ({
+                ...prev,
+                exchangeRate: 1,
+            }));
+            toast.success('Base and display currencies are the same - no conversion needed');
+        }
+    };
+
+    // Handle display currency change - auto refresh rate
     const handleCurrencyChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCurrency = e.target.value;
         const newSymbol = CURRENCY_SYMBOLS[newCurrency] || newCurrency;
@@ -101,6 +164,41 @@ export default function SettingsPage() {
             currencySymbol: newSymbol,
         }));
         setSaved(false);
+
+        // Auto-refresh exchange rate if different from base
+        if (newCurrency !== settings.baseCurrency) {
+            setRefreshingRate(true);
+            try {
+                const response = await fetch('/api/exchange-rate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        displayCurrency: newCurrency,
+                        baseCurrency: settings.baseCurrency
+                    }),
+                });
+                const data = await response.json();
+                if (data.success && data.data) {
+                    setSettings(prev => ({
+                        ...prev,
+                        exchangeRate: data.data.exchangeRate,
+                        exchangeRateUpdatedAt: data.data.exchangeRateUpdatedAt,
+                    }));
+                    const source = data.data.source || 'API';
+                    toast.success(`Rate from ${source}: ${formatRateDisplay(data.data.exchangeRate, settings.baseCurrency, newCurrency)}`);
+                }
+            } catch (error) {
+                console.error('Failed to refresh rate:', error);
+            } finally {
+                setRefreshingRate(false);
+            }
+        } else {
+            // Same currency, reset rate to 1
+            setSettings(prev => ({
+                ...prev,
+                exchangeRate: 1,
+            }));
+        }
     };
 
     const handleRefreshRate = async () => {
@@ -109,7 +207,10 @@ export default function SettingsPage() {
             const response = await fetch('/api/exchange-rate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ displayCurrency: settings.displayCurrency }),
+                body: JSON.stringify({
+                    displayCurrency: settings.displayCurrency,
+                    baseCurrency: settings.baseCurrency
+                }),
             });
             const data = await response.json();
 
@@ -119,6 +220,8 @@ export default function SettingsPage() {
                     exchangeRate: data.data.exchangeRate,
                     exchangeRateUpdatedAt: data.data.exchangeRateUpdatedAt,
                 }));
+                const source = data.data.source || 'API';
+                toast.success(`Rate from ${source}: ${formatRateDisplay(data.data.exchangeRate, settings.baseCurrency, settings.displayCurrency)}`);
             } else {
                 toast.error('Failed to refresh exchange rate');
             }
@@ -266,7 +369,7 @@ export default function SettingsPage() {
                                 <select
                                     name="baseCurrency"
                                     value={settings.baseCurrency}
-                                    onChange={handleChange}
+                                    onChange={handleBaseCurrencyChange}
                                     className={styles.select}
                                 >
                                     {SUPPORTED_CURRENCIES.map(currency => (
@@ -299,7 +402,13 @@ export default function SettingsPage() {
                                 <div className={styles.rateInfo}>
                                     <span className={styles.rateLabel}>Exchange Rate</span>
                                     <span className={styles.rateValue}>
-                                        1 {settings.displayCurrency} = {settings.exchangeRate?.toFixed(2) || '—'} {settings.baseCurrency}
+                                        {settings.exchangeRate && settings.exchangeRate < 1 ? (
+                                            // Rate < 1: Show inverse (e.g., 1 USD = 1460 NGN instead of 1 NGN = 0.0006 USD)
+                                            <>1 {settings.displayCurrency} = {(1 / settings.exchangeRate).toFixed(2)} {settings.baseCurrency}</>
+                                        ) : (
+                                            // Rate >= 1: Show as-is (e.g., 1 USD = 1460 NGN)
+                                            <>1 {settings.baseCurrency} = {settings.exchangeRate?.toFixed(2) || '—'} {settings.displayCurrency}</>
+                                        )}
                                     </span>
                                     <span className={styles.rateUpdated}>
                                         Last updated: {formatDate(settings.exchangeRateUpdatedAt)}
@@ -319,7 +428,7 @@ export default function SettingsPage() {
                         <div className={styles.toggleRow}>
                             <div>
                                 <h4>Paystack Payments</h4>
-                                <p>Enable online payment via Paystack</p>
+                                <p>Enable for African market (NGN, GHS, ZAR, KES)</p>
                             </div>
                             <button
                                 className={`${styles.toggle} ${settings.paystackEnabled ? styles.active : ''}`}
@@ -328,6 +437,49 @@ export default function SettingsPage() {
                                 <span className={styles.toggleKnob} />
                             </button>
                         </div>
+
+                        <div className={styles.toggleRow}>
+                            <div>
+                                <h4>PayPal Payments</h4>
+                                <p>Enable for international market (USD, EUR, GBP, etc.)</p>
+                            </div>
+                            <button
+                                className={`${styles.toggle} ${settings.paypalEnabled ? styles.active : ''}`}
+                                onClick={() => handleToggle('paypalEnabled')}
+                            >
+                                <span className={styles.toggleKnob} />
+                            </button>
+                        </div>
+
+                        {(settings.paystackEnabled || settings.paypalEnabled) && (
+                            <div className={styles.formGroup}>
+                                <label>Default Payment Method</label>
+                                <select
+                                    name="defaultPaymentMethod"
+                                    value={settings.defaultPaymentMethod}
+                                    onChange={handleChange}
+                                    className={styles.select}
+                                >
+                                    {settings.paystackEnabled && settings.paypalEnabled && (
+                                        <option value="both">Both (Customer Choice)</option>
+                                    )}
+                                    {settings.paystackEnabled && (
+                                        <option value="paystack">Paystack Only (African Market)</option>
+                                    )}
+                                    {settings.paypalEnabled && (
+                                        <option value="paypal">PayPal Only (International)</option>
+                                    )}
+                                </select>
+                                <span className={styles.helperText}>
+                                    {settings.defaultPaymentMethod === 'both'
+                                        ? 'Customers can choose between Paystack and PayPal at checkout'
+                                        : settings.defaultPaymentMethod === 'paystack'
+                                            ? 'Only Paystack will be shown at checkout'
+                                            : 'Only PayPal will be shown at checkout'
+                                    }
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { getCurrencySettings, formatPriceWithSettings, CurrencySettings } from './currency-server';
 
 // Email notification service
 // Supports multiple email providers via environment configuration
@@ -30,6 +31,8 @@ interface OrderEmailData {
         title: string;
         url: string;
     }>;
+    // Currency settings (optional - will be fetched if not provided)
+    currencySettings?: CurrencySettings;
 }
 
 /**
@@ -110,11 +113,15 @@ export const sendEmail = async (options: EmailOptions): Promise<boolean> => {
 
 // Order confirmation email to customer
 export const sendOrderConfirmationEmail = async (order: OrderEmailData): Promise<boolean> => {
+    // Get currency settings (use provided or fetch from DB)
+    const currency = order.currencySettings || await getCurrencySettings();
+    const formatPrice = (amount: number) => formatPriceWithSettings(amount, currency);
+
     const itemsHtml = order.items.map(item => `
         <tr>
             <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.title}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₦${item.price.toLocaleString()}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">${formatPrice(item.price)}</td>
         </tr>
     `).join('');
 
@@ -164,7 +171,7 @@ export const sendOrderConfirmationEmail = async (order: OrderEmailData): Promise
                     <tfoot>
                         <tr>
                             <td colspan="2" style="padding: 16px 12px; text-align: right; font-weight: 600; color: #111827;">Total:</td>
-                            <td style="padding: 16px 12px; text-align: right; font-weight: 700; color: #6366f1; font-size: 18px;">₦${order.totalAmount.toLocaleString()}</td>
+                            <td style="padding: 16px 12px; text-align: right; font-weight: 700; color: #6366f1; font-size: 18px;">${formatPrice(order.totalAmount)}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -227,7 +234,7 @@ export const sendOrderConfirmationEmail = async (order: OrderEmailData): Promise
         to: order.customerEmail,
         subject: `Order Confirmed - ${order.orderId}`,
         html,
-        text: `Order Confirmed!\n\nHi ${order.customerName},\n\nYour order ${order.orderId} has been confirmed.\nTotal: ₦${order.totalAmount.toLocaleString()}\n\nTrack your order: ${process.env.NEXT_PUBLIC_BASE_URL}/order-tracking?orderId=${order.orderId}`,
+        text: `Order Confirmed!\n\nHi ${order.customerName},\n\nYour order ${order.orderId} has been confirmed.\nTotal: ${formatPrice(order.totalAmount)}\n\nTrack your order: ${process.env.NEXT_PUBLIC_BASE_URL}/order-tracking?orderId=${order.orderId}`,
     });
 };
 
@@ -296,8 +303,12 @@ export const sendNewOrderAdminNotification = async (order: OrderEmailData): Prom
         return false;
     }
 
+    // Get currency settings (use provided or fetch from DB)
+    const currency = order.currencySettings || await getCurrencySettings();
+    const formatPrice = (amount: number) => formatPriceWithSettings(amount, currency);
+
     const itemsList = order.items.map(item =>
-        `• ${item.title} x${item.quantity} - ₦${item.price.toLocaleString()}`
+        `• ${item.title} x${item.quantity} - ${formatPrice(item.price)}`
     ).join('\n');
 
     const html = `
@@ -327,7 +338,7 @@ export const sendNewOrderAdminNotification = async (order: OrderEmailData): Prom
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; color: #6b7280;">Total:</td>
-                    <td style="padding: 8px 0; color: #10b981; font-weight: 700; font-size: 18px;">₦${order.totalAmount.toLocaleString()}</td>
+                    <td style="padding: 8px 0; color: #10b981; font-weight: 700; font-size: 18px;">${formatPrice(order.totalAmount)}</td>
                 </tr>
             </table>
             <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
@@ -348,9 +359,9 @@ export const sendNewOrderAdminNotification = async (order: OrderEmailData): Prom
 
     return sendEmail({
         to: adminEmail,
-        subject: `💰 New Order: ${order.orderId} - ₦${order.totalAmount.toLocaleString()}`,
+        subject: `💰 New Order: ${order.orderId} - ${formatPrice(order.totalAmount)}`,
         html,
-        text: `New order received!\n\nOrder ID: ${order.orderId}\nCustomer: ${order.customerName}\nTotal: ₦${order.totalAmount.toLocaleString()}\n\nItems:\n${itemsList}`,
+        text: `New order received!\n\nOrder ID: ${order.orderId}\nCustomer: ${order.customerName}\nTotal: ${formatPrice(order.totalAmount)}\n\nItems:\n${itemsList}`,
     });
 };
 

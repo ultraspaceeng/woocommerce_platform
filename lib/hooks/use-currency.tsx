@@ -1,10 +1,11 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { fetchExchangeRate, formatPriceWithCurrency, convertPrice } from '@/lib/services/currency-service';
+import { formatPriceWithCurrency, convertPrice } from '@/lib/services/currency-service';
 
 interface CurrencyContextType {
-    currency: string;
+    baseCurrency: string;
+    displayCurrency: string;
     exchangeRate: number;
     loading: boolean;
     setCurrency: (currency: string) => void;
@@ -13,10 +14,11 @@ interface CurrencyContextType {
     priceInCurrency: (amount: any) => string;
 }
 
-const CurrencyContext:any = createContext<CurrencyContextType | undefined>(undefined);
+const CurrencyContext: any = createContext<CurrencyContextType | undefined>(undefined);
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
-    const [currency, setCurrencyState] = useState('NGN');
+    const [baseCurrency, setBaseCurrency] = useState('NGN');
+    const [displayCurrency, setDisplayCurrency] = useState('NGN');
     const [exchangeRate, setExchangeRate] = useState(1);
     const [loading, setLoading] = useState(true);
 
@@ -28,7 +30,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
                 if (response.ok) {
                     const { data } = await response.json();
                     if (data) {
-                        setCurrencyState(data.displayCurrency || 'NGN');
+                        setBaseCurrency(data.baseCurrency || 'NGN');
+                        setDisplayCurrency(data.displayCurrency || 'NGN');
                         setExchangeRate(data.exchangeRate || 1);
                     }
                 }
@@ -43,25 +46,34 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const setCurrency = (newCurrency: string) => {
-        setCurrencyState(newCurrency);
+        setDisplayCurrency(newCurrency);
     };
 
+    // Convert amount from base currency to display currency
     const convert = useCallback((amount: number) => {
-        if (currency === 'NGN') return amount;
+        // If same currency or rate is 1, no conversion needed
+        if (baseCurrency === displayCurrency || exchangeRate === 1) {
+            return amount;
+        }
+        // Apply conversion: multiply by exchange rate (base -> display)
         return convertPrice(amount, exchangeRate);
-    }, [currency, exchangeRate]);
+    }, [baseCurrency, displayCurrency, exchangeRate]);
 
+    // Format amount with display currency symbol
     const format = useCallback((amount: number) => {
-        return formatPriceWithCurrency(amount, currency);
-    }, [currency]);
+        return formatPriceWithCurrency(amount, displayCurrency);
+    }, [displayCurrency]);
 
+    // Convert and format in one step
     const priceInCurrency = useCallback((amount: number) => {
         const converted = convert(amount);
         return format(converted);
     }, [convert, format]);
 
     const value = {
-        currency,
+        baseCurrency,
+        currency: displayCurrency, // Keep 'currency' for backwards compatibility
+        displayCurrency,
         exchangeRate,
         loading,
         setCurrency,
@@ -71,14 +83,14 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <CurrencyContext.Provider value= { value } >
-        { children }
+        <CurrencyContext.Provider value={value}>
+            {children}
         </CurrencyContext.Provider>
     );
 }
 
 export function useCurrency() {
-    const context:any = useContext(CurrencyContext);
+    const context: any = useContext(CurrencyContext);
     if (context === undefined) {
         throw new Error('useCurrency must be used within a CurrencyProvider');
     }

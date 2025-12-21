@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import MaintenanceOverlay from '@/components/ui/maintenance-overlay';
 import { ordersApi } from '@/lib/services/api';
 import { Order } from '@/types';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 const steps = [
@@ -25,6 +26,7 @@ function OrderTrackingContent() {
     const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const { priceInCurrency }: any = useCurrency();
 
     const fetchOrder = async (id: string) => {
         if (!id.trim()) return;
@@ -66,11 +68,10 @@ function OrderTrackingContent() {
         return 'pending';
     };
 
-    const formatPrice = (price: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(price);
+    const formatPrice = (price: number) => priceInCurrency(price);
 
     const formatDate = (date: string) =>
-        new Date(date).toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' });
+        new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     return (
         <>

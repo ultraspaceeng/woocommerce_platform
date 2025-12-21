@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fi';
 import { ordersApi } from '@/lib/services/api';
 import { Order, FulfillmentStatus } from '@/types';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 const statusColors: Record<string, string> = {
@@ -27,6 +28,7 @@ export default function OrdersPage() {
     const [paymentFilter, setPaymentFilter] = useState('all');
     const [fulfillmentFilter, setFulfillmentFilter] = useState('all');
     const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+    const { priceInCurrency }: any = useCurrency();
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -55,11 +57,10 @@ export default function OrdersPage() {
         }
     };
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount);
+    const formatCurrency = (amount: number) => priceInCurrency(amount);
 
     const formatDate = (date: string) =>
-        new Date(date).toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
     const filteredOrders = orders.filter(order =>
         order.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||

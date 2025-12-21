@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { FiCheckCircle, FiLock, FiShoppingBag, FiDownload, FiPrinter, FiMail, FiPackage, FiChevronRight, FiChevronLeft, FiHelpCircle, FiShield } from 'react-icons/fi';
+import { FiCheckCircle, FiLock, FiShoppingBag, FiDownload, FiPrinter, FiMail, FiPackage, FiChevronRight, FiChevronLeft, FiHelpCircle, FiShield, FiCreditCard, FiGlobe } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
@@ -13,9 +13,14 @@ import { useCartStore } from '@/lib/stores/cart-store';
 import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
-// Dynamic import for react-paystack (client-side only)
+// Dynamic imports for payment buttons (client-side only)
 const PaystackButton: any = dynamic(
     () => import('react-paystack').then((mod) => mod.PaystackButton),
+    { ssr: false }
+);
+
+const PayPalButton = dynamic(
+    () => import('@/components/checkout/paypal-button'),
     { ssr: false }
 );
 
@@ -30,9 +35,18 @@ interface CartItemForOrder {
     digitalFileName?: string;
 }
 
+interface PaymentSettings {
+    paystackEnabled: boolean;
+    paypalEnabled: boolean;
+    defaultPaymentMethod: 'paystack' | 'paypal' | 'both';
+    baseCurrency: string;
+    displayCurrency: string;
+    exchangeRate: number;
+}
+
 export default function CheckoutPage() {
     const { items, getSubtotal, getTotal, clearCart } = useCartStore();
-    const { priceInCurrency }: any = useCurrency();
+    const { priceInCurrency, baseCurrency, displayCurrency, exchangeRate }: any = useCurrency();
     const [verifying, setVerifying] = useState(false);
     const [success, setSuccess] = useState(false);
     const [orderId, setOrderId] = useState('');
@@ -41,11 +55,42 @@ export default function CheckoutPage() {
     const [hasPhysicalProducts, setHasPhysicalProducts] = useState(false);
     const [orderType, setOrderType] = useState<'digital-only' | 'physical-only' | 'mixed'>('physical-only');
     const [isFormValid, setIsFormValid] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'paystack' | 'paypal'>('paystack');
+    const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>({
+        paystackEnabled: true,
+        paypalEnabled: false,
+        defaultPaymentMethod: 'paystack',
+        baseCurrency: 'NGN',
+        displayCurrency: 'NGN',
+        exchangeRate: 1,
+    });
     const [formData, setFormData] = useState({
         name: '', email: '', phone: '', address: '', city: '', state: '', country: 'Nigeria', newsletter: false,
     });
 
     const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '';
+
+    // Fetch payment settings
+    useEffect(() => {
+        const fetchPaymentSettings = async () => {
+            try {
+                const response = await fetch('/api/payment-settings');
+                const data = await response.json();
+                if (data.success && data.data) {
+                    setPaymentSettings(data.data);
+                    // Set default selected payment method
+                    if (data.data.defaultPaymentMethod === 'both') {
+                        setSelectedPaymentMethod('paystack');
+                    } else {
+                        setSelectedPaymentMethod(data.data.defaultPaymentMethod);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch payment settings:', error);
+            }
+        };
+        fetchPaymentSettings();
+    }, []);
 
     useEffect(() => {
         if (success) return;
@@ -161,16 +206,67 @@ export default function CheckoutPage() {
         console.log('Payment cancelled by user');
     };
 
+    // PayPal success handler
+    const handlePayPalSuccess = async (paypalOrderId: string, details: any) => {
+        setVerifying(true);
+        try {
+            const orderData = prepareOrderData();
+            const response = await fetch('/api/paypal/capture-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paypalOrderId, orderData }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                setOrderId(data.data.orderId);
+                if (data.data.digitalItems?.length > 0) {
+                    setDigitalItems(data.data.digitalItems);
+                }
+                if (data.data.hasDigitalProducts && data.data.hasPhysicalProducts) {
+                    setOrderType('mixed');
+                } else if (data.data.hasDigitalProducts) {
+                    setOrderType('digital-only');
+                } else {
+                    setOrderType('physical-only');
+                }
+                setSuccess(true);
+                clearCart();
+            } else {
+                alert(`Payment failed: ${data.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('PayPal capture error:', error);
+            alert('Payment processing failed. Please try again.');
+        } finally {
+            setVerifying(false);
+        }
+    };
+
+    const handlePayPalError = (error: any) => {
+        console.error('PayPal error:', error);
+        alert('PayPal payment failed. Please try again.');
+    };
+
     const generateReference = () => {
         return `RC-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    };
+
+    // Calculate PayPal amount in display currency
+    const getPayPalAmount = () => {
+        const total = getTotal();
+        // If display currency is different from base, use converted amount
+        if (paymentSettings.displayCurrency !== paymentSettings.baseCurrency) {
+            return total * paymentSettings.exchangeRate;
+        }
+        return total;
     };
 
     const paystackConfig = {
         reference: generateReference(),
         email: formData.email,
-        amount: getTotal() * 100,
+        amount: getTotal() * 100, // Paystack uses base currency (NGN)
         publicKey: paystackPublicKey,
-        currency: 'NGN',
+        currency: paymentSettings.baseCurrency || 'NGN',
         metadata: {
             custom_fields: [{ value: formData.name }],
         },
@@ -339,9 +435,6 @@ export default function CheckoutPage() {
                         <div className={styles.formSection}>
                             <div className={styles.formSectionHeader}>
                                 <h2 className={styles.formTitle}>Contact information</h2>
-                                <div className={styles.formLoginPrompt}>
-                                    Already have an account? <Link href="/auth/login">Log in</Link>
-                                </div>
                             </div>
                             <div className={styles.formGrid}>
                                 <div className={styles.inputGroup}>
@@ -414,21 +507,77 @@ export default function CheckoutPage() {
                             </div>
                         )}
 
+                        {/* Payment Method Selection */}
+                        {paymentSettings.defaultPaymentMethod === 'both' && (
+                            <div className={styles.formSection}>
+                                <h2 className={styles.formTitle}>Payment Method</h2>
+                                <div className={styles.paymentMethods}>
+                                    {paymentSettings.paystackEnabled && (
+                                        <button
+                                            type="button"
+                                            className={`${styles.paymentMethod} ${selectedPaymentMethod === 'paystack' ? styles.selected : ''}`}
+                                            onClick={() => setSelectedPaymentMethod('paystack')}
+                                        >
+                                            <FiCreditCard size={20} />
+                                            <div>
+                                                <span className={styles.paymentMethodName}>Paystack</span>
+                                                <span className={styles.paymentMethodDesc}>Cards, Bank Transfer, USSD (NGN)</span>
+                                            </div>
+                                        </button>
+                                    )}
+                                    {paymentSettings.paypalEnabled && (
+                                        <button
+                                            type="button"
+                                            className={`${styles.paymentMethod} ${selectedPaymentMethod === 'paypal' ? styles.selected : ''}`}
+                                            onClick={() => setSelectedPaymentMethod('paypal')}
+                                        >
+                                            <FiGlobe size={20} />
+                                            <div>
+                                                <span className={styles.paymentMethodName}>PayPal</span>
+                                                <span className={styles.paymentMethodDesc}>International Cards, PayPal Balance</span>
+                                            </div>
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Form Actions */}
                         <div className={styles.formActions}>
                             <Link href="/cart" className={styles.backLink}>
                                 <FiChevronLeft size={16} /> Return to cart
                             </Link>
+
                             {isFormValid && formData.email ? (
-                                <PaystackButton
-                                    {...paystackConfig}
-                                    text={`Pay ${formatNGN(getTotal())}`}
-                                    onSuccess={handlePaystackSuccess}
-                                    onClose={handlePaystackClose}
-                                    onBankTransferConfirmationPending={() => storeOrderDataForVerify()}
-                                    onClick={() => storeOrderDataForVerify()}
-                                    className={styles.continueBtn}
-                                />
+                                <div className={styles.paymentButtons}>
+                                    {/* Paystack Button */}
+                                    {(paymentSettings.defaultPaymentMethod === 'paystack' ||
+                                        (paymentSettings.defaultPaymentMethod === 'both' && selectedPaymentMethod === 'paystack')) &&
+                                        paymentSettings.paystackEnabled && (
+                                            <PaystackButton
+                                                {...paystackConfig}
+                                                text={`Pay ${formatNGN(getTotal())}`}
+                                                onSuccess={handlePaystackSuccess}
+                                                onClose={handlePaystackClose}
+                                                onBankTransferConfirmationPending={() => storeOrderDataForVerify()}
+                                                onClick={() => storeOrderDataForVerify()}
+                                                className={styles.continueBtn}
+                                            />
+                                        )}
+
+                                    {/* PayPal Button */}
+                                    {(paymentSettings.defaultPaymentMethod === 'paypal' ||
+                                        (paymentSettings.defaultPaymentMethod === 'both' && selectedPaymentMethod === 'paypal')) &&
+                                        paymentSettings.paypalEnabled && (
+                                            <PayPalButton
+                                                amount={getPayPalAmount()}
+                                                currency={paymentSettings.displayCurrency || 'USD'}
+                                                onSuccess={handlePayPalSuccess}
+                                                onError={handlePayPalError}
+                                                disabled={!isFormValid}
+                                            />
+                                        )}
+                                </div>
                             ) : (
                                 <button className={styles.continueBtn} disabled>
                                     <FiLock size={16} /> Fill required fields
@@ -437,12 +586,12 @@ export default function CheckoutPage() {
                         </div>
 
                         {/* Policy Links */}
-                        <div className={styles.policyLinks}>
+                        {/* <div className={styles.policyLinks}>
                             <a href="#">Refund policy</a>
                             <a href="#">Shipping policy</a>
                             <a href="#">Privacy policy</a>
                             <a href="#">Terms of service</a>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 

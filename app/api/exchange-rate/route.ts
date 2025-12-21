@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         await connectDB();
 
         const body = await request.json();
-        const { displayCurrency } = body;
+        const { displayCurrency, baseCurrency: newBaseCurrency } = body;
 
         if (!displayCurrency) {
             return NextResponse.json(
@@ -63,7 +63,13 @@ export async function POST(request: Request) {
             settings = new SystemSettings();
         }
 
-        const baseCurrency = settings.baseCurrency || 'NGN';
+        // Use new base currency from request if provided, otherwise use existing
+        const baseCurrency = newBaseCurrency || settings.baseCurrency || 'NGN';
+
+        // Update base currency in settings if changed
+        if (newBaseCurrency && newBaseCurrency !== settings.baseCurrency) {
+            settings.baseCurrency = newBaseCurrency;
+        }
 
         // Fetch new exchange rate
         const rateResult = await fetchExchangeRate(baseCurrency, displayCurrency);
@@ -83,6 +89,8 @@ export async function POST(request: Request) {
 
         await settings.save();
 
+        console.log(`Exchange rate updated: ${baseCurrency} -> ${displayCurrency} = ${rateResult.rate} (source: ${rateResult.source})`);
+
         return NextResponse.json({
             success: true,
             data: {
@@ -91,8 +99,9 @@ export async function POST(request: Request) {
                 exchangeRate: rateResult.rate,
                 exchangeRateUpdatedAt: settings.exchangeRateUpdatedAt,
                 currencySymbol: settings.currencySymbol,
+                source: rateResult.source, // Show which API provided the rate
             },
-            message: 'Exchange rate updated successfully',
+            message: `Exchange rate updated from ${rateResult.source}`,
         });
     } catch (error) {
         console.error('Error updating exchange rate:', error);

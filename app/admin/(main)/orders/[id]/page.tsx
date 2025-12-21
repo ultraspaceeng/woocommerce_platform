@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { ordersApi } from '@/lib/services/api';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 type PaymentStatus = 'pending' | 'paid' | 'failed';
@@ -83,6 +84,7 @@ export default function OrderDetailsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const { priceInCurrency }: any = useCurrency();
 
     // Editable fields
     const [fulfillmentStatus, setFulfillmentStatus] = useState<FulfillmentStatus>('unfulfilled');
@@ -148,11 +150,10 @@ export default function OrderDetailsPage() {
         setIsEditing(false);
     };
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount);
+    const formatCurrency = (amount: number) => priceInCurrency(amount);
 
     const formatDate = (date: string) =>
-        new Date(date).toLocaleDateString('en-NG', {
+        new Date(date).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',

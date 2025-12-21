@@ -8,6 +8,7 @@ import {
     FiTrendingUp, FiArrowUp, FiArrowDown
 } from 'react-icons/fi';
 import { analyticsApi } from '@/lib/services/api';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 interface ProductAnalytics {
@@ -37,6 +38,7 @@ export default function ProductAnalyticsPage() {
     const [totals, setTotals] = useState<AnalyticsTotals | null>(null);
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState<string>('totalSales');
+    const { priceInCurrency }: any = useCurrency();
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -56,8 +58,7 @@ export default function ProductAnalyticsPage() {
         fetchAnalytics();
     }, [sortBy]);
 
-    const formatCurrency = (amount?: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount ?? 0);
+    const formatCurrency = (amount?: number) => priceInCurrency(amount ?? 0);
 
     const formatCount = (count?: number) => {
         if (count === undefined || count === null) return '0';

@@ -20,7 +20,9 @@ export interface ISystemSettings extends Document {
     exchangeRate: number; // Rate from base to display currency
     exchangeRateUpdatedAt: Date | null; // Last update time
     currencySymbol: string; // Display symbol
-    paystackEnabled: boolean;
+    paystackEnabled: boolean; // African market (NGN, GHS, ZAR, KES)
+    paypalEnabled: boolean; // International market (USD, EUR, GBP, etc.)
+    defaultPaymentMethod: 'paystack' | 'paypal' | 'both'; // Which payment methods to show
 
     // Shipping
     freeShippingThreshold: number;
@@ -93,6 +95,15 @@ const SystemSettingsSchema = new Schema<ISystemSettings>({
     paystackEnabled: {
         type: Boolean,
         default: true,
+    },
+    paypalEnabled: {
+        type: Boolean,
+        default: false,
+    },
+    defaultPaymentMethod: {
+        type: String,
+        enum: ['paystack', 'paypal', 'both'],
+        default: 'paystack',
     },
 
     // Shipping

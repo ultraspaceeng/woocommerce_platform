@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fi';
 import { dashboardApi, ordersApi, analyticsApi } from '@/lib/services/api';
 import { DashboardMetrics, Order } from '@/types';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 // Dynamic import Recharts
@@ -24,6 +25,7 @@ export default function DashboardPage() {
     const [recentOrders, setRecentOrders] = useState<Order[]>([]);
     const [stats, setStats] = useState<{ totalViews: number; totalDownloads: number } | null>(null);
     const [loading, setLoading] = useState(true);
+    const { priceInCurrency }: any = useCurrency();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,11 +47,10 @@ export default function DashboardPage() {
         fetchData();
     }, []);
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount);
+    const formatCurrency = (amount: number) => priceInCurrency(amount);
 
     const formatDate = (date: string) =>
-        new Date(date).toLocaleDateString('en-NG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
     if (loading) {
         return <div className={styles.loading}>Loading dashboard...</div>;

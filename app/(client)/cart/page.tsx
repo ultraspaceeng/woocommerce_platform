@@ -7,13 +7,14 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import MaintenanceOverlay from '@/components/ui/maintenance-overlay';
 import { useCartStore } from '@/lib/stores/cart-store';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 export default function CartPage() {
     const { items, updateQuantity, removeItem, getSubtotal, getTotal } = useCartStore();
+    const { priceInCurrency }: any = useCurrency();
 
-    const formatPrice = (price: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(price);
+    const formatPrice = (price: number) => priceInCurrency(price);
 
     if (items.length === 0) {
         return (

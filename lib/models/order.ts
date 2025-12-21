@@ -40,7 +40,10 @@ export interface IOrder extends Document {
     cartItems: IOrderItem[];
     totalAmount: number;
     paymentStatus: PaymentStatus;
+    paymentMethod?: 'paystack' | 'paypal' | 'bank_transfer';
     paystackRef?: string;
+    paypalOrderId?: string;
+    paypalCaptureId?: string;
     paymentDetails?: IPaymentDetails;
     paidAt?: Date;
     hasDigitalProducts: boolean;
@@ -128,7 +131,14 @@ const OrderSchema = new Schema<IOrder>({
         enum: ['pending', 'paid', 'failed'],
         default: 'pending',
     },
+    paymentMethod: {
+        type: String,
+        enum: ['paystack', 'paypal', 'bank_transfer'],
+        default: 'paystack',
+    },
     paystackRef: { type: String },
+    paypalOrderId: { type: String },
+    paypalCaptureId: { type: String },
     paymentDetails: { type: PaymentDetailsSchema },
     paidAt: { type: Date },
     hasDigitalProducts: { type: Boolean, default: false },

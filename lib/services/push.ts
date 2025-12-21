@@ -4,6 +4,7 @@
 import webpush from 'web-push';
 import dbConnect from '@/lib/db/mongodb';
 import PushSubscription from '@/lib/models/subscription';
+import { formatServerPrice } from './currency-server';
 
 // Configure web-push with VAPID keys
 // Generate keys using: npx web-push generate-vapid-keys
@@ -182,9 +183,10 @@ export const sendNewOrderAdminPush = async (
     amount: number,
     customerName: string
 ): Promise<{ success: number; failed: number }> => {
+    const formattedAmount = await formatServerPrice(amount);
     return broadcastToAdmins({
         title: '💰 New Order Received!',
-        body: `Order ${orderId} - ₦${amount.toLocaleString()} from ${customerName}`,
+        body: `Order ${orderId} - ${formattedAmount} from ${customerName}`,
         url: `/admin/orders/${orderId}`,
         tag: `admin-order-${orderId}`,
     });
@@ -196,9 +198,10 @@ export const sendPaymentReceivedAdminPush = async (
     amount: number,
     customerName: string
 ): Promise<{ success: number; failed: number }> => {
+    const formattedAmount = await formatServerPrice(amount);
     return broadcastToAdmins({
         title: '💳 Payment Received!',
-        body: `₦${amount.toLocaleString()} from ${customerName} (Order: ${orderId})`,
+        body: `${formattedAmount} from ${customerName} (Order: ${orderId})`,
         url: `/admin/orders/${orderId}`,
         tag: `admin-payment-${orderId}`,
     });
@@ -247,9 +250,10 @@ export const sendNewProductNotification = async (
     productSlug: string,
     price: number
 ): Promise<{ success: number; failed: number }> => {
+    const formattedPrice = await formatServerPrice(price);
     return broadcastToVisitors({
         title: '🆕 New Product Alert!',
-        body: `${productTitle} - ₦${price.toLocaleString()} just landed!`,
+        body: `${productTitle} - ${formattedPrice} just landed!`,
         url: `/market/${productSlug}`,
         tag: `new-product-${productSlug}`,
     });

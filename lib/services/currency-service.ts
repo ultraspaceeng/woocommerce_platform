@@ -1,13 +1,16 @@
 /**
  * Currency Service
  * Handles currency conversion and exchange rate fetching
- * Uses frankfurter.app API (free, no API key required)
+ * Uses ExchangeRate-API (free tier: 1500 requests/month, supports NGN)
+ * Fallback: Open Exchange Rates via frankfurter.app
  */
 
 import { CURRENCY_SYMBOLS } from '@/lib/constants/currencies';
 
-
-const EXCHANGE_API_URL = 'https://api.frankfurter.app';
+// Primary API: ExchangeRate-API (free tier supports NGN)
+const EXCHANGERATE_API_URL = 'https://open.er-api.com/v6/latest';
+// Fallback API: Frankfurter (doesn't support NGN but good for major currencies)
+const FRANKFURTER_API_URL = 'https://api.frankfurter.app';
 
 export interface ExchangeRateResult {
     success: boolean;
@@ -15,24 +18,68 @@ export interface ExchangeRateResult {
     from: string;
     to: string;
     date: string;
+    source?: string;
     error?: string;
 }
 
 /**
- * Fetch exchange rate from frankfurter.app API
- * Note: Uses EUR as base, so we need to calculate cross-rates for NGN
+ * Fetch exchange rate from external APIs
+ * Primary: ExchangeRate-API (supports NGN and 150+ currencies)
+ * Fallback: Frankfurter API, then static fallback rates
  */
 export async function fetchExchangeRate(from: string, to: string): Promise<ExchangeRateResult> {
     try {
         // If same currency, return 1
         if (from === to) {
-            return { success: true, rate: 1, from, to, date: new Date().toISOString() };
+            return { success: true, rate: 1, from, to, date: new Date().toISOString(), source: 'same' };
         }
 
-        // Frankfurter API uses EUR as base for free tier
-        // For currencies like NGN that might not be supported, we use fallback rates
+        // Try ExchangeRate-API first (supports NGN)
+        try {
+            const response = await fetch(`${EXCHANGERATE_API_URL}/${from}`, {
+                next: { revalidate: 3600 }, // Cache for 1 hour
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.result === 'success' && data.rates && data.rates[to]) {
+                    return {
+                        success: true,
+                        rate: data.rates[to],
+                        from,
+                        to,
+                        date: data.time_last_update_utc || new Date().toISOString(),
+                        source: 'exchangerate-api',
+                    };
+                }
+            }
+        } catch (err) {
+            console.warn('ExchangeRate-API failed, trying fallback:', err);
+        }
+
+        // Fallback: Try Frankfurter API (doesn't support NGN but good for EUR, USD, GBP, etc.)
+        try {
+            const response = await fetch(`${FRANKFURTER_API_URL}/latest?from=${from}&to=${to}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.rates && data.rates[to]) {
+                    return {
+                        success: true,
+                        rate: data.rates[to],
+                        from,
+                        to,
+                        date: data.date,
+                        source: 'frankfurter',
+                    };
+                }
+            }
+        } catch (err) {
+            console.warn('Frankfurter API failed, using static fallback:', err);
+        }
+
+        // Last resort: Static fallback rates (only used when all APIs fail)
         const FALLBACK_RATES_TO_USD: Record<string, number> = {
-            NGN: 1550, // Approximate NGN to USD rate
+            NGN: 1550,
             USD: 1,
             EUR: 0.92,
             GBP: 0.79,
@@ -41,9 +88,11 @@ export async function fetchExchangeRate(from: string, to: string): Promise<Excha
             ZAR: 18.5,
             KES: 153,
             GHS: 15.2,
+            INR: 83,
+            JPY: 149,
+            CNY: 7.2,
         };
 
-        // If both currencies have fallback rates, calculate cross-rate
         if (FALLBACK_RATES_TO_USD[from] && FALLBACK_RATES_TO_USD[to]) {
             const fromToUsd = FALLBACK_RATES_TO_USD[from];
             const toToUsd = FALLBACK_RATES_TO_USD[to];
@@ -55,29 +104,11 @@ export async function fetchExchangeRate(from: string, to: string): Promise<Excha
                 from,
                 to,
                 date: new Date().toISOString(),
+                source: 'fallback',
             };
         }
 
-        // Try the API for other currencies
-        const response = await fetch(`${EXCHANGE_API_URL}/latest?from=${from}&to=${to}`);
-
-        if (!response.ok) {
-            throw new Error(`API returned status ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.rates && data.rates[to]) {
-            return {
-                success: true,
-                rate: data.rates[to],
-                from,
-                to,
-                date: data.date,
-            };
-        }
-
-        throw new Error('Currency not found in response');
+        throw new Error(`No exchange rate available for ${from} to ${to}`);
     } catch (error) {
         console.error('Exchange rate fetch error:', error);
         return {
@@ -92,10 +123,12 @@ export async function fetchExchangeRate(from: string, to: string): Promise<Excha
 }
 
 /**
- * Convert price from one currency to another
+ * Convert price from base currency to display currency
+ * The exchangeRate is: 1 base currency = exchangeRate display currency
+ * Example: if NGN→USD rate is 0.000645, then 1000 NGN * 0.000645 = 0.645 USD
  */
 export function convertPrice(amount: number, exchangeRate: number): number {
-    return parseFloat((amount / exchangeRate).toFixed(2));
+    return parseFloat((amount * exchangeRate).toFixed(2));
 }
 
 /**
@@ -127,3 +160,4 @@ export function formatPriceWithCurrency(
 export function getCurrencySymbol(currencyCode: string): string {
     return CURRENCY_SYMBOLS[currencyCode] || currencyCode;
 }
+

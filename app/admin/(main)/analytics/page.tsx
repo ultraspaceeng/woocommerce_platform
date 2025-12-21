@@ -7,19 +7,21 @@ import {
 } from 'react-icons/fi';
 import { dashboardApi } from '@/lib/services/api';
 import { DashboardMetrics } from '@/types';
+import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
 // Dynamic import Recharts
-const BarChart:any = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
-const Bar:any = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const XAxis:any = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
-const YAxis:any = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
-const Tooltip:any = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
-const ResponsiveContainer:any = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const BarChart: any = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar: any = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis: any = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis: any = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip: any = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer: any = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
 
 export default function AnalyticsPage() {
     const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
     const [loading, setLoading] = useState(true);
+    const { priceInCurrency }: any = useCurrency();
 
     useEffect(() => {
         const fetchMetrics = async () => {
@@ -35,8 +37,7 @@ export default function AnalyticsPage() {
         fetchMetrics();
     }, []);
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(amount);
+    const formatCurrency = (amount: number) => priceInCurrency(amount);
 
     if (loading) {
         return <div className={styles.loading}>Loading analytics...</div>;
@@ -118,7 +119,7 @@ export default function AnalyticsPage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                                     <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v:any) => `₦${(v / 1000).toFixed(0)}k`} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(v: any) => `₦${(v / 1000).toFixed(0)}k`} />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
                                         formatter={(value: number) => [formatCurrency(value), 'Revenue']}

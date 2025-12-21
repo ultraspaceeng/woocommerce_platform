@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiPackage, FiChevronRight, FiDownload, FiShield } from 'react-icons/fi';
@@ -10,11 +11,75 @@ import { useCartStore } from '@/lib/stores/cart-store';
 import { useCurrency } from '@/lib/hooks/use-currency';
 import styles from './page.module.css';
 
+interface RecommendedProduct {
+    _id: string;
+    title: string;
+    slug: string;
+    price: number;
+    discountedPrice?: number;
+    assets: string[];
+}
+
 export default function CartPage() {
-    const { items, updateQuantity, removeItem, getSubtotal, getTotal } = useCartStore();
+    const { items, updateQuantity, removeItem, getSubtotal, getTotal, addItem } = useCartStore();
     const { priceInCurrency }: any = useCurrency();
+    const [recommendedProducts, setRecommendedProducts] = useState<RecommendedProduct[]>([]);
+    const [loadingRecommended, setLoadingRecommended] = useState(false);
 
     const formatPrice = (price: number) => priceInCurrency(price);
+
+    // Fetch frequently bought together products based on cart items
+    useEffect(() => {
+        const fetchRecommendedProducts = async () => {
+            if (items.length === 0) {
+                setRecommendedProducts([]);
+                return;
+            }
+
+            setLoadingRecommended(true);
+            try {
+                // Get category IDs from cart items
+                const cartProductIds = items.map(item => item.product._id);
+                const categoryIds = items
+                    .map(item => (item.product as any).category)
+                    .filter(Boolean);
+
+                // Build query params
+                const params = new URLSearchParams();
+                params.set('limit', '4');
+                params.set('excludeIds', cartProductIds.join(','));
+                if (categoryIds.length > 0) {
+                    params.set('categories', categoryIds.join(','));
+                }
+
+                const response = await fetch(`/api/products/recommended?${params.toString()}`);
+                const data = await response.json();
+
+                if (data.success && data.data) {
+                    setRecommendedProducts(data.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch recommended products:', error);
+            } finally {
+                setLoadingRecommended(false);
+            }
+        };
+
+        fetchRecommendedProducts();
+    }, [items]);
+
+    // Quick add to cart handler
+    const handleQuickAdd = (product: RecommendedProduct) => {
+        addItem({
+            _id: product._id,
+            title: product.title,
+            slug: product.slug,
+            price: product.price,
+            discountedPrice: product.discountedPrice,
+            assets: product.assets,
+            type: 'physical',
+        } as any, 1);
+    };
 
     if (items.length === 0) {
         return (
@@ -161,35 +226,60 @@ export default function CartPage() {
                             </div>
 
                             {/* Frequently Bought Together */}
-                            <div className={styles.relatedSection}>
-                                <div className={styles.relatedHeader}>
-                                    <h2 className={styles.relatedTitle}>Frequently Bought Together</h2>
-                                    <Link href="/market" className={styles.relatedViewAll}>View All</Link>
+                            {recommendedProducts.length > 0 && (
+                                <div className={styles.relatedSection}>
+                                    <div className={styles.relatedHeader}>
+                                        <h2 className={styles.relatedTitle}>Frequently Bought Together</h2>
+                                        <Link href="/market" className={styles.relatedViewAll}>View All</Link>
+                                    </div>
+                                    <div className={styles.relatedGrid}>
+                                        {loadingRecommended ? (
+                                            // Loading skeleton
+                                            Array.from({ length: 3 }).map((_, i) => (
+                                                <div key={i} className={styles.relatedCard}>
+                                                    <div className={styles.relatedCardImage}>
+                                                        <div className={styles.skeletonImage} />
+                                                    </div>
+                                                    <div className={styles.skeletonText} />
+                                                    <div className={styles.skeletonPrice} />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            recommendedProducts.map((product) => (
+                                                <div key={product._id} className={styles.relatedCard}>
+                                                    <Link href={`/market/${product.slug || product._id}`}>
+                                                        <div className={styles.relatedCardImage}>
+                                                            {product.assets?.[0] ? (
+                                                                <Image
+                                                                    src={product.assets[0]}
+                                                                    alt={product.title}
+                                                                    fill
+                                                                    sizes="150px"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                />
+                                                            ) : (
+                                                                <FiPackage />
+                                                            )}
+                                                        </div>
+                                                    </Link>
+                                                    <Link href={`/market/${product.slug || product._id}`}>
+                                                        <h3 className={styles.relatedCardTitle}>{product.title}</h3>
+                                                    </Link>
+                                                    <span className={styles.relatedCardPrice}>
+                                                        {formatPrice(product.discountedPrice || product.price)}
+                                                    </span>
+                                                    <button
+                                                        className={styles.relatedAddBtn}
+                                                        onClick={() => handleQuickAdd(product)}
+                                                    >
+                                                        <FiPlus size={14} /> Add
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
-                                <div className={styles.relatedGrid}>
-                                    <div className={styles.relatedCard}>
-                                        <div className={styles.relatedCardImage}>
-                                            <FiPackage />
-                                        </div>
-                                        <h3 className={styles.relatedCardTitle}>Related Product</h3>
-                                        <span className={styles.relatedCardPrice}>{formatPrice(2500)}</span>
-                                    </div>
-                                    <div className={styles.relatedCard}>
-                                        <div className={styles.relatedCardImage}>
-                                            <FiPackage />
-                                        </div>
-                                        <h3 className={styles.relatedCardTitle}>Related Product</h3>
-                                        <span className={styles.relatedCardPrice}>{formatPrice(4500)}</span>
-                                    </div>
-                                    <div className={styles.relatedCard}>
-                                        <div className={styles.relatedCardImage}>
-                                            <FiPackage />
-                                        </div>
-                                        <h3 className={styles.relatedCardTitle}>Related Product</h3>
-                                        <span className={styles.relatedCardPrice}>{formatPrice(3500)}</span>
-                                    </div>
-                                </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Summary Sidebar */}
@@ -261,3 +351,4 @@ export default function CartPage() {
         </div>
     );
 }
+

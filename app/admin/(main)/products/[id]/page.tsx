@@ -58,6 +58,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
     const [categories, setCategories] = useState<Category[]>([]);
+    const [baseCurrency, setBaseCurrency] = useState('NGN');
     const [formData, setFormData] = useState<ProductFormData>({
         title: '',
         description: '',
@@ -91,6 +92,22 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
             }
         };
         fetchCategories();
+    }, []);
+
+    // Fetch base currency from settings
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                if (data.success && data.data?.baseCurrency) {
+                    setBaseCurrency(data.data.baseCurrency);
+                }
+            } catch (error) {
+                console.error('Failed to fetch settings:', error);
+            }
+        };
+        fetchSettings();
     }, []);
 
     // Fetch product if editing
@@ -285,10 +302,13 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                 // If neither flag is set and no new file, don't include - API will preserve existing
             }
 
+
             if (isNew) {
                 await productsApi.create(productData);
+                toast.success('Product created successfully');
             } else {
                 await productsApi.update(id, productData);
+                toast.success('Product updated successfully');
             }
 
             router.push('/admin/products');
@@ -451,7 +471,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                             <h3 className={styles.cardTitle}>Pricing</h3>
                             <div className={styles.formRow}>
                                 <Input
-                                    label="Price (₦)"
+                                    label={`Price (${baseCurrency})`}
                                     name="price"
                                     type="number"
                                     value={formData.price}
@@ -462,7 +482,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                                     step="0.01"
                                 />
                                 <Input
-                                    label="Compare At Price (₦)"
+                                    label={`Compare At Price (${baseCurrency})`}
                                     name="discountedPrice"
                                     type="number"
                                     value={formData.discountedPrice}

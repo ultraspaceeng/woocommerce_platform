@@ -10,6 +10,8 @@ import {
     sendNewOrderAdminPush,
     broadcastToAdmins
 } from './push';
+import connectDB from '@/lib/db/mongodb';
+import Notification from '@/lib/models/notification';
 
 interface OrderNotificationData {
     orderId: string;
@@ -29,6 +31,15 @@ interface OrderNotificationData {
         country: string;
     };
 }
+
+// Helper to format currency
+const formatAmount = (amount: number): string => {
+    return new Intl.NumberFormat('en-NG', {
+        style: 'currency',
+        currency: 'NGN',
+        minimumFractionDigits: 0,
+    }).format(amount);
+};
 
 // Send all notifications for a new order
 export const notifyOrderPlaced = async (order: any): Promise<void> => {
@@ -52,6 +63,28 @@ export const notifyOrderPlaced = async (order: any): Promise<void> => {
         sendNewOrderAdminPush(order.orderId, order.totalAmount, order.userDetails?.name || 'Customer')
             .then(result => console.log(`✓ Admin push sent (${result.success} success, ${result.failed} failed)`))
             .catch(err => console.error('Admin push error:', err))
+    );
+
+    // Create persistent notification record
+    notifications.push(
+        (async () => {
+            try {
+                await connectDB();
+                await Notification.create({
+                    type: 'new_order',
+                    title: 'New Order Received',
+                    message: `Order ${order.orderId} placed by ${order.userDetails?.name || 'Customer'} for ${formatAmount(order.totalAmount)}`,
+                    data: {
+                        orderId: order.orderId,
+                        customerId: order.userId,
+                        amount: order.totalAmount
+                    }
+                });
+                console.log('✓ Notification record created');
+            } catch (err) {
+                console.error('Failed to create notification record:', err);
+            }
+        })()
     );
 
     await Promise.allSettled(notifications);

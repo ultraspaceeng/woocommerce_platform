@@ -150,6 +150,24 @@
     border: 2px solid var(--admin-bg);
 }
 
+.notificationBadge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background-color: var(--admin-error);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--admin-bg);
+}
+
 /* Content */
 .adminContent {
     flex: 1;

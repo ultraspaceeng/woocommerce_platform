@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiShoppingCart, FiPackage, FiDownload, FiCheck, FiStar, FiEye, FiShoppingBag } from 'react-icons/fi';
+import { FiShoppingCart, FiPackage, FiDownload, FiCheck, FiStar, FiEye, FiShoppingBag, FiPlay } from 'react-icons/fi';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { useCurrency } from '@/lib/hooks/use-currency';
@@ -122,6 +122,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                             {isDigital ? 'DIGITAL DOWNLOAD' : (product.category || 'PHYSICAL GOOD')}
                         </span>
                     </div>
+
+                    {/* YouTube Play Overlay */}
+                    {product.videoUrl && (
+                        <div className={styles.playOverlay}>
+                            <FiPlay size={28} />
+                        </div>
+                    )}
                 </div>
 
                 {/* Content Section */}

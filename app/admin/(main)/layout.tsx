@@ -1,6 +1,7 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { FiMenu, FiBell, FiSearch } from 'react-icons/fi';
 import { Toaster } from 'react-hot-toast';
 import AdminSidebar from '@/components/layout/admin-sidebar';
@@ -11,6 +12,27 @@ import styles from './layout.module.css';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    // Fetch unread notification count
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const res = await fetch('/api/notifications?unread_only=true&limit=0');
+                const data = await res.json();
+                if (data.success) {
+                    setUnreadCount(data.unreadCount);
+                }
+            } catch (error) {
+                console.error('Failed to fetch unread count:', error);
+            }
+        };
+
+        fetchUnreadCount();
+        // Refresh every 30 seconds
+        const interval = setInterval(fetchUnreadCount, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className={`${styles.adminLayout} adminLayout`}>
@@ -59,10 +81,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                     </div>
 
                     <div className={styles.headerRight}>
-                        <button className={styles.headerButton}>
+                        <Link href="/admin/notifications" className={styles.headerButton}>
                             <FiBell size={20} />
-                            <span className={styles.notificationDot} />
-                        </button>
+                            {unreadCount > 0 && (
+                                <span className={styles.notificationBadge}>
+                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                </span>
+                            )}
+                        </Link>
                         <ThemeToggle />
                     </div>
                 </header>
@@ -84,4 +110,3 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
     );
 }
-

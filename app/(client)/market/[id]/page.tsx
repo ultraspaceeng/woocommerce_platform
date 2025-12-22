@@ -150,19 +150,31 @@ export default function ProductPage({ params }: ProductPageProps) {
                         {/* Image Gallery */}
                         <div className={styles.imageSection}>
                             <div className={styles.mainImage}>
-                                {product.videoUrl && selectedImageIndex === (product.assets?.length || 0) ? (
-                                    <iframe
-                                        width="100%"
-                                        height="100%"
-                                        src={product.videoUrl.replace('watch?v=', 'embed/').split('&')[0]}
-                                        title="Product Video"
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                        className={styles.videoFrame}
-                                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                                    ></iframe>
-                                ) : product.assets && product.assets.length > 0 ? (
+                                {product.videoUrl && selectedImageIndex === (product.assets?.length || 0) ? (() => {
+                                    // Extract YouTube video ID from various URL formats
+                                    const getYouTubeEmbedUrl = (url: string) => {
+                                        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                                        const match = url.match(regExp);
+                                        const videoId = (match && match[2].length === 11) ? match[2] : null;
+                                        return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null;
+                                    };
+                                    const embedUrl = getYouTubeEmbedUrl(product.videoUrl);
+                                    return embedUrl ? (
+                                        <iframe
+                                            width="100%"
+                                            height="100%"
+                                            src={embedUrl}
+                                            title="Product Video"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                            className={styles.videoFrame}
+                                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                                        ></iframe>
+                                    ) : (
+                                        <div className={styles.imagePlaceholder}>Invalid video URL</div>
+                                    );
+                                })() : product.assets && product.assets.length > 0 ? (
                                     <>
                                         <Image
                                             src={product.assets[selectedImageIndex] || product.assets[0]}

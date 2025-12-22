@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
     FiGrid, FiPackage, FiShoppingCart, FiUsers, FiSettings,
-    FiLogOut, FiTrendingUp, FiTag, FiArchive
+    FiLogOut, FiTrendingUp, FiTag, FiArchive, FiBell
 } from 'react-icons/fi';
 import { useAdminStore } from '@/lib/stores/admin-store';
 import styles from './admin-sidebar.module.css';
@@ -23,6 +23,7 @@ const commerceNavItems = [
 ];
 
 const managementNavItems = [
+    { href: '/admin/notifications', label: 'Notifications', icon: FiBell },
     { href: '/admin/users', label: 'Customers', icon: FiUsers },
     { href: '/admin/settings', label: 'Settings', icon: FiSettings },
 ];

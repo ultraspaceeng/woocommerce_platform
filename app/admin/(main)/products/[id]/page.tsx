@@ -76,8 +76,6 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         digitalFile: '',
         digitalFileName: '',
         deleteDigitalFile: false,
-        digitalFileName: '',
-        deleteDigitalFile: false,
         images: [],
         videoUrl: '',
     });
@@ -120,8 +118,6 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         })) || [],
                         seoTitle: product.seoData?.metaTitle || '',
                         seoDescription: product.seoData?.metaDescription || '',
-                        digitalFile: product.digitalFile || '',
-                        digitalFileName: product.digitalFileName || '',
                         digitalFile: product.digitalFile || '',
                         digitalFileName: product.digitalFileName || '',
                         images: product.assets || [],
@@ -271,7 +267,6 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                     metaTitle: formData.seoTitle,
                     metaDescription: formData.seoDescription,
                 },
-                // Product images
                 // Product images
                 assets: formData.images,
                 videoUrl: formData.videoUrl,

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     FiArrowLeft, FiPlus, FiX, FiImage, FiUpload,
-    FiDollarSign, FiPackage, FiTag, FiGlobe, FiSave, FiFile
+    FiDollarSign, FiPackage, FiTag, FiGlobe, FiSave, FiFile, FiExternalLink
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Button from '@/components/ui/button';
@@ -37,6 +37,7 @@ interface ProductFormData {
     // Digital product fields
     digitalFile: string;
     digitalFileName: string;
+    demoLink: string;
     deleteDigitalFile: boolean; // Flag to explicitly delete existing file
     // Product images (base64)
     images: string[];
@@ -76,6 +77,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
         seoDescription: '',
         digitalFile: '',
         digitalFileName: '',
+        demoLink: '',
         deleteDigitalFile: false,
         images: [],
         videoUrl: '',
@@ -137,6 +139,7 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                         seoDescription: product.seoData?.metaDescription || '',
                         digitalFile: product.digitalFile || '',
                         digitalFileName: product.digitalFileName || '',
+                        demoLink: product.demoLink || '',
                         images: product.assets || [],
                         videoUrl: product.videoUrl || '',
                         deleteDigitalFile: false,
@@ -300,6 +303,9 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                     productData.digitalFileName = formData.digitalFileName;
                 }
                 // If neither flag is set and no new file, don't include - API will preserve existing
+
+                // Demo link for digital products
+                productData.demoLink = formData.demoLink || undefined;
             }
 
 
@@ -556,6 +562,21 @@ export default function ProductFormPage({ params }: ProductFormPageProps) {
                                     style={{ display: 'none' }}
                                     accept=".pdf,.zip,.rar,.mp3,.mp4,.epub,.mobi,.doc,.docx,.ppt,.pptx"
                                 />
+
+                                {/* Demo Link Section */}
+                                <div className={styles.demoLinkSection}>
+                                    <div className={styles.demoLinkHeader}>
+                                        <FiExternalLink size={18} />
+                                        <span>Demo / Preview Link</span>
+                                    </div>
+                                    <Input
+                                        name="demoLink"
+                                        value={formData.demoLink}
+                                        onChange={handleChange}
+                                        placeholder="https://your-demo-site.com"
+                                        helperText="Optional: Add a link where customers can preview this product (e.g., live demo of a template)"
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar, FiEye, FiDownload, FiShoppingBag, FiChevronRight, FiChevronLeft, FiHeart, FiTruck, FiShield, FiRotateCcw, FiPlay } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiShoppingCart, FiPackage, FiCheck, FiX, FiStar, FiEye, FiDownload, FiShoppingBag, FiChevronRight, FiChevronLeft, FiHeart, FiTruck, FiShield, FiRotateCcw, FiPlay, FiExternalLink } from 'react-icons/fi';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Button from '@/components/ui/button';
@@ -352,6 +352,19 @@ export default function ProductPage({ params }: ProductPageProps) {
                                     <FiHeart size={20} />
                                 </button>
                             </div>
+
+                            {/* Demo Link / Live Preview */}
+                            {isDigital && product.demoLink && (
+                                <a
+                                    href={product.demoLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.demoLinkBtn}
+                                >
+                                    <FiExternalLink size={18} />
+                                    Live Preview
+                                </a>
+                            )}
 
                             {/* Trust Row */}
                             <div className={styles.trustRow}>

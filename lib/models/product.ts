@@ -30,6 +30,7 @@ export interface IProduct extends Document {
     videoUrl?: string;
     digitalFile?: string;
     digitalFileName?: string;
+    demoLink?: string;
     brand?: string;
     seoData: IProductSeoData;
     isActive: boolean;
@@ -103,6 +104,7 @@ const ProductSchema = new Schema<IProduct>({
     videoUrl: { type: String },
     digitalFile: { type: String },
     digitalFileName: { type: String },
+    demoLink: { type: String },
     brand: { type: String },
     seoData: {
         type: ProductSeoDataSchema,

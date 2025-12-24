@@ -558,3 +558,24 @@
     min-height: 400px;
     color: var(--admin-text-muted);
 }
+
+/* Demo Link Section */
+.demoLinkSection {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--admin-border);
+}
+
+.demoLinkHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    margin-bottom: 0.75rem;
+}
+
+.demoLinkHeader svg {
+    color: var(--admin-accent);
+}

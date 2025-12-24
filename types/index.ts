@@ -28,6 +28,7 @@ export interface Product {
   assets: string[];
   videoUrl?: string;
   digitalFile?: string;
+  demoLink?: string;
   seoData: ProductSeoData;
   createdAt: string;
   updatedAt: string;

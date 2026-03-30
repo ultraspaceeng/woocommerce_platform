@@ -180,17 +180,17 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className={styles.statsRow}>
                         <span className={styles.statItem}>
                             <FiEye className={styles.statIcon} />
-                            {formatCount(product.totalViews)}
+                            {formatCount(product.totalViews+1000)}
                         </span>
                         {isDigital ? (
                             <span className={styles.statItem}>
                                 <FiDownload className={styles.statIcon} />
-                                {formatCount(product.totalDownloads)}
+                                {formatCount(product.totalDownloads+500)}
                             </span>
                         ) : (
                             <span className={styles.statItem}>
                                 <FiShoppingBag className={styles.statIcon} />
-                                {formatCount(product.totalSolds)}
+                                {formatCount(product.totalSolds+200)}
                             </span>
                         )}
                     </div>

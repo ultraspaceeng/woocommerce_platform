@@ -268,7 +268,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                             <div className={styles.statsRow}>
                                 <span className={styles.statItem}>
                                     <FiEye className={styles.statIcon} />
-                                    {formatCount((product?.totalViews ?? 0)+1000)} views
+                                    {formatCount((product?.totalViews ?? 0)+500)} views
                                 </span>
                                 {isDigital ? (
                                     <span className={styles.statItem}>

@@ -59,7 +59,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         fetchProduct();
     }, [id]);
 
-    const formatCount = (count?: number) => {
+    const formatCount = (count?: any) => {
         if (!count) return '0';
         if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
         if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
@@ -268,17 +268,17 @@ export default function ProductPage({ params }: ProductPageProps) {
                             <div className={styles.statsRow}>
                                 <span className={styles.statItem}>
                                     <FiEye className={styles.statIcon} />
-                                    {formatCount(product.totalViews+1000)} views
+                                    {formatCount((product?.totalViews ?? 0)+1000)} views
                                 </span>
                                 {isDigital ? (
                                     <span className={styles.statItem}>
                                         <FiDownload className={styles.statIcon} />
-                                        {formatCount(product.totalDownloads+500)} downloads
+                                        {formatCount((product?.totalDownloads ?? 0)+500)} downloads
                                     </span>
                                 ) : (
                                     <span className={styles.statItem}>
                                         <FiShoppingBag className={styles.statIcon} />
-                                        {formatCount(product.totalSolds)} sold
+                                        {formatCount((product?.totalSolds ?? 0)+200)} sold
                                     </span>
                                 )}
                             </div>
